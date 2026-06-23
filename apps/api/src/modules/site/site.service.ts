@@ -1,0 +1,68 @@
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+
+@Injectable()
+export class SiteService {
+  constructor(private prisma: PrismaService) {}
+
+  async getConfig() {
+    const config = await this.prisma.siteConfig.findFirst();
+    if (!config) {
+      throw new NotFoundException('站点配置不存在');
+    }
+    return {
+      brandName: config.brandName,
+      heroTitle: config.heroTitle,
+      heroSubtitle: config.heroSubtitle,
+      bioTitle: config.bioTitle,
+      bioContent: config.bioContent,
+      contact: {
+        phone: config.contactPhone,
+        email: config.contactEmail,
+        wechat: config.contactWechat,
+        location: config.locationText,
+      },
+      socialLinks: {
+        bilibili: config.bilibiliUrl,
+      },
+      footerText: config.footerText,
+    };
+  }
+
+  async updateConfig(data: {
+    brandName?: string;
+    heroTitle?: string;
+    heroSubtitle?: string;
+    bioTitle?: string;
+    bioContent?: string;
+    contactPhone?: string;
+    contactEmail?: string;
+    contactWechat?: string;
+    locationText?: string;
+    bilibiliUrl?: string;
+    footerText?: string;
+  }) {
+    const existing = await this.prisma.siteConfig.findFirst();
+    if (!existing) {
+      return this.prisma.siteConfig.create({
+        data: {
+          brandName: data.brandName || '',
+          heroTitle: data.heroTitle || '',
+          heroSubtitle: data.heroSubtitle || '',
+          bioTitle: data.bioTitle || '',
+          bioContent: data.bioContent || '',
+          contactPhone: data.contactPhone || '',
+          contactEmail: data.contactEmail || '',
+          contactWechat: data.contactWechat || '',
+          locationText: data.locationText || '',
+          bilibiliUrl: data.bilibiliUrl,
+          footerText: data.footerText || '',
+        },
+      });
+    }
+    return this.prisma.siteConfig.update({
+      where: { id: existing.id },
+      data,
+    });
+  }
+}

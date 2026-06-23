@@ -1,0 +1,238 @@
+import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+
+@Injectable()
+export class WorkshopsService {
+  constructor(private prisma: PrismaService) {}
+
+  async getWorkshops(query: {
+    page?: number;
+    pageSize?: number;
+    featured?: boolean;
+    status?: string;
+    keyword?: string;
+    includeUnpublished?: boolean;
+  }) {
+    const page = Number(query.page) || 1;
+    const pageSize = Number(query.pageSize) || 10;
+    const skip = (page - 1) * pageSize;
+
+    const where: any = {};
+    if (!query.includeUnpublished) where.isPublished = true;
+    if (query.featured) where.isFeatured = true;
+    if (query.status) where.status = query.status;
+    if (query.keyword) {
+      where.OR = [
+        { title: { contains: query.keyword } },
+        { summary: { contains: query.keyword } },
+      ];
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.workshop.findMany({
+        where,
+        orderBy: { sortOrder: 'asc' },
+        skip,
+        take: pageSize,
+      }),
+      this.prisma.workshop.count({ where }),
+    ]);
+
+    return {
+      items: items.map((w) => ({
+        id: w.id,
+        title: w.title,
+        slug: w.slug,
+        subtitle: w.subtitle,
+        summary: w.summary,
+        content: w.content,
+        coverImage: w.coverImage,
+        priceText: w.priceText,
+        location: w.location,
+        startDate: w.startDate?.toISOString(),
+        endDate: w.endDate?.toISOString(),
+        capacity: w.capacity,
+        enrolledCount: w.enrolledCount,
+        level: w.level,
+        durationText: w.durationText,
+        status: w.status,
+        isFeatured: w.isFeatured,
+        isPublished: w.isPublished,
+        sortOrder: w.sortOrder,
+        tags: [],
+      })),
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
+  }
+
+  async getWorkshopBySlug(slug: string, includeUnpublished = false) {
+    const workshop = await this.prisma.workshop.findUnique({
+      where: { slug },
+      include: {
+        highlights: { orderBy: { sortOrder: 'asc' } },
+        itinerary: { orderBy: { dayIndex: 'asc' } },
+        feeItems: { orderBy: { sortOrder: 'asc' } },
+      },
+    });
+    if (!workshop) throw new NotFoundException('活动不存在');
+    if (!includeUnpublished && !workshop.isPublished) throw new NotFoundException('活动不存在');
+
+    const siteConfig = await this.prisma.siteConfig.findFirst();
+
+    const feeIncludes = workshop.feeItems.filter((f) => f.type === 'included').map((f) => f.content);
+    const feeExcludes = workshop.feeItems.filter((f) => f.type === 'excluded').map((f) => f.content);
+
+    return {
+      id: workshop.id,
+      title: workshop.title,
+      slug: workshop.slug,
+      subtitle: workshop.subtitle,
+      summary: workshop.summary,
+      content: workshop.content,
+      coverImage: workshop.coverImage,
+      priceText: workshop.priceText,
+      location: workshop.location,
+      startDate: workshop.startDate?.toISOString(),
+      endDate: workshop.endDate?.toISOString(),
+      capacity: workshop.capacity,
+      enrolledCount: workshop.enrolledCount,
+      level: workshop.level,
+      durationText: workshop.durationText,
+      status: workshop.status,
+      isFeatured: workshop.isFeatured,
+      tags: [],
+      highlights: workshop.highlights.map((h) => ({
+        title: h.title,
+        content: h.content,
+      })),
+      itinerary: workshop.itinerary.map((d) => ({
+        dayIndex: d.dayIndex,
+        title: d.title,
+        content: d.content,
+      })),
+      feeIncludes,
+      feeExcludes,
+      contact: {
+        phone: siteConfig?.contactPhone || '',
+        email: siteConfig?.contactEmail || '',
+        wechat: siteConfig?.contactWechat || '',
+        location: workshop.location || siteConfig?.locationText || '',
+      },
+    };
+  }
+
+  async createWorkshop(data: any) {
+    const existing = await this.prisma.workshop.findUnique({ where: { slug: data.slug } });
+    if (existing) throw new ConflictException('slug 已存在');
+    return this.prisma.workshop.create({ data });
+  }
+
+  async updateWorkshop(id: string, data: any) {
+    return this.prisma.workshop.update({ where: { id }, data });
+  }
+
+  async deleteWorkshop(id: string) {
+    return this.prisma.workshop.delete({ where: { id } });
+  }
+
+  async getWorkshopById(id: string) {
+    const workshop = await this.prisma.workshop.findUnique({
+      where: { id },
+      include: {
+        highlights: { orderBy: { sortOrder: 'asc' } },
+        itinerary: { orderBy: { dayIndex: 'asc' } },
+        feeItems: { orderBy: { sortOrder: 'asc' } },
+      },
+    });
+    if (!workshop) throw new NotFoundException('活动不存在');
+
+    return {
+      id: workshop.id,
+      title: workshop.title,
+      slug: workshop.slug,
+      subtitle: workshop.subtitle,
+      summary: workshop.summary,
+      content: workshop.content,
+      coverImage: workshop.coverImage,
+      priceText: workshop.priceText,
+      priceCents: workshop.priceCents,
+      location: workshop.location,
+      startDate: workshop.startDate?.toISOString(),
+      endDate: workshop.endDate?.toISOString(),
+      capacity: workshop.capacity,
+      enrolledCount: workshop.enrolledCount,
+      level: workshop.level,
+      durationText: workshop.durationText,
+      status: workshop.status,
+      isFeatured: workshop.isFeatured,
+      isPublished: workshop.isPublished,
+      sortOrder: workshop.sortOrder,
+      highlights: workshop.highlights.map((h) => ({
+        id: h.id,
+        title: h.title,
+        content: h.content,
+        sortOrder: h.sortOrder,
+      })),
+      itinerary: workshop.itinerary.map((d) => ({
+        id: d.id,
+        dayIndex: d.dayIndex,
+        title: d.title,
+        content: d.content,
+        sortOrder: d.sortOrder,
+      })),
+      feeItems: workshop.feeItems.map((f) => ({
+        id: f.id,
+        type: f.type,
+        content: f.content,
+        sortOrder: f.sortOrder,
+      })),
+    };
+  }
+
+  async addHighlight(workshopId: string, data: { title: string; content: string; sortOrder?: number }) {
+    return this.prisma.workshopHighlight.create({
+      data: { workshopId, title: data.title, content: data.content, sortOrder: data.sortOrder ?? 0 },
+    });
+  }
+
+  async updateHighlight(id: string, data: { title?: string; content?: string; sortOrder?: number }) {
+    return this.prisma.workshopHighlight.update({ where: { id }, data });
+  }
+
+  async deleteHighlight(id: string) {
+    return this.prisma.workshopHighlight.delete({ where: { id } });
+  }
+
+  async addItinerary(workshopId: string, data: { dayIndex: number; title: string; content: string; sortOrder?: number }) {
+    return this.prisma.workshopItinerary.create({
+      data: { workshopId, dayIndex: data.dayIndex, title: data.title, content: data.content, sortOrder: data.sortOrder ?? 0 },
+    });
+  }
+
+  async updateItinerary(id: string, data: { dayIndex?: number; title?: string; content?: string; sortOrder?: number }) {
+    return this.prisma.workshopItinerary.update({ where: { id }, data });
+  }
+
+  async deleteItinerary(id: string) {
+    return this.prisma.workshopItinerary.delete({ where: { id } });
+  }
+
+  async addFeeItem(workshopId: string, data: { type: string; content: string; sortOrder?: number }) {
+    return this.prisma.workshopFeeItem.create({
+      data: { workshopId, type: data.type, content: data.content, sortOrder: data.sortOrder ?? 0 },
+    });
+  }
+
+  async updateFeeItem(id: string, data: { type?: string; content?: string; sortOrder?: number }) {
+    return this.prisma.workshopFeeItem.update({ where: { id }, data });
+  }
+
+  async deleteFeeItem(id: string) {
+    return this.prisma.workshopFeeItem.delete({ where: { id } });
+  }
+}

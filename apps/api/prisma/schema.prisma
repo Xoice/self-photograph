@@ -1,0 +1,212 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  role         String   @default("admin")
+  status       String   @default("active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model SiteConfig {
+  id            String   @id @default(uuid())
+  brandName     String   @map("brand_name")
+  heroTitle     String   @map("hero_title")
+  heroSubtitle  String   @map("hero_subtitle")
+  bioTitle      String   @map("bio_title")
+  bioContent     String   @map("bio_content")
+  contactPhone  String   @map("contact_phone")
+  contactEmail  String   @map("contact_email")
+  contactWechat String   @map("contact_wechat")
+  locationText  String   @map("location_text")
+  bilibiliUrl   String?  @map("bilibili_url")
+  footerText    String   @map("footer_text")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("site_configs")
+}
+
+model GalleryCategory {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  parentId  String?  @map("parent_id")
+  sortOrder Int      @default(0) @map("sort_order")
+  isVisible Boolean  @default(true) @map("is_visible")
+  parent    GalleryCategory? @relation("CategoryTree", fields: [parentId], references: [id])
+  children  GalleryCategory[] @relation("CategoryTree")
+  works     GalleryWork[]
+
+  @@map("gallery_categories")
+}
+
+model GalleryTag {
+  id    String @id @default(uuid())
+  name  String
+  slug  String @unique
+  works GalleryWork[]
+
+  @@map("gallery_tags")
+}
+
+model GalleryWork {
+  id             String   @id @default(uuid())
+  title          String
+  slug           String   @unique
+  summary        String
+  description    String?
+  coverImage     String   @map("cover_image")
+  thumbnailImage String?  @map("thumbnail_image")
+  shootDate      DateTime? @map("shoot_date")
+  location       String?
+  cameraInfo     String?  @map("camera_info")
+  isFeatured     Boolean  @default(false) @map("is_featured")
+  isPublished    Boolean  @default(false) @map("is_published")
+  sortOrder      Int      @default(0) @map("sort_order")
+  categoryId     String?  @map("category_id")
+  category       GalleryCategory? @relation(fields: [categoryId], references: [id])
+  tags           GalleryTag[]
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("gallery_works")
+}
+
+model Video {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  description     String?
+  platform        String
+  videoUrl        String   @map("video_url")
+  coverImage      String?  @map("cover_image")
+  durationSeconds Int?     @map("duration_seconds")
+  category        String?
+  isPublished     Boolean  @default(false) @map("is_published")
+  sortOrder       Int      @default(0) @map("sort_order")
+  publishedAt     DateTime? @map("published_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@map("videos")
+}
+
+model Workshop {
+  id            String   @id @default(uuid())
+  title         String
+  slug          String   @unique
+  subtitle      String?
+  summary       String?
+  content       String?
+  coverImage    String?  @map("cover_image")
+  priceText     String?  @map("price_text")
+  priceCents    Int?     @map("price_cents")
+  location      String?
+  startDate     DateTime? @map("start_date")
+  endDate       DateTime? @map("end_date")
+  capacity      Int?
+  enrolledCount Int      @default(0) @map("enrolled_count")
+  level         String?
+  durationText  String?  @map("duration_text")
+  status        String   @default("draft")
+  isFeatured    Boolean  @default(false) @map("is_featured")
+  isPublished   Boolean  @default(false) @map("is_published")
+  sortOrder     Int      @default(0) @map("sort_order")
+  highlights    WorkshopHighlight[]
+  itinerary     WorkshopItinerary[]
+  feeItems      WorkshopFeeItem[]
+  enrollments   WorkshopEnrollment[]
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("workshops")
+}
+
+model WorkshopHighlight {
+  id         String  @id @default(uuid())
+  workshopId String  @map("workshop_id")
+  title      String
+  content    String
+  sortOrder  Int     @default(0) @map("sort_order")
+  workshop   Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+
+  @@map("workshop_highlights")
+}
+
+model WorkshopItinerary {
+  id         String  @id @default(uuid())
+  workshopId String  @map("workshop_id")
+  dayIndex   Int     @map("day_index")
+  title      String
+  content    String
+  sortOrder  Int     @default(0) @map("sort_order")
+  workshop   Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+
+  @@map("workshop_itineraries")
+}
+
+model WorkshopFeeItem {
+  id         String  @id @default(uuid())
+  workshopId String  @map("workshop_id")
+  type       String
+  content    String
+  sortOrder  Int     @default(0) @map("sort_order")
+  workshop   Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+
+  @@map("workshop_fee_items")
+}
+
+model ContactLead {
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  message    String
+  sourcePage String?  @map("source_page")
+  status     String   @default("new")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("contact_leads")
+}
+
+model WorkshopEnrollment {
+  id         String   @id @default(uuid())
+  workshopId String   @map("workshop_id")
+  name       String
+  phone      String
+  wechat     String?
+  email      String?
+  message    String?
+  status     String   @default("new")
+  createdAt  DateTime @default(now()) @map("created_at")
+  workshop   Workshop @relation(fields: [workshopId], references: [id])
+
+  @@map("workshop_enrollments")
+}
+
+model MediaAsset {
+  id        String   @id @default(uuid())
+  fileName  String   @map("file_name")
+  fileType  String   @map("file_type")
+  mimeType  String   @map("mime_type")
+  url       String
+  width     Int?
+  height    Int?
+  sizeBytes Int?     @map("size_bytes")
+  provider  String
+  createdBy String?  @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("media_assets")
+}
