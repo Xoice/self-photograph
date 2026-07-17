@@ -27,7 +27,12 @@ const ScrollToTop = () => {
             lenisInstance.start();
             lenisInstance.scrollTo(offsetTop, { immediate: true });
           }
+          // 清掉 URL hash，避免刷新时跳回锚点位置
+          window.history.replaceState(null, '', window.location.pathname);
         }, 500);
+      } else {
+        // 清掉 URL hash
+        window.history.replaceState(null, '', window.location.pathname);
       }
     };
 
