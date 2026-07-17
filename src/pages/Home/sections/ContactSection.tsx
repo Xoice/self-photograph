@@ -135,7 +135,7 @@ const ContactSection = () => {
                                 size="small"
                                 sx={{
                                   color: copiedField === item.field ? 'primary.main' : 'rgba(255,255,255,0.3)',
-                                  '&:hover': { color: 'primary.main', bgcolor: 'rgba(204, 255, 0, 0.1)' }
+                                  '&:hover': { color: 'primary.main', bgcolor: 'rgba(224, 164, 88, 0.1)' }
                                 }}
                               >
                                 {copiedField === item.field ? <Check fontSize="small" /> : <ContentCopy fontSize="small" />}
@@ -253,7 +253,7 @@ const ContactSection = () => {
                       '&:hover': {
                         bgcolor: 'primary.main',
                         opacity: 0.9,
-                        boxShadow: '0 0 25px rgba(204, 255, 0, 0.6)',
+                        boxShadow: '0 0 25px rgba(224, 164, 88, 0.6)',
                         transform: 'translateY(-2px)',
                       },
                       transition: 'all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)',

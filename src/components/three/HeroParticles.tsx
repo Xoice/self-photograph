@@ -127,7 +127,7 @@ const HeroParticles = () => {
         </bufferGeometry>
         <pointsMaterial
           size={0.25}
-          color="#CCFF00"
+          color="#E0A458"
           transparent
           opacity={0.8}
           sizeAttenuation

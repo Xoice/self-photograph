@@ -311,7 +311,7 @@ const WorkshopEditorPage = () => {
                   <IconButton onClick={() => removeItinerary(idx)} sx={{ color: '#f44336', mt: 0.5 }}><Delete /></IconButton>
                   <Stack spacing={2} sx={{ flex: 1 }}>
                     <Stack direction="row" spacing={2}>
-                      <Chip label={`Day ${d.dayIndex + 1}`} sx={{ bgcolor: 'rgba(204,255,0,0.15)', color: 'primary.main' }} />
+                      <Chip label={`Day ${d.dayIndex + 1}`} sx={{ bgcolor: 'rgba(224,164,88,0.15)', color: 'primary.main' }} />
                       <TextField label="标题" value={d.title} onChange={(e) => updateItinerary(idx, { title: e.target.value })} fullWidth size="small" />
                     </Stack>
                     <TextField label="内容" value={d.content} onChange={(e) => updateItinerary(idx, { content: e.target.value })} fullWidth multiline rows={2} size="small" />

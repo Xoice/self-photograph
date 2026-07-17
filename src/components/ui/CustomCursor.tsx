@@ -77,7 +77,7 @@ const CustomCursor = () => {
         '&.hovered': {
           width: '50px',
           height: '50px',
-          backgroundColor: 'rgba(204, 255, 0, 0.3)',
+          backgroundColor: 'rgba(224, 164, 88, 0.3)',
           borderColor: 'primary.main',
         },
         '&.pressed': {

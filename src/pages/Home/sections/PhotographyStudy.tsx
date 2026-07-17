@@ -90,7 +90,7 @@ const PhotographyStudy = () => {
                     '&:hover': {
                       transform: 'translateY(-8px)',
                       borderColor: workshop.isFeatured ? 'primary.main' : 'rgba(255,255,255,0.2)',
-                      boxShadow: workshop.isFeatured ? '0 20px 40px rgba(204, 255, 0, 0.2)' : '0 20px 40px rgba(0,0,0,0.4)',
+                      boxShadow: workshop.isFeatured ? '0 20px 40px rgba(224, 164, 88, 0.2)' : '0 20px 40px rgba(0,0,0,0.4)',
                     },
                   }}
                 >
@@ -102,11 +102,11 @@ const PhotographyStudy = () => {
                           label={tag}
                           size="small"
                           sx={{
-                            bgcolor: workshop.isFeatured ? 'rgba(204, 255, 0, 0.2)' : 'rgba(255,255,255,0.05)',
+                            bgcolor: workshop.isFeatured ? 'rgba(224, 164, 88, 0.2)' : 'rgba(255,255,255,0.05)',
                             color: workshop.isFeatured ? 'primary.main' : 'text.secondary',
                             fontSize: '0.75rem',
                             '&:hover': {
-                              bgcolor: workshop.isFeatured ? 'rgba(204, 255, 0, 0.3)' : 'rgba(255,255,255,0.1)',
+                              bgcolor: workshop.isFeatured ? 'rgba(224, 164, 88, 0.3)' : 'rgba(255,255,255,0.1)',
                             },
                           }}
                         />
@@ -179,7 +179,7 @@ const PhotographyStudy = () => {
                             '&:hover': {
                               bgcolor: isOpen(workshop.status) ? 'primary.main' : undefined,
                               opacity: isOpen(workshop.status) ? 0.9 : undefined,
-                              boxShadow: isOpen(workshop.status) ? '0 0 25px rgba(204, 255, 0, 0.6)' : undefined,
+                              boxShadow: isOpen(workshop.status) ? '0 0 25px rgba(224, 164, 88, 0.6)' : undefined,
                               transform: isOpen(workshop.status) ? 'translateY(-2px)' : undefined,
                             },
                             transition: 'all 0.3s ease'

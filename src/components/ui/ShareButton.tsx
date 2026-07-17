@@ -62,7 +62,7 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
         onClick={(e) => setAnchorEl(e.currentTarget)}
         sx={{
           color: 'primary.main',
-          '&:hover': { bgcolor: 'rgba(204,255,0,0.1)' },
+          '&:hover': { bgcolor: 'rgba(224,164,88,0.1)' },
         }}
       >
         <Share />
@@ -74,7 +74,7 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
         onClose={() => setAnchorEl(null)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-        slotProps={{ paper: { sx: { bgcolor: '#111', border: '1px solid rgba(204,255,0,0.2)', p: 2, minWidth: 200 } } }}
+        slotProps={{ paper: { sx: { bgcolor: '#111', border: '1px solid rgba(224,164,88,0.2)', p: 2, minWidth: 200 } } }}
       >
         <Typography variant="body2" sx={{ fontWeight: 600, mb: 1.5, color: 'primary.main' }}>
           分享到
@@ -88,8 +88,8 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
               justifyContent: 'flex-start',
               textTransform: 'none',
               color: copied ? 'primary.main' : '#EAEAEA',
-              bgcolor: copied ? 'rgba(204,255,0,0.1)' : 'rgba(255,255,255,0.05)',
-              '&:hover': { bgcolor: 'rgba(204,255,0,0.1)' },
+              bgcolor: copied ? 'rgba(224,164,88,0.1)' : 'rgba(255,255,255,0.05)',
+              '&:hover': { bgcolor: 'rgba(224,164,88,0.1)' },
             }}
           >
             {copied ? '已复制链接' : '复制链接'}
@@ -103,7 +103,7 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
               textTransform: 'none',
               color: '#EAEAEA',
               bgcolor: 'rgba(255,255,255,0.05)',
-              '&:hover': { bgcolor: 'rgba(204,255,0,0.1)' },
+              '&:hover': { bgcolor: 'rgba(224,164,88,0.1)' },
             }}
           >
             微信（扫码）
@@ -117,7 +117,7 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
               textTransform: 'none',
               color: '#EAEAEA',
               bgcolor: 'rgba(255,255,255,0.05)',
-              '&:hover': { bgcolor: 'rgba(204,255,0,0.1)' },
+              '&:hover': { bgcolor: 'rgba(224,164,88,0.1)' },
             }}
           >
             微博
@@ -131,7 +131,7 @@ export default function ShareButton({ title, url }: ShareButtonProps) {
               textTransform: 'none',
               color: '#EAEAEA',
               bgcolor: 'rgba(255,255,255,0.05)',
-              '&:hover': { bgcolor: 'rgba(204,255,0,0.1)' },
+              '&:hover': { bgcolor: 'rgba(224,164,88,0.1)' },
             }}
           >
             Twitter

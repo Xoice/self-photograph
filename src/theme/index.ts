@@ -4,7 +4,7 @@ const xoiceTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#CCFF00',
+      main: '#E0A458',
     },
     background: {
       default: '#050505',
@@ -48,7 +48,7 @@ const xoiceTheme = createTheme({
           overflowX: 'hidden',
         },
         '*:focus-visible': {
-          outline: '2px solid #CCFF00',
+          outline: '2px solid #E0A458',
           outlineOffset: '2px',
         },
       },

@@ -1,6 +1,6 @@
 import { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { ThemeProvider, CssBaseline, Box, CircularProgress } from '@mui/material';
+import { ThemeProvider, CssBaseline, Box, Typography, CircularProgress } from '@mui/material';
 import { HelmetProvider } from 'react-helmet-async';
 import Lenis from 'lenis';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -53,11 +53,66 @@ function PageLoader() {
 function Footer() {
   const { data: config } = useSiteConfig();
   const year = new Date().getFullYear();
+  const bilibili = config?.socialLinks?.bilibili;
 
   return (
-    <Box component="footer" sx={{ p: 4, borderTop: '1px solid #222', display: 'flex', justifyContent: 'space-between', color: '#444' }}>
-      <Box>&copy; {year} {config?.brandName || 'Xoice'} Photography.</Box>
-      <Box>{config?.footerText || `Designed with`} <Box component="span" sx={{ color: 'primary.main' }}>♥</Box> by React 19.</Box>
+    <Box component="footer" sx={{ py: 6, px: { xs: 2, md: 4 }, borderTop: '1px solid #222', bgcolor: '#050505' }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3, mb: 4 }}>
+        {/* 品牌 + 版权 */}
+        <Box>
+          <Typography sx={{ fontSize: '1.2rem', fontWeight: 700, color: 'text.primary', mb: 0.5 }}>
+            {config?.brandName || 'Xoice'} Photography
+          </Typography>
+          <Typography variant="caption" sx={{ color: '#555' }}>
+            &copy; {year} All rights reserved.
+          </Typography>
+        </Box>
+
+        {/* 快速导航 */}
+        <Box sx={{ display: 'flex', gap: 4 }}>
+          {[
+            { label: '首页', href: '#hero' },
+            { label: '画廊', href: '/gallery' },
+            { label: '影视', href: '#video' },
+            { label: '研学', href: '#photographystudy' },
+            { label: '联系', href: '#connect' },
+          ].map((item) => (
+            <Typography
+              key={item.label}
+              component="a"
+              href={item.href}
+              sx={{ color: '#666', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.3s', '&:hover': { color: 'primary.main' } }}
+            >
+              {item.label}
+            </Typography>
+          ))}
+        </Box>
+
+        {/* 社交媒体 */}
+        {bilibili && (
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <Typography
+              component="a"
+              href={bilibili}
+              target="_blank"
+              rel="noopener noreferrer"
+              sx={{ color: '#555', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.3s', '&:hover': { color: 'primary.main' } }}
+            >
+              B站空间
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      {/* 底部信息 */}
+      <Box sx={{ borderTop: '1px solid #1a1a1a', pt: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1 }}>
+        <Typography variant="caption" sx={{ color: '#333' }}>
+          {config?.footerText || 'Designed with React 19'}
+        </Typography>
+        <Typography variant="caption" sx={{ color: '#333' }}>
+          Capturing the soul of the county &amp; stars.
+        </Typography>
+      </Box>
     </Box>
   );
 }

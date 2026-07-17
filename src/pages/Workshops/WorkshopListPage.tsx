@@ -91,7 +91,7 @@ const WorkshopListPage = () => {
                     '&:hover': {
                       transform: 'translateY(-8px)',
                       borderColor: ws.isFeatured ? 'primary.main' : 'rgba(255,255,255,0.2)',
-                      boxShadow: ws.isFeatured ? '0 20px 40px rgba(204, 255, 0, 0.2)' : '0 20px 40px rgba(0,0,0,0.4)',
+                      boxShadow: ws.isFeatured ? '0 20px 40px rgba(224, 164, 88, 0.2)' : '0 20px 40px rgba(0,0,0,0.4)',
                     },
                     '&:hover img': { transform: 'scale(1.08)' },
                   }}
@@ -146,7 +146,7 @@ const WorkshopListPage = () => {
                           label={tag}
                           size="small"
                           sx={{
-                            bgcolor: ws.isFeatured ? 'rgba(204,255,0,0.2)' : 'rgba(255,255,255,0.05)',
+                            bgcolor: ws.isFeatured ? 'rgba(224,164,88,0.2)' : 'rgba(255,255,255,0.05)',
                             color: ws.isFeatured ? 'primary.main' : 'text.secondary',
                             fontSize: '0.7rem',
                           }}

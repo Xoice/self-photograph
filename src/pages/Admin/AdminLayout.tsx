@@ -175,7 +175,7 @@ function SidebarContent({ user, location, onLogout, onNavigate }: { user: any; l
                 }}
                 sx={{
                   borderRadius: 1,
-                  bgcolor: isActive ? 'rgba(204,255,0,0.1)' : 'transparent',
+                  bgcolor: isActive ? 'rgba(224,164,88,0.1)' : 'transparent',
                   '&:hover': { bgcolor: 'rgba(255,255,255,0.05)' },
                 }}
               >

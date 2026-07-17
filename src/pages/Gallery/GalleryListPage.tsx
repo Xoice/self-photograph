@@ -154,13 +154,13 @@ const GalleryListPage = () => {
                       <Chip
                         label={work.category?.name || '未分类'}
                         size="small"
-                        sx={{ bgcolor: 'rgba(204,255,0,0.15)', color: 'primary.main', fontSize: '0.7rem' }}
+                        sx={{ bgcolor: 'rgba(224,164,88,0.15)', color: 'primary.main', fontSize: '0.7rem' }}
                       />
                       {work.isFeatured && (
                         <Chip
                           label="精选"
                           size="small"
-                          sx={{ bgcolor: 'rgba(204,255,0,0.15)', color: 'primary.main', fontSize: '0.7rem' }}
+                          sx={{ bgcolor: 'rgba(224,164,88,0.15)', color: 'primary.main', fontSize: '0.7rem' }}
                         />
                       )}
                     </Stack>

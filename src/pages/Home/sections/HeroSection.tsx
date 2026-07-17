@@ -3,6 +3,7 @@ import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { lazy, Suspense, useRef, useState, useEffect } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { useGalleryWorks } from '@/hooks/useGalleryWorks';
 
 const HeroCanvas = lazy(() => import('../../../components/three/HeroCanvas'));
 
@@ -17,7 +18,7 @@ const HeroFallback = () => (
         content: '""',
         position: 'absolute',
         inset: 0,
-        backgroundImage: 'radial-gradient(circle, rgba(204,255,0,0.04) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(circle, rgba(224,164,88,0.04) 1px, transparent 1px)',
         backgroundSize: '40px 40px',
         opacity: 0.5,
       },
@@ -29,6 +30,8 @@ const HeroSection = () => {
   const containerRef = useRef(null);
   const [canvasVisible, setCanvasVisible] = useState(true);
   const { data: config } = useSiteConfig();
+  const { data: galleryData } = useGalleryWorks({ featured: true, pageSize: 1 });
+  const heroImage = galleryData?.items?.[0]?.coverImage;
 
   const titleParts = config?.heroTitle?.split(' ') || ['XOICE', 'PHOTOGRAPH'];
   const subtitle = config?.heroSubtitle || 'Capturing the soul of the county & stars.';
@@ -68,7 +71,34 @@ const HeroSection = () => {
       id="hero"
       sx={{ height: '100vh', width: '100%', position: 'relative', overflow: 'hidden', scrollMarginTop: '100px' }}
     >
-      <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
+      {/* 真实代表作背景图 */}
+      {heroImage && (
+        <Box
+          component="img"
+          src={heroImage}
+          alt=""
+          aria-hidden="true"
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.35,
+            zIndex: 0,
+          }}
+        />
+      )}
+      {/* 渐变遮罩 */}
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          background: 'linear-gradient(to bottom, rgba(5,5,5,0.6) 0%, rgba(5,5,5,0.4) 40%, rgba(5,5,5,0.8) 100%)',
+          zIndex: 1,
+        }}
+      />
+      <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2 }}>
         <Suspense fallback={<HeroFallback />}>
           <HeroCanvas visible={canvasVisible} />
         </Suspense>
@@ -77,14 +107,14 @@ const HeroSection = () => {
       <Stack
         justifyContent="center"
         alignItems="center"
-        sx={{ height: '100%', position: 'relative', zIndex: 10, mixBlendMode: 'exclusion', pointerEvents: 'none' }}
+        sx={{ height: '100%', position: 'relative', zIndex: 10, pointerEvents: 'none' }}
       >
-        <Typography variant="h1" className="hero-title" sx={{ textAlign: 'center', fontSize: { xs: '15vw', md: '12vw' }, lineHeight: 0.85 }}>
+        <Typography variant="h1" className="hero-title" sx={{ textAlign: 'center', fontSize: { xs: '10vw', md: '8vw' }, fontWeight: 700, lineHeight: 0.9, textShadow: '0 4px 30px rgba(0,0,0,0.8)' }}>
           {titleParts.map((part, idx) => (
             <Box key={idx} component="span" sx={{ display: 'block' }}>{part}</Box>
           ))}
         </Typography>
-        <Typography className="hero-subtitle" sx={{ mt: 4, letterSpacing: '0.2em', color: 'primary.main', textTransform: 'uppercase' }}>
+        <Typography className="hero-subtitle" sx={{ mt: 4, letterSpacing: '0.2em', color: 'rgba(234,234,234,0.7)', textTransform: 'uppercase', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
           {subtitle}
         </Typography>
       </Stack>

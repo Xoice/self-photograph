@@ -134,7 +134,7 @@ const WorksManager = () => {
                   <TableCell>{work.title}</TableCell>
                   <TableCell>{work.category?.name || '-'}</TableCell>
                   <TableCell>
-                    {work.isFeatured ? <Chip label="精选" size="small" sx={{ bgcolor: 'rgba(204,255,0,0.1)', color: 'primary.main' }} /> : '-'}
+                    {work.isFeatured ? <Chip label="精选" size="small" sx={{ bgcolor: 'rgba(224,164,88,0.1)', color: 'primary.main' }} /> : '-'}
                   </TableCell>
                   <TableCell>
                     <Chip label={work.isPublished ? '已发布' : '草稿'} size="small" sx={{

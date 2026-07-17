@@ -207,7 +207,7 @@ const ImageCropper = ({ file, onCrop, onCancel, aspectRatio = 0 }: ImageCropperP
                 top: cropArea.y,
                 width: cropArea.width,
                 height: cropArea.height,
-                border: '2px solid #CCFF00',
+                border: '2px solid #E0A458',
                 boxShadow: '0 0 0 9999px rgba(0,0,0,0.6)',
                 pointerEvents: 'none',
               }}

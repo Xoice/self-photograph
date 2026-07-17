@@ -100,7 +100,7 @@ const WorkDetailPage = () => {
             <Chip
               label={work.category?.name || '未分类'}
               sx={{
-                bgcolor: 'rgba(204, 255, 0, 0.1)',
+                bgcolor: 'rgba(224, 164, 88, 0.1)',
                 color: 'primary.main',
                 fontWeight: 500,
               }}
@@ -154,19 +154,17 @@ const WorkDetailPage = () => {
            sx={{
             width: '100%',
             height: 'auto',
-            maxHeight: '70vh',
-             objectFit: 'contain',
-             border: '1px solid rgba(234, 234, 234, 0.1)',
+            display: 'block',
              cursor: 'pointer',
              transition: 'opacity 0.3s',
-             '&:hover': { opacity: 0.9 },
+             '&:hover': { opacity: 0.85 },
             }}
           />
         </Box>
 
         {work.description && (
           <Box className="work-section" sx={{ mb: 8 }}>
-            <Typography variant="h2" sx={{ fontSize: '1.5rem', fontWeight: 600, mb: 3, color: 'primary.main' }}>
+            <Typography variant="h2" sx={{ fontSize: '1.5rem', fontWeight: 600, mb: 3, color: 'text.primary' }}>
               作品介绍
             </Typography>
             <Typography variant="body1" sx={{ color: '#aaa', lineHeight: 1.8, whiteSpace: 'pre-line' }}>
@@ -177,7 +175,7 @@ const WorkDetailPage = () => {
 
         {work.images && work.images.length > 1 && (
           <Box className="work-section" sx={{ mb: 8 }}>
-            <Typography variant="h2" sx={{ fontSize: '1.5rem', fontWeight: 600, mb: 3, color: 'primary.main' }}>
+            <Typography variant="h2" sx={{ fontSize: '1.5rem', fontWeight: 600, mb: 3, color: 'text.primary' }}>
               更多图片
             </Typography>
             <Stack spacing={2}>
@@ -195,12 +193,10 @@ const WorkDetailPage = () => {
                    sx={{
                     width: '100%',
                     height: 'auto',
-                    objectFit: 'contain',
-                    maxHeight: '80vh',
-                   border: '1px solid rgba(234, 234, 234, 0.1)',
-                   cursor: 'pointer',
-                   transition: 'opacity 0.3s',
-                   '&:hover': { opacity: 0.9 },
+                    display: 'block',
+                    cursor: 'pointer',
+                    transition: 'opacity 0.3s',
+                    '&:hover': { opacity: 0.85 },
                   }}
                 />
               ))}

@@ -3,10 +3,13 @@ import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger } from '@/utils/gsap';
 import { useRef, useEffect } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
+import { useGalleryWorks } from '@/hooks/useGalleryWorks';
 
 const BioSection = () => {
   const sectionRef = useRef(null);
   const { data: config } = useSiteConfig();
+  const { data: galleryData } = useGalleryWorks({ featured: true, pageSize: 2 });
+  const bioImage = (config as any)?.bioImage || galleryData?.items?.[1]?.coverImage;
 
   const bioTitle = config?.bioTitle || '关于 Xoice';
   const bioParagraphs = config?.bioContent?.split('\n') || [
@@ -27,12 +30,33 @@ const BioSection = () => {
   // 异步数据加载后刷新 ScrollTrigger 位置
   useEffect(() => {
     ScrollTrigger.refresh();
-  }, [config]);
+  }, [config, galleryData]);
 
   return (
     <Box ref={sectionRef} component="section" id="bio" sx={{ minHeight: '100vh', py: 10, display: 'flex', alignItems: 'center' }}>
       <Container maxWidth="xl">
-        <Stack spacing={4}>
+        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 6, md: 10 }, alignItems: 'center' }}>
+          {bioImage && (
+            <Box className="bio-content" sx={{ flex: { xs: '0 0 100%', md: '0 0 40%' }, maxWidth: { xs: '100%', md: '500px' }, position: 'relative' }}>
+              <Box
+                component="img"
+                src={bioImage}
+                alt={bioTitle}
+                loading="lazy"
+                sx={{
+                  width: '100%',
+                  height: 'auto',
+                  aspectRatio: '4/5',
+                  objectFit: 'cover',
+                  borderRadius: 1,
+                  filter: 'grayscale(20%)',
+                  transition: 'filter 0.6s ease',
+                  '&:hover': { filter: 'grayscale(0%)' },
+                }}
+              />
+            </Box>
+          )}
+          <Stack spacing={4} sx={{ flex: 1 }}>
           <Typography className="bio-content" variant="h2" sx={{ fontSize: { xs: '3rem', md: '4rem' } }}>
             {bioTitle}
           </Typography>
@@ -57,6 +81,7 @@ const BioSection = () => {
             </Button>
           </Box>
         </Stack>
+        </Box>
       </Container>
     </Box>
   );

@@ -124,7 +124,7 @@ const WorkshopDetailPage = () => {
               label="重磅推出"
               sx={{
                 mb: 3,
-                bgcolor: 'rgba(204, 255, 0, 0.1)',
+                bgcolor: 'rgba(224, 164, 88, 0.1)',
                 color: 'primary.main',
                 fontSize: '0.875rem',
                 fontWeight: 500,
@@ -255,7 +255,7 @@ const WorkshopDetailPage = () => {
                     >
                       <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
                         <Stack direction="row" spacing={2} alignItems="center">
-                          <Chip label={`Day ${day.dayIndex + 1}`} size="small" sx={{ bgcolor: 'rgba(204,255,0,0.15)', color: 'primary.main', fontWeight: 600 }} />
+                          <Chip label={`Day ${day.dayIndex + 1}`} size="small" sx={{ bgcolor: 'rgba(224,164,88,0.15)', color: 'primary.main', fontWeight: 600 }} />
                           <Typography variant="h6" sx={{ color: '#EAEAEA' }}>{day.title}</Typography>
                         </Stack>
                         {isExpanded ? <ExpandLess sx={{ color: 'text.secondary' }} /> : <ExpandMore sx={{ color: 'text.secondary' }} />}
