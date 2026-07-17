@@ -69,8 +69,8 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
 
   const handleCropDone = useCallback((croppedFile: File) => {
     setCropFile(null);
-    setRenameDialog({ file: croppedFile, name: croppedFile.name });
-  }, []);
+    doUpload(croppedFile);
+  }, [doUpload]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
