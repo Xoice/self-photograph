@@ -42,7 +42,7 @@ export class MediaService {
     };
   }
 
-  async getMediaList(query: { page?: number; pageSize?: number; type?: string }) {
+  async getMediaList(query: { page?: number; pageSize?: number; type?: string; q?: string }) {
     const page = query.page || 1;
     const pageSize = query.pageSize || 20;
     const skip = (page - 1) * pageSize;
@@ -50,6 +50,9 @@ export class MediaService {
     const where: any = {};
     if (query.type) {
       where.fileType = query.type;
+    }
+    if (query.q) {
+      where.fileName = { contains: query.q };
     }
 
     const [items, total] = await Promise.all([
@@ -81,6 +84,17 @@ export class MediaService {
         totalPages: Math.ceil(total / pageSize),
       },
     };
+  }
+
+  async renameMedia(id: string, fileName: string) {
+    const media = await this.prisma.mediaAsset.findUnique({ where: { id } });
+    if (!media) {
+      throw new BadRequestException('文件不存在');
+    }
+    return this.prisma.mediaAsset.update({
+      where: { id },
+      data: { fileName },
+    });
   }
 
   async deleteMedia(id: string) {

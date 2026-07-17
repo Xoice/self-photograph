@@ -116,7 +116,7 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
               component="img"
               src={value}
               alt="预览"
-              sx={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }}
+              sx={{ width: '100%', height: 'auto', maxHeight: 300, objectFit: 'contain', display: 'block', bgcolor: '#0a0a0a' }}
             />
             <IconButton
               onClick={handleRemove}

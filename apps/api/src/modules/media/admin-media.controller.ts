@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Param, Query, Body, UseGuards, UseInterceptors, UploadedFile, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Param, Query, Body, UseGuards, UseInterceptors, UploadedFile, ParseUUIDPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Throttle } from '@nestjs/throttler';
 import { MediaService } from './media.service';
@@ -18,12 +18,18 @@ export class AdminMediaController {
   }
 
   @Get()
-  async getMediaList(@Query('page') page?: string, @Query('pageSize') pageSize?: string, @Query('type') type?: string) {
+  async getMediaList(@Query('page') page?: string, @Query('pageSize') pageSize?: string, @Query('type') type?: string, @Query('q') q?: string) {
     return this.mediaService.getMediaList({
       page: page ? parseInt(page) : 1,
       pageSize: pageSize ? parseInt(pageSize) : 20,
       type,
+      q,
     });
+  }
+
+  @Patch(':id/rename')
+  async renameMedia(@Param('id', ParseUUIDPipe) id: string, @Body('fileName') fileName: string) {
+    return this.mediaService.renameMedia(id, fileName);
   }
 
   @Delete(':id')

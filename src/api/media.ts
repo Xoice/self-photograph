@@ -34,8 +34,13 @@ export function getMediaList(query?: {
   page?: number;
   pageSize?: number;
   type?: string;
+  q?: string;
 }): Promise<{ items: MediaItem[]; pagination: { page: number; pageSize: number; total: number; totalPages: number } }> {
   return apiClient.get('/admin/media', { params: query });
+}
+
+export function renameMedia(id: string, fileName: string): Promise<MediaItem> {
+  return apiClient.patch(`/admin/media/${id}/rename`, { fileName });
 }
 
 export function deleteMedia(id: string): Promise<void> {

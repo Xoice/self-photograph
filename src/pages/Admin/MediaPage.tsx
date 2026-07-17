@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, Container, Grid, IconButton, CircularProgress, Pagination, Stack, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
-import { Delete, ContentCopy, Check } from '@mui/icons-material';
+import { Delete, ContentCopy, Check, Edit, Search } from '@mui/icons-material';
 import { Close } from '@mui/icons-material';
-import { getMediaList, deleteMedia, type MediaItem } from '@/api/media';
+import { TextField, InputAdornment } from '@mui/material';
+import { getMediaList, deleteMedia, renameMedia, type MediaItem } from '@/api/media';
 import ImageUploader from '@/components/ui/ImageUploader';
 
 const MediaPage = () => {
@@ -15,11 +16,15 @@ const MediaPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [renameTarget, setRenameTarget] = useState<MediaItem | null>(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [renaming, setRenaming] = useState(false);
 
   const loadMedia = useCallback(() => {
     setLoading(true);
     setError('');
-    getMediaList({ page, pageSize: 20 })
+    getMediaList({ page, pageSize: 20, q: searchQuery || undefined })
       .then((res) => {
         setItems(res.items || []);
         setTotalPages(res.pagination?.totalPages || 1);
@@ -29,7 +34,7 @@ const MediaPage = () => {
         setError(err.message || '加载失败');
       })
       .finally(() => setLoading(false));
-  }, [page]);
+  }, [page, searchQuery]);
 
   useEffect(() => { loadMedia(); }, [loadMedia]);
 
@@ -52,6 +57,20 @@ const MediaPage = () => {
       setError(err.message || '删除失败');
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleRename = async () => {
+    if (!renameTarget) return;
+    setRenaming(true);
+    try {
+      await renameMedia(renameTarget.id, renameValue.trim());
+      setRenameTarget(null);
+      loadMedia();
+    } catch (err: any) {
+      setError(err.message || '重命名失败');
+    } finally {
+      setRenaming(false);
     }
   };
 
@@ -79,6 +98,17 @@ const MediaPage = () => {
           />
         </Box>
       </Box>
+
+      <TextField
+        size="small"
+        placeholder="搜索图片名称..."
+        value={searchQuery}
+        onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+        sx={{ mb: 3, maxWidth: 400 }}
+        InputProps={{
+          startAdornment: (<InputAdornment position="start"><Search sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment>),
+        }}
+      />
 
       <Typography variant="h6" sx={{ mb: 3, color: 'text.secondary' }}>
         已上传 ({items.length})
@@ -135,6 +165,13 @@ const MediaPage = () => {
                     </IconButton>
                     <IconButton
                       size="small"
+                      onClick={(e) => { e.stopPropagation(); setRenameTarget(item); setRenameValue(item.fileName); }}
+                      sx={{ bgcolor: 'rgba(0,0,0,0.7)', color: 'white', '&:hover': { bgcolor: 'rgba(0,0,0,0.9)' } }}
+                    >
+                      <Edit fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
                       onClick={(e) => { e.stopPropagation(); setDeleteTarget(item); }}
                       sx={{ bgcolor: 'rgba(0,0,0,0.7)', color: '#f44336', '&:hover': { bgcolor: 'rgba(244,67,54,0.3)' } }}
                     >
@@ -162,6 +199,25 @@ const MediaPage = () => {
           )}
         </>
       )}
+
+      <Dialog open={!!renameTarget} onClose={() => setRenameTarget(null)} maxWidth="xs" fullWidth>
+        <DialogTitle data-lenis-prevent>重命名图片</DialogTitle>
+        <DialogContent data-lenis-prevent sx={{ mt: 1 }}>
+          <TextField
+            autoFocus
+            fullWidth
+            label="文件名"
+            value={renameValue}
+            onChange={(e) => setRenameValue(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRenameTarget(null)}>取消</Button>
+          <Button onClick={handleRename} disabled={renaming} sx={{ color: 'primary.main' }}>
+            {renaming ? '保存中...' : '保存'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={!!deleteTarget} onClose={() => setDeleteTarget(null)}>
         <DialogTitle>确认删除</DialogTitle>
