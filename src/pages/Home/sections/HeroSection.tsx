@@ -27,7 +27,7 @@ const HeroFallback = () => (
 );
 
 const HeroSection = () => {
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [canvasVisible, setCanvasVisible] = useState(true);
   const { data: config } = useSiteConfig();
   const { data: galleryData } = useGalleryWorks({ featured: true, pageSize: 1 });
@@ -64,6 +64,63 @@ const HeroSection = () => {
     }, '-=1');
   }, { scope: containerRef });
 
+  // 文字 3D 视差：入场动画完成后启用，幅度小不影响可读性
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    let xToTitle: ReturnType<typeof gsap.quickTo> | null = null;
+    let yToTitle: ReturnType<typeof gsap.quickTo> | null = null;
+    let xToSub: ReturnType<typeof gsap.quickTo> | null = null;
+    let yToSub: ReturnType<typeof gsap.quickTo> | null = null;
+    let xToBg: ReturnType<typeof gsap.quickTo> | null = null;
+    let yToBg: ReturnType<typeof gsap.quickTo> | null = null;
+
+    // 延迟 2.5s 等入场动画跑完
+    const initTimer = setTimeout(() => {
+      const title = el.querySelector('.hero-title') as HTMLElement | null;
+      const sub = el.querySelector('.hero-subtitle') as HTMLElement | null;
+      const bgImg = el.querySelector('img[aria-hidden="true"]') as HTMLElement | null;
+
+      if (title) {
+        xToTitle = gsap.quickTo(title, 'x', { duration: 0.6, ease: 'power2.out' });
+        yToTitle = gsap.quickTo(title, 'rotateX', { duration: 0.6, ease: 'power2.out' });
+      }
+      if (sub) {
+        xToSub = gsap.quickTo(sub, 'x', { duration: 0.8, ease: 'power2.out' });
+        yToSub = gsap.quickTo(sub, 'y', { duration: 0.8, ease: 'power2.out' });
+      }
+      if (bgImg) {
+        xToBg = gsap.quickTo(bgImg, 'x', { duration: 1, ease: 'power2.out' });
+        yToBg = gsap.quickTo(bgImg, 'y', { duration: 1, ease: 'power2.out' });
+      }
+    }, 2500);
+
+    const onMove = (e: MouseEvent) => {
+      const rect = el.getBoundingClientRect();
+      // 归一化到 -0.5..0.5
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+
+      // 标题：水平偏移 + 轻微 rotateX 产生 3D 仰俯
+      if (xToTitle) xToTitle(px * 8);
+      if (yToTitle) yToTitle(py * 3);
+      // 副标题：幅度更小
+      if (xToSub) xToSub(px * 5);
+      if (yToSub) yToSub(py * 4);
+      // 背景图反向偏移，增加深度感
+      if (xToBg) xToBg(px * -6);
+      if (yToBg) yToBg(py * -4);
+    };
+
+    el.addEventListener('mousemove', onMove);
+
+    return () => {
+      clearTimeout(initTimer);
+      el.removeEventListener('mousemove', onMove);
+    };
+  }, []);
+
   return (
     <Box
       ref={containerRef}
@@ -86,6 +143,7 @@ const HeroSection = () => {
             objectFit: 'cover',
             opacity: 0.35,
             zIndex: 0,
+            willChange: 'transform',
           }}
         />
       )}
@@ -107,14 +165,36 @@ const HeroSection = () => {
       <Stack
         justifyContent="center"
         alignItems="center"
-        sx={{ height: '100%', position: 'relative', zIndex: 10, pointerEvents: 'none' }}
+        sx={{ height: '100%', position: 'relative', zIndex: 10, pointerEvents: 'none', perspective: '800px' }}
       >
-        <Typography variant="h1" className="hero-title" sx={{ textAlign: 'center', fontSize: { xs: '10vw', md: '8vw' }, fontWeight: 700, lineHeight: 0.9, textShadow: '0 4px 30px rgba(0,0,0,0.8)' }}>
+        <Typography
+          variant="h1"
+          className="hero-title"
+          sx={{
+            textAlign: 'center',
+            fontSize: { xs: '10vw', md: '8vw' },
+            fontWeight: 700,
+            lineHeight: 0.9,
+            textShadow: '0 4px 30px rgba(0,0,0,0.8)',
+            transformStyle: 'preserve-3d',
+            willChange: 'transform',
+          }}
+        >
           {titleParts.map((part, idx) => (
             <Box key={idx} component="span" sx={{ display: 'block' }}>{part}</Box>
           ))}
         </Typography>
-        <Typography className="hero-subtitle" sx={{ mt: 4, letterSpacing: '0.2em', color: 'rgba(234,234,234,0.7)', textTransform: 'uppercase', textShadow: '0 2px 10px rgba(0,0,0,0.8)' }}>
+        <Typography
+          className="hero-subtitle"
+          sx={{
+            mt: 4,
+            letterSpacing: '0.2em',
+            color: 'rgba(234,234,234,0.7)',
+            textTransform: 'uppercase',
+            textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+            willChange: 'transform',
+          }}
+        >
           {subtitle}
         </Typography>
       </Stack>
