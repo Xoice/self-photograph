@@ -70,7 +70,7 @@ const CustomCursor = () => {
         border: '1px solid #EAEAEA',
         borderRadius: '50%',
         pointerEvents: 'none',
-        zIndex: 9999,
+        zIndex: 1200,
         transform: 'translate(-50%, -50%)',
         mixBlendMode: 'difference',
         transition: 'width 0.3s, height 0.3s, background-color 0.3s, border-radius 0.3s',

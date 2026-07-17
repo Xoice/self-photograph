@@ -128,14 +128,14 @@ const MediaPage = () => {
                   >
                     <IconButton
                       size="small"
-                      onClick={() => handleCopyUrl(item.url, item.id)}
+                      onClick={(e) => { e.stopPropagation(); handleCopyUrl(item.url, item.id); }}
                       sx={{ bgcolor: 'rgba(0,0,0,0.7)', color: 'white', '&:hover': { bgcolor: 'rgba(0,0,0,0.9)' } }}
                     >
                       {copiedId === item.id ? <Check fontSize="small" /> : <ContentCopy fontSize="small" />}
                     </IconButton>
                     <IconButton
                       size="small"
-                      onClick={() => setDeleteTarget(item)}
+                      onClick={(e) => { e.stopPropagation(); setDeleteTarget(item); }}
                       sx={{ bgcolor: 'rgba(0,0,0,0.7)', color: '#f44336', '&:hover': { bgcolor: 'rgba(244,67,54,0.3)' } }}
                     >
                       <Delete fontSize="small" />

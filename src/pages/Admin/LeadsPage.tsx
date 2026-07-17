@@ -278,9 +278,9 @@ const LeadsPage = () => {
         </TableContainer>
       )}
 
-      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { maxHeight: "90vh", display: "flex", flexDirection: "column" } }}>
+      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="sm" fullWidth >
         <DialogTitle>线索详情</DialogTitle>
-        <DialogContent sx={{ overflowY: 'auto', flex: '1 1 auto' }}>
+        <DialogContent sx={{ maxHeight: '70vh', overflowY: 'auto' }}>
           {detailItem && (
             <Box sx={{ display: 'grid', gap: 2, mt: 1 }}>
               <Box>
