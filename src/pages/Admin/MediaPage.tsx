@@ -179,16 +179,16 @@ const MediaPage = () => {
       <Dialog
         open={!!previewItem}
         onClose={() => setPreviewItem(null)}
-        maxWidth={false}
-        PaperProps={{ sx: { bgcolor: 'rgba(0,0,0,0.95)', maxWidth: '90vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
+        fullScreen
+        PaperProps={{ sx: { bgcolor: 'rgba(0,0,0,0.95)' } }}
       >
         <IconButton
           onClick={() => setPreviewItem(null)}
-          sx={{ position: 'absolute', top: 8, right: 8, color: 'white', zIndex: 1 }}
+          sx={{ position: 'absolute', top: 16, right: 16, color: 'white', zIndex: 1 }}
         >
           <Close />
         </IconButton>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, overflow: 'hidden', p: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%', p: 4 }}>
           <Box
             component="img"
             src={previewItem?.url}
@@ -197,7 +197,7 @@ const MediaPage = () => {
           />
         </Box>
         {previewItem && (
-          <Box sx={{ p: 2, bgcolor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, p: 2, bgcolor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
             <Typography variant="body2" sx={{ color: '#aaa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {previewItem.fileName}
               {previewItem.width && previewItem.height ? ` (${previewItem.width}x${previewItem.height})` : ''}
