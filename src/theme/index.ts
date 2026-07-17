@@ -53,6 +53,13 @@ const xoiceTheme = createTheme({
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          cursor: 'auto',
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
