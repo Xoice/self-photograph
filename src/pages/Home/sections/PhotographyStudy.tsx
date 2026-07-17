@@ -3,11 +3,8 @@ import { CalendarToday, LocationOn, People, ArrowForward } from '@mui/icons-mate
 import { useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from '@/utils/gsap';
 import { useWorkshops } from '@/hooks/useWorkshops';
-
-gsap.registerPlugin(ScrollTrigger);
 import type { WorkshopStatus } from '@/types/api';
 
 const statusMap: Record<WorkshopStatus, string> = {
@@ -76,9 +73,12 @@ const PhotographyStudy = () => {
           ) : (
             workshops.map((workshop) => (
               <Grid size={{ xs: 12, md: 6 }} key={workshop.id}>
-                <Card
-                  className="photography-study-card interactable"
-                  onClick={() => handleCardClick(workshop.slug)}
+               <Card
+                 className="photography-study-card interactable"
+                 onClick={() => handleCardClick(workshop.slug)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick(workshop.slug); } }}
                   sx={{
                     bgcolor: '#111',
                     border: workshop.isFeatured ? '2px solid primary.main' : '1px solid rgba(255,255,255,0.05)',

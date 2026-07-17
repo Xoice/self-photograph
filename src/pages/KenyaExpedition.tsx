@@ -3,11 +3,8 @@ import { CalendarToday, LocationOn, People, CameraAlt, CheckCircle, ArrowBack, A
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap } from '@/utils/gsap';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const KenyaExpedition = () => {
   const containerRef = useRef<HTMLDivElement>(null);

@@ -3,13 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Container, Grid, Skeleton, Chip, Stack, Button } from '@mui/material';
 import { CalendarToday, LocationOn, People, ArrowBack } from '@mui/icons-material';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap } from '@/utils/gsap';
 import { useWorkshops } from '@/hooks/useWorkshops';
 import SEOHead from '@/components/ui/SEOHead';
 import type { WorkshopStatus } from '@/types/api';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const statusMap: Record<WorkshopStatus, string> = {
   draft: '草稿',

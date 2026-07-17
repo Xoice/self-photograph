@@ -2,6 +2,7 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import { Box, Typography, Container, Skeleton, Button } from '@mui/material';
 import { useGalleryWorks } from '@/hooks/useGalleryWorks';
 import { useNavigate } from 'react-router-dom';
+import ResponsiveImage from '@/components/ui/ResponsiveImage';
 
 const GallerySection = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -143,7 +144,7 @@ const GallerySection = () => {
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleWorkClick(work.slug); } }}
                   sx={cardSx}
                 >
-                 <Box component="img" src={work.coverImage} alt={work.title} loading="lazy" sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.7s cubic-bezier(0.165,0.84,0.44,1)' }} />
+                 <ResponsiveImage src={work.coverImage} alt={work.title} sizes={"(min-width: 900px) 400px, 75vw"} sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.7s cubic-bezier(0.165,0.84,0.44,1)' }} />
                  <Box className="gallery-info" sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', background: 'linear-gradient(to top, rgba(0,0,0,0.7), transparent)', transform: 'translateY(0)', p: { xs: 2, md: 3 }, transition: 'transform 0.4s cubic-bezier(0.165,0.84,0.44,1)' }}>
                     <Typography variant="caption" sx={{ color: 'primary.main', display: 'block', mb: 1 }}>{work.category?.name || ''}</Typography>
                     <Typography variant="h5">{work.title}</Typography>
@@ -175,7 +176,7 @@ const GallerySection = () => {
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleWorkClick(work.slug); } }}
                     sx={cardSx}
                   >
-                    <Box component="img" src={work.coverImage} alt={work.title} loading="lazy" sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.7s cubic-bezier(0.165,0.84,0.44,1)' }} />
+                    <ResponsiveImage src={work.coverImage} alt={work.title} sizes={"(min-width: 900px) 400px, 75vw"} sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.7s cubic-bezier(0.165,0.84,0.44,1)' }} />
                     <Box className="gallery-info" sx={{ position: 'absolute', bottom: 0, left: 0, width: '100%', p: 3, background: 'linear-gradient(to top, rgba(0,0,0,0.95), rgba(0,0,0,0.6) 50%, transparent)', transform: 'translateY(100%)', transition: 'transform 0.4s cubic-bezier(0.165,0.84,0.44,1)' }}>
                       <Typography variant="caption" sx={{ color: 'primary.main', display: 'block', mb: 1 }}>{work.category?.name || ''}</Typography>
                       <Typography variant="h5">{work.title}</Typography>

@@ -2,13 +2,10 @@ import { useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Box, Typography, Container, Grid, Skeleton, Chip, Stack } from '@mui/material';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap } from '@/utils/gsap';
 import { useGalleryWorks } from '@/hooks/useGalleryWorks';
 import { useGalleryCategories } from '@/hooks/useGalleryCategories';
 import SEOHead from '@/components/ui/SEOHead';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const GalleryListPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);

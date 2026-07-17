@@ -1,11 +1,8 @@
 import { Box, Typography, Container, Stack, Button } from '@mui/material';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from '@/utils/gsap';
 import { useRef, useEffect } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const BioSection = () => {
   const sectionRef = useRef(null);

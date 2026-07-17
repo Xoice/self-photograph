@@ -43,6 +43,8 @@ export default function Lightbox({ open, images, currentIndex, onClose, onNaviga
     >
       <IconButton
         onClick={onClose}
+        aria-label="关闭"
+        autoFocus
         sx={{ position: 'absolute', top: 16, right: 16, color: 'white', zIndex: 1 }}
       >
         <Close />
@@ -53,6 +55,7 @@ export default function Lightbox({ open, images, currentIndex, onClose, onNaviga
           <IconButton
             onClick={handlePrev}
             disabled={currentIndex === 0}
+            aria-label="上一张"
             sx={{
               position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)',
               color: 'white', zIndex: 1,
@@ -64,6 +67,7 @@ export default function Lightbox({ open, images, currentIndex, onClose, onNaviga
           <IconButton
             onClick={handleNext}
             disabled={currentIndex === images.length - 1}
+            aria-label="下一张"
             sx={{
               position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)',
               color: 'white', zIndex: 1,
@@ -85,6 +89,8 @@ export default function Lightbox({ open, images, currentIndex, onClose, onNaviga
           component="img"
           src={images[currentIndex]}
           alt={alt ? `${alt} ${currentIndex + 1}` : ''}
+          tabIndex={0}
+          role="img"
           sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
         />
       </Box>

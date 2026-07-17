@@ -2,11 +2,9 @@ import { useRef, useState, useEffect } from 'react';
 import { Box, Typography, Container, Button, Card, CardContent, Grid, Stack, IconButton, Tooltip, Fade, TextField, Alert } from '@mui/material';
 import { Phone, Email, LocationOn, Send, ContentCopy, Check, Chat } from '@mui/icons-material';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from '@/utils/gsap';
+import { cardHoverSx } from '@/utils/theme';
 import { useForm } from 'react-hook-form';
-
-gsap.registerPlugin(ScrollTrigger);
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -107,13 +105,8 @@ const ContactSection = () => {
               sx={{
                 bgcolor: '#111',
                 border: '1px solid rgba(255,255,255,0.05)',
-                transition: 'all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)',
                 height: '100%',
-                '&:hover': {
-                  transform: 'translateY(-8px)',
-                  borderColor: 'rgba(255,255,255,0.2)',
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                },
+                ...cardHoverSx,
               }}
             >
               <CardContent sx={{ p: 5 }}>
@@ -164,13 +157,8 @@ const ContactSection = () => {
               sx={{
                 bgcolor: '#111',
                 border: '1px solid rgba(255,255,255,0.05)',
-                transition: 'all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)',
                 height: '100%',
-                '&:hover': {
-                  transform: 'translateY(-8px)',
-                  borderColor: 'rgba(255,255,255,0.2)',
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                },
+                ...cardHoverSx,
               }}
             >
               <CardContent sx={{ p: 5 }}>

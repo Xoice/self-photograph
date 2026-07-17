@@ -1,13 +1,12 @@
-import { Box, Typography, Container, Card, CardMedia, CardContent, Grid, Chip, Button, Skeleton } from '@mui/material';
+import { Box, Typography, Container, Card, CardContent, Grid, Chip, Button, Skeleton } from '@mui/material';
 import { PlayArrow, OpenInNew } from '@mui/icons-material';
 import { useRef, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap, ScrollTrigger } from '@/utils/gsap';
+import { cardHoverSx } from '@/utils/theme';
+import ResponsiveImage from '@/components/ui/ResponsiveImage';
 import { useVideos } from '@/hooks/useVideos';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const VideoSection = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -59,27 +58,24 @@ const VideoSection = () => {
           ) : (
             videos.map((video) => (
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={video.id}>
-                <Card
-                  className="video-card"
-                  onClick={() => window.open(video.videoUrl, '_blank', 'noopener,noreferrer')}
+               <Card
+                 className="video-card"
+                 onClick={() => window.open(video.videoUrl, '_blank', 'noopener,noreferrer')}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(video.videoUrl, '_blank', 'noopener,noreferrer'); } }}
                   sx={{
                     bgcolor: '#111',
                     border: '1px solid rgba(255,255,255,0.05)',
-                    transition: 'all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1)',
                     cursor: 'pointer',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      borderColor: 'rgba(255,255,255,0.2)',
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-                    },
+                    ...cardHoverSx,
                   }}
                 >
                   <Box sx={{ position: 'relative', aspectRatio: '16/9' }}>
-                    <CardMedia
-                      component="img"
-                      image={video.coverImage}
+                    <ResponsiveImage
+                      src={video.coverImage}
                       alt={video.title}
-                      loading="lazy"
+                      sizes="(min-width: 900px) 33vw, 100vw"
                       sx={{ height: '100%', objectFit: 'cover' }}
                     />
                     <Box

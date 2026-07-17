@@ -3,14 +3,12 @@ import { Box, Typography, Container, Chip, Button, Skeleton, Alert, Stack } from
 import { ArrowBack, CalendarToday, LocationOn, CameraAlt } from '@mui/icons-material';
 import { useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap } from '@/utils/gsap';
 import { useGalleryWork } from '@/hooks/useGalleryWork';
 import SEOHead from '@/components/ui/SEOHead';
 import ShareButton from '@/components/ui/ShareButton';
 import Lightbox from '@/components/ui/Lightbox';
-
-gsap.registerPlugin(ScrollTrigger);
+import ResponsiveImage from '@/components/ui/ResponsiveImage';
 
 const WorkDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -148,17 +146,16 @@ const WorkDetailPage = () => {
         </Box>
 
         <Box className="work-section" sx={{ mb: 8 }}>
-          <Box
-           component="img"
-           src={work.coverImage}
-           alt={work.title}
-            loading="lazy"
-           onClick={() => { setLightboxIndex(0); setLightboxOpen(true); }}
-            sx={{
-             width: '100%',
-             height: 'auto',
-             maxHeight: '70vh',
-              objectFit: 'contain',
+          <ResponsiveImage src={work.coverImage} alt={work.title} sizes="(min-width: 1200px) 1200px, 100vw"
+           tabIndex={0}
+           role="button"
+          onClick={() => { setLightboxIndex(0); setLightboxOpen(true); }}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLightboxIndex(0); setLightboxOpen(true); } }}
+           sx={{
+            width: '100%',
+            height: 'auto',
+            maxHeight: '70vh',
+             objectFit: 'contain',
              border: '1px solid rgba(234, 234, 234, 0.1)',
              cursor: 'pointer',
              transition: 'opacity 0.3s',
@@ -185,16 +182,19 @@ const WorkDetailPage = () => {
             </Typography>
             <Stack spacing={2}>
               {work.images.slice(1).map((img, idx) => (
-                <Box
+                <ResponsiveImage
                   key={idx}
-           component="img"
-           src={img}
-           alt={`${work.title} - ${idx + 2}`}
-            loading="lazy"
-           onClick={() => { setLightboxIndex(idx + 1); setLightboxOpen(true); }}
-                  sx={{
-                   width: '100%',
-                   height: 'auto',
+
+                  src={img}
+                  alt={`${work.title} - ${idx + 2}`}
+                   sizes="(min-width: 1200px) 1200px, 100vw"
+                   tabIndex={0}
+                   role="button"
+                  onClick={() => { setLightboxIndex(idx + 1); setLightboxOpen(true); }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLightboxIndex(idx + 1); setLightboxOpen(true); } }}
+                   sx={{
+                    width: '100%',
+                    height: 'auto',
                     objectFit: 'contain',
                     maxHeight: '80vh',
                    border: '1px solid rgba(234, 234, 234, 0.1)',

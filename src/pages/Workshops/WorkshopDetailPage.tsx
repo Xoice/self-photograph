@@ -4,14 +4,11 @@ import { CalendarToday, LocationOn, People, CheckCircle, ArrowBack, Phone, Email
 import { LinearProgress, Collapse } from '@mui/material';
 import { useRef, useState, useCallback } from 'react';
 import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { gsap } from '@/utils/gsap';
 import { useWorkshop } from '@/hooks/useWorkshop';
 import SEOHead from '@/components/ui/SEOHead';
 import ShareButton from '@/components/ui/ShareButton';
 import EnrollmentDialog from '@/components/ui/EnrollmentDialog';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const WorkshopDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
