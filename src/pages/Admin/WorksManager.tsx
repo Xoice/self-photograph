@@ -154,7 +154,7 @@ const WorksManager = () => {
         </TableContainer>
       )}
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { maxHeight: "90vh", overflowY: "auto" } }}>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth >
         <DialogTitle>{editItem ? '编辑作品' : '新增作品'}</DialogTitle>
         <DialogContent>
           <TextField label="标题" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} fullWidth sx={{ mb: 2, mt: 1 }} />
