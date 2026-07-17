@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Param, Query, UseGuards, UseInterceptors, UploadedFile, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Param, Query, Body, UseGuards, UseInterceptors, UploadedFile, ParseUUIDPipe } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Throttle } from '@nestjs/throttler';
 import { MediaService } from './media.service';
@@ -13,8 +13,8 @@ export class AdminMediaController {
   @Post('upload')
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @UseInterceptors(FileInterceptor('file'))
-  async upload(@UploadedFile() file: Express.Multer.File, @CurrentUser() user: { id: string }) {
-    return this.mediaService.upload(file, user.id);
+  async upload(@UploadedFile() file: Express.Multer.File, @CurrentUser() user: { id: string }, @Body('customName') customName?: string) {
+    return this.mediaService.upload(file, user.id, customName);
   }
 
   @Get()

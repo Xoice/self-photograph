@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Box, Typography, IconButton, LinearProgress, Stack, Button } from '@mui/material';
+import { Box, Typography, IconButton, LinearProgress, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import { Delete, AddPhotoAlternate, PhotoLibrary } from '@mui/icons-material';
 import { uploadMedia, type UploadResult } from '@/api/media';
 import { compressImage } from '@/utils/imageCompress';
@@ -22,9 +22,10 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
   const [cropFile, setCropFile] = useState<File | null>(null);
   const [browserOpen, setBrowserOpen] = useState(false);
   const [compressing, setCompressing] = useState(false);
+  const [renameDialog, setRenameDialog] = useState<{ file: File; name: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const doUpload = useCallback(async (file: File) => {
+  const doUpload = useCallback(async (file: File, customName?: string) => {
     setUploading(true);
     setError('');
     setProgress(0);
@@ -32,7 +33,7 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
       const interval = setInterval(() => {
         setProgress((p) => Math.min(p + 10, 90));
       }, 200);
-      const result: UploadResult = await uploadMedia(file);
+      const result: UploadResult = await uploadMedia(file, customName);
       clearInterval(interval);
       setProgress(100);
       onChange(result.url);
@@ -63,17 +64,13 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
       }
       setCompressing(false);
     }
-    if (enableCrop) {
-      setCropFile(file);
-    } else {
-      doUpload(file);
-    }
-  }, [enableCrop, doUpload]);
+    setRenameDialog({ file, name: file.name });
+  }, [doUpload]);
 
   const handleCropDone = useCallback((croppedFile: File) => {
     setCropFile(null);
-    doUpload(croppedFile);
-  }, [doUpload]);
+    setRenameDialog({ file: croppedFile, name: croppedFile.name });
+  }, []);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -242,6 +239,42 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
         onClose={() => setBrowserOpen(false)}
         onSelect={handleBrowserSelect}
       />
+
+      <Dialog open={!!renameDialog} onClose={() => setRenameDialog(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>重命名图片</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            fullWidth
+            label="文件名"
+            value={renameDialog?.name || ''}
+            onChange={(e) => setRenameDialog((prev) => prev ? { ...prev, name: e.target.value } : prev)}
+            sx={{ mt: 1 }}
+            helperText="可修改后上传，或保持原名直接确认"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRenameDialog(null)}>取消</Button>
+          <Button
+            onClick={() => {
+              if (!renameDialog) return;
+              const name = renameDialog.name.trim();
+              const finalFile = name && name !== renameDialog.file.name
+                ? new File([renameDialog.file], name, { type: renameDialog.file.type })
+                : renameDialog.file;
+              setRenameDialog(null);
+              if (enableCrop) {
+                setCropFile(finalFile);
+              } else {
+                doUpload(finalFile, name || undefined);
+              }
+            }}
+            sx={{ color: 'primary.main' }}
+          >
+            确认
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

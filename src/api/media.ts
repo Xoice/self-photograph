@@ -21,9 +21,12 @@ export interface UploadResult {
   sizeBytes: number | null;
 }
 
-export async function uploadMedia(file: File): Promise<UploadResult> {
+export async function uploadMedia(file: File, customName?: string): Promise<UploadResult> {
   const formData = new FormData();
   formData.append('file', file);
+  if (customName) {
+    formData.append('customName', customName);
+  }
   return apiClient.post('/admin/media/upload', formData);
 }
 

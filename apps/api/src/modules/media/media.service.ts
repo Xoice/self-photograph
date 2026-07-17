@@ -5,7 +5,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class MediaService {
   constructor(private prisma: PrismaService) {}
 
-  async upload(file: Express.Multer.File, userId?: string) {
+  async upload(file: Express.Multer.File, userId?: string, customName?: string) {
     if (!file) {
       throw new BadRequestException('请选择要上传的文件');
     }
@@ -20,7 +20,7 @@ export class MediaService {
 
     const media = await this.prisma.mediaAsset.create({
       data: {
-        fileName: file.originalname,
+        fileName: customName || file.originalname,
         fileType: file.mimetype.split('/')[1] || 'unknown',
         mimeType: file.mimetype,
         url: `/uploads/${file.filename}`,
