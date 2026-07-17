@@ -184,7 +184,7 @@ const LeadsPage = () => {
             </TableHead>
             <TableBody>
               {leads.map((lead) => (
-                <TableRow key={lead.id}>
+                <TableRow key={lead.id} sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.03)' } }}>
                   <TableCell>{lead.name}</TableCell>
                   <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{lead.email}</TableCell>
                   <TableCell
@@ -278,9 +278,9 @@ const LeadsPage = () => {
         </TableContainer>
       )}
 
-      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { maxHeight: "90vh", display: "flex", flexDirection: "column" } }}>
         <DialogTitle>线索详情</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ overflowY: 'auto', flex: '1 1 auto' }}>
           {detailItem && (
             <Box sx={{ display: 'grid', gap: 2, mt: 1 }}>
               <Box>

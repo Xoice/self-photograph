@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, Container, Grid, IconButton, CircularProgress, Pagination, Stack, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { Delete, ContentCopy, Check } from '@mui/icons-material';
+import { Close } from '@mui/icons-material';
 import { getMediaList, deleteMedia, type MediaItem } from '@/api/media';
 import ImageUploader from '@/components/ui/ImageUploader';
 
@@ -13,6 +14,7 @@ const MediaPage = () => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
 
   const loadMedia = useCallback(() => {
     setLoading(true);
@@ -102,13 +104,17 @@ const MediaPage = () => {
                     borderRadius: 1,
                     overflow: 'hidden',
                     border: '1px solid #333',
+                    cursor: 'pointer',
                     '&:hover': { borderColor: 'primary.main' },
                   }}
+                  onClick={() => setPreviewItem(item)}
                 >
                   <Box
                     component="img"
                     src={item.url}
                     alt={item.fileName}
+                    loading="lazy"
+                    decoding="async"
                     sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                   />
                   <Stack
@@ -168,6 +174,43 @@ const MediaPage = () => {
             {deleting ? '删除中...' : '删除'}
           </Button>
         </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={!!previewItem}
+        onClose={() => setPreviewItem(null)}
+        maxWidth={false}
+        PaperProps={{ sx: { bgcolor: 'rgba(0,0,0,0.95)', maxWidth: '90vw', maxHeight: '90vh', display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
+      >
+        <IconButton
+          onClick={() => setPreviewItem(null)}
+          sx={{ position: 'absolute', top: 8, right: 8, color: 'white', zIndex: 1 }}
+        >
+          <Close />
+        </IconButton>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, overflow: 'hidden', p: 2 }}>
+          <Box
+            component="img"
+            src={previewItem?.url}
+            alt={previewItem?.fileName || ''}
+            sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+          />
+        </Box>
+        {previewItem && (
+          <Box sx={{ p: 2, bgcolor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body2" sx={{ color: '#aaa', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {previewItem.fileName}
+              {previewItem.width && previewItem.height ? ` (${previewItem.width}x${previewItem.height})` : ''}
+            </Typography>
+            <IconButton
+              size="small"
+              onClick={() => handleCopyUrl(previewItem.url, previewItem.id)}
+              sx={{ color: copiedId === previewItem.id ? 'primary.main' : 'white', flexShrink: 0 }}
+            >
+              {copiedId === previewItem.id ? <Check fontSize="small" /> : <ContentCopy fontSize="small" />}
+            </IconButton>
+          </Box>
+        )}
       </Dialog>
     </Container>
   );

@@ -121,7 +121,7 @@ const VideosManager = () => {
             </TableHead>
             <TableBody>
               {videos.map((video) => (
-                <TableRow key={video.id}>
+                <TableRow key={video.id} sx={{ '&:hover': { bgcolor: 'rgba(255,255,255,0.03)' } }}>
                   <TableCell>{video.title}</TableCell>
                   <TableCell>{video.category}</TableCell>
                   <TableCell>{video.durationText}</TableCell>
@@ -142,9 +142,9 @@ const VideosManager = () => {
         </TableContainer>
       )}
 
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth PaperProps={{ sx: { maxHeight: "90vh", display: "flex", flexDirection: "column" } }}>
         <DialogTitle>{editItem ? '编辑视频' : '新增视频'}</DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ overflowY: 'auto', flex: '1 1 auto' }}>
           <TextField label="标题" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} fullWidth sx={{ mb: 2, mt: 1 }} />
           <TextField label="URL标识（英文）" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} fullWidth sx={{ mb: 2 }} helperText="URL标识，英文，如 photo-basic" />
           <TextField label="描述" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} fullWidth multiline rows={2} sx={{ mb: 2 }} />
