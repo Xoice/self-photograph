@@ -2,6 +2,7 @@ import { useState, useRef, useCallback } from 'react';
 import { Box, Typography, IconButton, LinearProgress, Stack, Button } from '@mui/material';
 import { Delete, AddPhotoAlternate, PhotoLibrary } from '@mui/icons-material';
 import { uploadMedia, type UploadResult } from '@/api/media';
+import { compressImage } from '@/utils/imageCompress';
 import ImageCropper from './ImageCropper';
 import MediaBrowser from './MediaBrowser';
 
@@ -20,6 +21,7 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
   const [dragOver, setDragOver] = useState(false);
   const [cropFile, setCropFile] = useState<File | null>(null);
   const [browserOpen, setBrowserOpen] = useState(false);
+  const [compressing, setCompressing] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const doUpload = useCallback(async (file: File) => {
@@ -42,14 +44,24 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
     }
   }, [onChange]);
 
-  const handleFile = useCallback((file: File) => {
+  const handleFile = useCallback(async (file: File) => {
     if (!file.type.startsWith('image/')) {
       setError('仅支持图片文件');
       return;
     }
+    // 大于 10MB 自动压缩
     if (file.size > 10 * 1024 * 1024) {
-      setError('文件大小不能超过 10MB');
-      return;
+      setCompressing(true);
+      setError('');
+      try {
+        const compressed = await compressImage(file);
+        file = compressed;
+      } catch {
+        setError('图片压缩失败，请尝试使用更小的图片');
+        setCompressing(false);
+        return;
+      }
+      setCompressing(false);
     }
     if (enableCrop) {
       setCropFile(file);
@@ -169,8 +181,13 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
           >
             {uploading ? (
               <Box sx={{ width: '100%' }}>
-                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>上传中...</Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>{compressing ? '正在压缩图片...' : '上传中...'}</Typography>
                 <LinearProgress variant="determinate" value={progress} sx={{ '& .MuiLinearProgress-bar': { bgcolor: 'primary.main' } }} />
+              </Box>
+            ) : compressing ? (
+              <Box sx={{ width: '100%' }}>
+                <Typography variant="body2" sx={{ color: 'primary.main', mb: 2 }}>正在压缩图片...</Typography>
+                <LinearProgress sx={{ '& .MuiLinearProgress-bar': { bgcolor: 'primary.main' } }} />
               </Box>
             ) : (
               <Stack spacing={1.5} alignItems="center">
@@ -194,7 +211,7 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
                   </Button>
                 </Stack>
                 <Typography variant="caption" sx={{ color: '#555' }}>
-                  支持拖拽上传，JPG/PNG/WebP，最大 10MB
+                  支持拖拽上传，JPG/PNG/WebP，超过 10MB 自动压缩
                 </Typography>
               </Stack>
             )}
