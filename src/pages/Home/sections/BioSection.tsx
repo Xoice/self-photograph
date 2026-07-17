@@ -3,13 +3,11 @@ import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger } from '@/utils/gsap';
 import { useRef, useEffect } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
-import { useGalleryWorks } from '@/hooks/useGalleryWorks';
 
 const BioSection = () => {
   const sectionRef = useRef(null);
   const { data: config } = useSiteConfig();
-  const { data: galleryData } = useGalleryWorks({ featured: true, pageSize: 2 });
-  const bioImage = (config as any)?.bioImage || galleryData?.items?.[1]?.coverImage;
+  const bioImage = config?.bioImage;
 
   const bioTitle = config?.bioTitle || '关于 Xoice';
   const bioParagraphs = config?.bioContent?.split('\n') || [
@@ -30,7 +28,7 @@ const BioSection = () => {
   // 异步数据加载后刷新 ScrollTrigger 位置
   useEffect(() => {
     ScrollTrigger.refresh();
-  }, [config, galleryData]);
+  }, [config]);
 
   return (
     <Box ref={sectionRef} component="section" id="bio" sx={{ minHeight: '100vh', py: 10, display: 'flex', alignItems: 'center' }}>

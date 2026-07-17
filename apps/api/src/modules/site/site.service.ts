@@ -16,6 +16,7 @@ export class SiteService {
       heroSubtitle: config.heroSubtitle,
       bioTitle: config.bioTitle,
       bioContent: config.bioContent,
+      bioImage: config.bioImage,
       contact: {
         phone: config.contactPhone,
         email: config.contactEmail,
@@ -35,6 +36,7 @@ export class SiteService {
     heroSubtitle?: string;
     bioTitle?: string;
     bioContent?: string;
+    bioImage?: string;
     contactPhone?: string;
     contactEmail?: string;
     contactWechat?: string;
@@ -50,8 +52,9 @@ export class SiteService {
           heroTitle: data.heroTitle || '',
           heroSubtitle: data.heroSubtitle || '',
           bioTitle: data.bioTitle || '',
-          bioContent: data.bioContent || '',
-          contactPhone: data.contactPhone || '',
+         bioContent: data.bioContent || '',
+         bioImage: data.bioImage,
+         contactPhone: data.contactPhone || '',
           contactEmail: data.contactEmail || '',
           contactWechat: data.contactWechat || '',
           locationText: data.locationText || '',

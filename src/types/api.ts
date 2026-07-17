@@ -34,6 +34,7 @@ export interface SiteConfig {
   heroSubtitle: string;
   bioTitle: string;
   bioContent: string;
+  bioImage?: string;
   contact: ContactInfo;
   socialLinks: SocialLinks;
   footerText: string;

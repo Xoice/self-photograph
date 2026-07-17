@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Typography, Container, TextField, Button, CircularProgress, Alert, Divider } from '@mui/material';
 import apiClient from '@/api/client';
+import ImageUploader from '@/components/ui/ImageUploader';
 
 interface SiteConfig {
   brandName: string;
@@ -8,6 +9,7 @@ interface SiteConfig {
   heroSubtitle: string;
   bioTitle: string;
   bioContent: string;
+  bioImage?: string;
   contact: { phone: string; email: string; wechat: string; location: string };
   socialLinks: { bilibili: string };
   footerText: string;
@@ -87,6 +89,7 @@ const SiteConfigPage = () => {
         heroSubtitle: config.heroSubtitle,
         bioTitle: config.bioTitle,
         bioContent: config.bioContent,
+        bioImage: config.bioImage || '',
         contactPhone: config.contact.phone,
         contactEmail: config.contact.email,
         contactWechat: config.contact.wechat,
@@ -161,6 +164,16 @@ const SiteConfigPage = () => {
       <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
         <TextField label="关于标题" value={config.bioTitle} onChange={(e) => updateConfig({ bioTitle: e.target.value })} fullWidth />
         <TextField label="关于内容" value={config.bioContent} onChange={(e) => updateConfig({ bioContent: e.target.value })} fullWidth multiline rows={4} />
+        <Box>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>关于照片（肖像照）</Typography>
+          <ImageUploader
+            value={config.bioImage || ''}
+            onChange={(url) => updateConfig({ bioImage: url })}
+            label="肖像照"
+            aspectRatio={4 / 5}
+            enableCrop={true}
+          />
+        </Box>
       </Box>
 
       <Divider sx={{ borderColor: '#222', my: 4 }} />

@@ -27,6 +27,7 @@ model SiteConfig {
   heroSubtitle  String   @map("hero_subtitle")
   bioTitle      String   @map("bio_title")
   bioContent     String   @map("bio_content")
+  bioImage      String?  @map("bio_image")
   contactPhone  String   @map("contact_phone")
   contactEmail  String   @map("contact_email")
   contactWechat String   @map("contact_wechat")

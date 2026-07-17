@@ -23,6 +23,10 @@ export class UpdateSiteConfigDto {
 
   @IsString()
   @IsOptional()
+  bioImage?: string;
+
+  @IsString()
+  @IsOptional()
   contactPhone?: string;
 
   @IsString()
