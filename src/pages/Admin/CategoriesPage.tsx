@@ -160,7 +160,7 @@ const CategoriesPage = () => {
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>{editItem ? '编辑分类' : '新增分类'}</DialogTitle>
-        <DialogContent>
+        <DialogContent data-lenis-prevent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
           <TextField label="名称" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} fullWidth sx={{ mb: 2, mt: 1 }} />
           <TextField label="URL标识（英文）" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} fullWidth sx={{ mb: 2 }} helperText="URL标识，英文，如 landscape" />
           <FormControl fullWidth sx={{ mb: 2 }}>

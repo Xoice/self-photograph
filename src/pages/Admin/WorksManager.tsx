@@ -156,7 +156,7 @@ const WorksManager = () => {
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth >
         <DialogTitle>{editItem ? '编辑作品' : '新增作品'}</DialogTitle>
-        <DialogContent>
+        <DialogContent data-lenis-prevent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
           <TextField label="标题" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} fullWidth sx={{ mb: 2, mt: 1 }} />
           <TextField label="URL标识（英文）" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} fullWidth sx={{ mb: 2 }} helperText="URL标识，英文，如 silent-ridge" />
           <TextField label="摘要" value={formData.summary} onChange={(e) => setFormData({ ...formData, summary: e.target.value })} fullWidth sx={{ mb: 2 }} />
