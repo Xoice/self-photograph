@@ -1,6 +1,6 @@
 import { Box, Typography, Container, Card, CardMedia, CardContent, Grid, Chip, Button, Skeleton } from '@mui/material';
 import { PlayArrow, OpenInNew } from '@mui/icons-material';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -32,6 +32,11 @@ const VideoSection = () => {
     );
   }, { scope: sectionRef });
 
+  // 异步数据加载后刷新 ScrollTrigger 位置
+  useEffect(() => {
+    ScrollTrigger.refresh();
+  }, [data]);
+
   return (
     <Box component="section" ref={sectionRef} id="video" sx={{ minHeight: '100vh', py: 15, bgcolor: '#080808', scrollMarginTop: '100px' }}>
       <Container maxWidth="xl">
@@ -56,6 +61,7 @@ const VideoSection = () => {
               <Grid size={{ xs: 12, sm: 6, md: 4 }} key={video.id}>
                 <Card
                   className="video-card"
+                  onClick={() => window.open(video.videoUrl, '_blank', 'noopener,noreferrer')}
                   sx={{
                     bgcolor: '#111',
                     border: '1px solid rgba(255,255,255,0.05)',
@@ -89,7 +95,8 @@ const VideoSection = () => {
                         justifyContent: 'center',
                         opacity: 0,
                         transition: 'opacity 0.3s ease',
-                        '&:hover': { opacity: 1 },
+                        pointerEvents: 'none',
+                        '.video-card:hover &': { opacity: 1 },
                       }}
                     >
                       <PlayArrow sx={{ fontSize: 64, color: 'white' }} />
@@ -132,6 +139,7 @@ const VideoSection = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       size="small"
+                      onClick={(e) => e.stopPropagation()}
                       sx={{
                         color: 'primary.main',
                         textTransform: 'none',

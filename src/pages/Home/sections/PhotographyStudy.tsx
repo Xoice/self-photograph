@@ -1,6 +1,6 @@
 import { Box, Typography, Container, Card, CardContent, Chip, Button, Stack, Grid, Skeleton } from '@mui/material';
 import { CalendarToday, LocationOn, People, ArrowForward } from '@mui/icons-material';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
@@ -36,6 +36,11 @@ const PhotographyStudy = () => {
         scrollTrigger: { trigger: sectionRef.current, start: 'top 90%' } },
     );
   }, { scope: sectionRef });
+
+  // 异步数据加载后刷新 ScrollTrigger 位置
+  useEffect(() => {
+    ScrollTrigger.refresh();
+  }, [data]);
 
   const handleCardClick = (slug: string) => {
     navigate(`/workshops/${slug}`);

@@ -149,19 +149,20 @@ const WorkDetailPage = () => {
 
         <Box className="work-section" sx={{ mb: 8 }}>
           <Box
-            component="img"
-            src={work.coverImage}
-            alt={work.title}
-            onClick={() => { setLightboxIndex(0); setLightboxOpen(true); }}
+           component="img"
+           src={work.coverImage}
+           alt={work.title}
+            loading="lazy"
+           onClick={() => { setLightboxIndex(0); setLightboxOpen(true); }}
             sx={{
-              width: '100%',
-              height: 'auto',
-              maxHeight: '70vh',
-              objectFit: 'cover',
-              border: '1px solid rgba(234, 234, 234, 0.1)',
-              cursor: 'pointer',
-              transition: 'opacity 0.3s',
-              '&:hover': { opacity: 0.9 },
+             width: '100%',
+             height: 'auto',
+             maxHeight: '70vh',
+              objectFit: 'contain',
+             border: '1px solid rgba(234, 234, 234, 0.1)',
+             cursor: 'pointer',
+             transition: 'opacity 0.3s',
+             '&:hover': { opacity: 0.9 },
             }}
           />
         </Box>
@@ -186,18 +187,20 @@ const WorkDetailPage = () => {
               {work.images.slice(1).map((img, idx) => (
                 <Box
                   key={idx}
-                  component="img"
-                  src={img}
-                  alt={`${work.title} - ${idx + 2}`}
-                  onClick={() => { setLightboxIndex(idx + 1); setLightboxOpen(true); }}
+           component="img"
+           src={img}
+           alt={`${work.title} - ${idx + 2}`}
+            loading="lazy"
+           onClick={() => { setLightboxIndex(idx + 1); setLightboxOpen(true); }}
                   sx={{
-                    width: '100%',
-                    height: 'auto',
-                    objectFit: 'cover',
-                    border: '1px solid rgba(234, 234, 234, 0.1)',
-                    cursor: 'pointer',
-                    transition: 'opacity 0.3s',
-                    '&:hover': { opacity: 0.9 },
+                   width: '100%',
+                   height: 'auto',
+                    objectFit: 'contain',
+                    maxHeight: '80vh',
+                   border: '1px solid rgba(234, 234, 234, 0.1)',
+                   cursor: 'pointer',
+                   transition: 'opacity 0.3s',
+                   '&:hover': { opacity: 0.9 },
                   }}
                 />
               ))}

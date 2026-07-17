@@ -76,6 +76,11 @@ const ContactSection = () => {
     );
   }, { scope: sectionRef });
 
+  // 异步数据加载后刷新 ScrollTrigger 位置
+  useEffect(() => {
+    ScrollTrigger.refresh();
+  }, [config]);
+
   const contactItems = contact ? [
     { icon: <Phone sx={{ fontSize: 24, color: 'primary.main' }} />, label: '电话', value: contact.phone, copyValue: contact.phone, field: 'phone' },
     { icon: <Email sx={{ fontSize: 24, color: 'primary.main' }} />, label: '邮箱', value: contact.email, copyValue: contact.email, field: 'email' },

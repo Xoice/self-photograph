@@ -2,7 +2,7 @@ import { Box, Typography, Container, Stack, Button } from '@mui/material';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -26,6 +26,11 @@ const BioSection = () => {
       },
     );
   }, { scope: sectionRef });
+
+  // 异步数据加载后刷新 ScrollTrigger 位置
+  useEffect(() => {
+    ScrollTrigger.refresh();
+  }, [config]);
 
   return (
     <Box ref={sectionRef} component="section" id="bio" sx={{ minHeight: '100vh', py: 10, display: 'flex', alignItems: 'center' }}>
