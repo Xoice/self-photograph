@@ -13,12 +13,12 @@ const HeroFallback = () => (
     sx={{
       position: 'absolute',
       inset: 0,
-      background: 'radial-gradient(ellipse at 50% 40%, #0a0a0a 0%, #050505 70%)',
+      background: 'radial-gradient(ellipse at 50% 50%, #030310 0%, #010104 70%)',
       '&::before': {
         content: '""',
         position: 'absolute',
         inset: 0,
-        backgroundImage: 'radial-gradient(circle, rgba(224,164,88,0.04) 1px, transparent 1px)',
+        backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)',
         backgroundSize: '40px 40px',
         opacity: 0.5,
       },
@@ -156,7 +156,7 @@ const HeroSection = () => {
           zIndex: 1,
         }}
       />
-      <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 2 }}>
+      <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}>
         <Suspense fallback={<HeroFallback />}>
           <HeroCanvas visible={canvasVisible} />
         </Suspense>

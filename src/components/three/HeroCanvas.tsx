@@ -19,7 +19,7 @@ const HeroCanvas = ({ visible }: HeroCanvasProps) => {
       frameloop={visible ? 'always' : 'never'}
     >
       <color attach="background" args={['#050505']} />
-      <fog attach="fog" args={['#050505', 10, 50]} />
+      <fog attach="fog" args={['#020208', 15, 55]} />
       <Suspense fallback={null}>
         <HeroParticles />
       </Suspense>
