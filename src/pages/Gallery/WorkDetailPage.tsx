@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Container, Chip, Button, Skeleton, Alert, Stack } from '@mui/material';
-import { ArrowBack, CalendarToday, LocationOn, CameraAlt } from '@mui/icons-material';
+import { ArrowBack, CalendarToday, LocationOn, CameraAlt, Home } from '@mui/icons-material';
 import { useRef, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/utils/gsap';
@@ -56,13 +56,22 @@ const WorkDetailPage = () => {
     return (
       <Box sx={{ bgcolor: '#050505', minHeight: '100vh', pt: 15, pb: 10 }}>
         <Container maxWidth="lg">
-          <Button
-            onClick={() => navigate('/#gallery')}
-            startIcon={<ArrowBack />}
-            sx={{ mb: 4, color: '#EAEAEA', textTransform: 'none' }}
-          >
-            返回画廊
-          </Button>
+          <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
+            <Button
+              onClick={() => navigate('/gallery')}
+              startIcon={<ArrowBack />}
+              sx={{ color: '#EAEAEA', textTransform: 'none' }}
+            >
+              返回全部作品
+            </Button>
+            <Button
+              onClick={() => navigate('/#gallery')}
+              startIcon={<Home />}
+              sx={{ color: '#EAEAEA', textTransform: 'none' }}
+            >
+              返回首页
+            </Button>
+          </Stack>
           <Alert severity="error" sx={{ bgcolor: '#1a1a1a', color: '#EAEAEA' }}>
             作品加载失败，请稍后重试
           </Alert>
@@ -81,19 +90,22 @@ const WorkDetailPage = () => {
         type="article"
       />
       <Container maxWidth="lg">
-        <Button
-          onClick={() => navigate('/#gallery')}
-          startIcon={<ArrowBack />}
-          sx={{
-            mb: 4,
-            color: '#EAEAEA',
-            textTransform: 'none',
-            fontSize: '1rem',
-            '&:hover': { color: 'primary.main' },
-          }}
-        >
-          返回画廊
-        </Button>
+        <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
+          <Button
+            onClick={() => navigate('/gallery')}
+            startIcon={<ArrowBack />}
+            sx={{ color: '#EAEAEA', textTransform: 'none', fontSize: '1rem', '&:hover': { color: 'primary.main' } }}
+          >
+            返回全部作品
+          </Button>
+          <Button
+            onClick={() => navigate('/#gallery')}
+            startIcon={<Home />}
+            sx={{ color: '#EAEAEA', textTransform: 'none', fontSize: '1rem', '&:hover': { color: 'primary.main' } }}
+          >
+            返回首页
+          </Button>
+        </Stack>
 
         <Box className="work-header" sx={{ mb: 8 }}>
           <Stack direction="row" spacing={1} sx={{ mb: 3 }}>

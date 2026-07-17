@@ -200,7 +200,7 @@ const MediaPage = () => {
         </>
       )}
 
-      <Dialog open={!!renameTarget} onClose={() => setRenameTarget(null)} maxWidth="xs" fullWidth>
+      <Dialog open={!!renameTarget} onClose={() => setRenameTarget(null)} maxWidth="sm" fullWidth>
         <DialogTitle data-lenis-prevent>重命名图片</DialogTitle>
         <DialogContent data-lenis-prevent sx={{ mt: 1 }}>
           <TextField
