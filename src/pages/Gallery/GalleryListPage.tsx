@@ -1,11 +1,12 @@
 import { useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Box, Typography, Container, Grid, Skeleton, Chip, Stack } from '@mui/material';
+import { Box, Typography, Container, Grid, Skeleton, Chip, Stack, Button } from '@mui/material';
 import { useGSAP } from '@gsap/react';
 import { gsap } from '@/utils/gsap';
 import { useGalleryWorks } from '@/hooks/useGalleryWorks';
 import { useGalleryCategories } from '@/hooks/useGalleryCategories';
 import SEOHead from '@/components/ui/SEOHead';
+import { Home } from '@mui/icons-material';
 
 const GalleryListPage = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,13 +47,22 @@ const GalleryListPage = () => {
     <Box ref={containerRef} sx={{ minHeight: '100vh', bgcolor: '#050505', pt: 12, pb: 10 }}>
       <SEOHead title="画廊" description="精选作品集。在这里，光影不再是物理现象，而是叙事的语言。" url="/gallery" />
       <Container maxWidth="xl">
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 700, mb: 2 }}>
-            画廊
-          </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4 }}>
+          <Box>
+            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 700, mb: 2 }}>
+              画廊
+            </Typography>
           <Typography variant="body1" sx={{ fontSize: '1.2rem', color: 'text.secondary', maxWidth: '600px' }}>
             精选作品集。在这里，光影不再是物理现象，而是叙事的语言。
           </Typography>
+          </Box>
+          <Button
+            onClick={() => navigate('/#gallery')}
+            startIcon={<Home />}
+            sx={{ color: '#EAEAEA', textTransform: 'none', fontSize: '0.9rem', '&:hover': { color: 'primary.main' }, flexShrink: 0 }}
+          >
+            返回首页
+          </Button>
         </Box>
 
         <Stack direction="row" spacing={1} sx={{ mb: 6, flexWrap: 'wrap', gap: 1 }}>
