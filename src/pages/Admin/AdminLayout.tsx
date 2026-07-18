@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { Box, Typography, List, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Divider, CircularProgress } from '@mui/material';
 import { Dashboard, Image, OndemandVideo, School, Logout, Menu as MenuIcon, Close, PhotoLibrary, Category, Mail, Settings } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
+import type { UserProfile } from '@/api/auth';
 
 const menuItems = [
   { label: '概览', path: '/admin', icon: <Dashboard /> },

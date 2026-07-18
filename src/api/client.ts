@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AxiosRequestConfig, AxiosInstance } from 'axios';
+import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import type { ApiResponse } from '@/types/api';
 import { createMockAdapter } from '@/mocks';
 
@@ -74,20 +74,12 @@ instance.interceptors.response.use(undefined, (error) => {
 });
 
 // 响应拦截器已解包 body.data，包装让 get/post 等返回 Promise<T>（业务数据）
-const apiClient: {
-  get: <T = unknown>(url: string, config?: AxiosRequestConfig) => Promise<T>;
-  post: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
-  patch: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
-  put: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig) => Promise<T>;
-  delete: <T = unknown>(url: string, config?: AxiosRequestConfig) => Promise<T>;
-  defaults: AxiosInstance['defaults'];
-  interceptors: AxiosInstance['interceptors'];
-} = {
-  get: (url, config) => instance.get(url, config) as Promise<unknown> as Promise<any>,
-  post: (url, data, config) => instance.post(url, data, config) as Promise<unknown> as Promise<any>,
-  patch: (url, data, config) => instance.patch(url, data, config) as Promise<unknown> as Promise<any>,
-  put: (url, data, config) => instance.put(url, data, config) as Promise<unknown> as Promise<any>,
-  delete: (url, config) => instance.delete(url, config) as Promise<unknown> as Promise<any>,
+const apiClient = {
+  get: <T = unknown>(url: string, config?: AxiosRequestConfig) => instance.get(url, config) as unknown as Promise<T>,
+  post: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig) => instance.post(url, data, config) as unknown as Promise<T>,
+  patch: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig) => instance.patch(url, data, config) as unknown as Promise<T>,
+  put: <T = unknown>(url: string, data?: unknown, config?: AxiosRequestConfig) => instance.put(url, data, config) as unknown as Promise<T>,
+  delete: <T = unknown>(url: string, config?: AxiosRequestConfig) => instance.delete(url, config) as unknown as Promise<T>,
   defaults: instance.defaults,
   interceptors: instance.interceptors,
 };

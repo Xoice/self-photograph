@@ -3,6 +3,7 @@ import { Box, Typography, Container, Button, Table, TableBody, TableCell, TableC
 import { Add, Edit, Delete } from '@mui/icons-material';
 import apiClient from '@/api/client';
 import type { GalleryCategory, FlatGalleryCategory } from '@/types/api';
+import { getErrorMessage } from '@/utils/error';
 
 interface CategoryFormData {
   name: string;

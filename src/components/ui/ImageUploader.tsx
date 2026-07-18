@@ -3,6 +3,7 @@ import { Box, Typography, IconButton, LinearProgress, Stack, Button, Dialog, Dia
 import { Delete, AddPhotoAlternate, PhotoLibrary } from '@mui/icons-material';
 import { uploadMedia, type UploadResult } from '@/api/media';
 import { compressImage } from '@/utils/imageCompress';
+import { getErrorMessage } from '@/utils/error';
 import ImageCropper from './ImageCropper';
 import MediaBrowser from './MediaBrowser';
 

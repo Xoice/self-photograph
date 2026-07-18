@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Container, TextField, Button, Card, CardContent, Grid, Switch, FormControlLabel, Select, InputLabel, FormControl, MenuItem, Alert, Stack, IconButton, Divider, Chip, CircularProgress } from '@mui/material';
 import { Add, Delete, ArrowBack, Save } from '@mui/icons-material';
@@ -11,7 +11,6 @@ import {
 } from '@/api/workshops';
 import ImageUploader from '@/components/ui/ImageUploader';
 import type { WorkshopStatus } from '@/types/api';
-import type { AdminWorkshopDetail } from '@/types/api';
 import { getErrorMessage } from '@/utils/error';
 
 const statusMap: Record<WorkshopStatus, string> = {

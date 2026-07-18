@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Typography, TextField, Button, Alert, Container, Paper } from '@mui/material';
 import { useAuth } from '@/contexts/AuthContext';
+import { getErrorMessage } from '@/utils/error';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');

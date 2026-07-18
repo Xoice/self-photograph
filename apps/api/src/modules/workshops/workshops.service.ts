@@ -138,7 +138,7 @@ export class WorkshopsService {
     };
   }
 
-  async createWorkshop(data: Prisma.WorkshopCreateInput & { tags?: string[] }) {
+  async createWorkshop(data: Omit<Prisma.WorkshopCreateInput, 'tags'> & { tags?: string[] }) {
     const existing = await this.prisma.workshop.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
     // tags 数组序列化为 JSON 字符串存储
@@ -146,7 +146,7 @@ export class WorkshopsService {
     return this.prisma.workshop.create({ data: { ...rest, tags: JSON.stringify(tags ?? []) } });
   }
 
-  async updateWorkshop(id: string, data: Prisma.WorkshopUpdateInput & { tags?: string[] }) {
+  async updateWorkshop(id: string, data: Omit<Prisma.WorkshopUpdateInput, 'tags'> & { tags?: string[] }) {
     const { tags, ...rest } = data;
     const payload: Prisma.WorkshopUpdateInput = { ...rest };
     if (tags !== undefined) payload.tags = JSON.stringify(tags ?? []);

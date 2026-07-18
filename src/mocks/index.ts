@@ -124,7 +124,7 @@ export function createMockAdapter(): AxiosAdapter {
           status: 200,
           statusText: 'OK',
           headers: {},
-          config: config as AxiosRequestConfig,
+          config: { ...config } as unknown as AxiosResponse['config'],
         });
       }, 100);
     });

@@ -145,10 +145,9 @@ const ImageCropper = ({ file, onCrop, onCancel, aspectRatio = 0 }: ImageCropperP
     canvas.height = Math.round(sh);
     ctx.drawImage(img, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
 
+    const isPng = file?.type === 'image/png';
     canvas.toBlob((blob) => {
       if (blob) {
-        // PNG 保留透明度，其余统一 JPEG
-        const isPng = file?.type === 'image/png';
         const outType = isPng ? 'image/png' : 'image/jpeg';
         const outName = file?.name || (isPng ? 'cropped.png' : 'cropped.jpg');
         const croppedFile = new File([blob], outName, { type: outType });
