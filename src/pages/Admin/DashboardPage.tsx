@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Box, Typography, Container, Card, CardContent, Grid, CircularProgress, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import apiClient from '@/api/client';
+import type { PaginatedData } from '@/types/api';
 
 interface Stats {
   works: number;
@@ -27,35 +28,39 @@ const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const loadStats = () => {
+  const loadStats = useCallback(() => {
     if (!user) return;
     setLoading(true);
     setError(false);
-    const empty = { pagination: { total: 0 } };
     Promise.all([
-      apiClient.get('/admin/gallery/works').catch(() => empty),
-      apiClient.get('/admin/videos').catch(() => empty),
-      apiClient.get('/admin/workshops').catch(() => empty),
-      apiClient.get('/admin/leads/contact').catch(() => empty),
-      apiClient.get('/admin/leads/workshop-enrollments').catch(() => empty),
-      apiClient.get('/admin/media').catch(() => empty),
+      apiClient.get('/admin/gallery/works').catch(() => ({ pagination: { total: 0 } })),
+      apiClient.get('/admin/videos').catch(() => ({ pagination: { total: 0 } })),
+      apiClient.get('/admin/workshops').catch(() => ({ pagination: { total: 0 } })),
+      apiClient.get('/admin/leads/contact').catch(() => ({ pagination: { total: 0 } })),
+      apiClient.get('/admin/leads/workshop-enrollments').catch(() => ({ pagination: { total: 0 } })),
+      apiClient.get('/admin/media').catch(() => ({ pagination: { total: 0 } })),
     ]).then(([works, videos, workshops, leads, enrollments, media]) => {
       setStats({
-        works: (works as any)?.pagination?.total || 0,
-        videos: (videos as any)?.pagination?.total || 0,
-        workshops: (workshops as any)?.pagination?.total || 0,
-        leads: (leads as any)?.pagination?.total || 0,
-        enrollments: (enrollments as any)?.pagination?.total || 0,
-        media: (media as any)?.pagination?.total || 0,
+        works: (works as PaginatedData<unknown>)?.pagination?.total || 0,
+        videos: (videos as PaginatedData<unknown>)?.pagination?.total || 0,
+        workshops: (workshops as PaginatedData<unknown>)?.pagination?.total || 0,
+        leads: (leads as PaginatedData<unknown>)?.pagination?.total || 0,
+        enrollments: (enrollments as PaginatedData<unknown>)?.pagination?.total || 0,
+        media: (media as PaginatedData<unknown>)?.pagination?.total || 0,
       });
-      setLoading(false);
+      setError(false);
     }).catch(() => {
       setError(true);
+    }).finally(() => {
       setLoading(false);
     });
-  };
+  }, [user]);
 
-  useEffect(() => { loadStats(); }, [user]);
+  useEffect(() => {
+    if (!user) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 挂载时拉取统计
+    loadStats();
+  }, [user, loadStats]);
 
   const statCards: StatCard[] = stats ? [
     { label: '作品', value: stats.works, color: '#4caf50', path: '/admin/works' },

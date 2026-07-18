@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState } from 'react';
+import { useRef, useEffect, useCallback, useState, useMemo } from 'react';
 import { Box, Typography, Container, Skeleton, Button } from '@mui/material';
 import { useGalleryWorks } from '@/hooks/useGalleryWorks';
 import { useNavigate } from 'react-router-dom';
@@ -9,7 +9,8 @@ const GallerySection = () => {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { data, isLoading } = useGalleryWorks({ featured: true, pageSize: 8 });
-  const works = data?.items ?? [];
+  // memo 化避免每次渲染都产生新数组引用，导致 effect 依赖无谓重跑
+  const works = useMemo(() => data?.items ?? [], [data]);
   const rafRef = useRef<number>(0);
 
   // 桌面端 pin 横滚：wrapper 高度 = 1 屏 + 横向内容可滚距离，保证 1:1 映射
@@ -29,9 +30,10 @@ const GallerySection = () => {
     if (!wrapper || !scroller) return;
 
     const rect = wrapper.getBoundingClientRect();
-    const wrapperHeight = wrapper.offsetHeight;
+    // 避免与同名 state 变量遮蔽
+    const wrapperHeightPx = wrapper.offsetHeight;
     const viewportHeight = window.innerHeight;
-    const scrollableDistance = wrapperHeight - viewportHeight;
+    const scrollableDistance = wrapperHeightPx - viewportHeight;
 
     if (scrollableDistance <= 0) return;
 
@@ -45,6 +47,7 @@ const GallerySection = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 横滚布局测量：挂载/works 变化后同步量取高度
     measure();
 
     const onScroll = () => {
@@ -78,6 +81,7 @@ const GallerySection = () => {
   }, [measure, updateHorizontalScroll, works.length]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 数据加载后重新量取横滚尺寸
     measure();
     updateHorizontalScroll();
   }, [works, measure, updateHorizontalScroll]);

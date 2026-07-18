@@ -56,6 +56,11 @@ const ImageCropper = ({ file, onCrop, onCancel, aspectRatio = 0 }: ImageCropperP
   const containerRef = useRef<HTMLDivElement>(null);
   const boundsRef = useRef<ImageBounds>({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
 
+  // aspectRatio prop 变化时同步内部 ratio（如切换不同上传场景）
+  useEffect(() => {
+    setRatio(aspectRatio);
+  }, [aspectRatio]);
+
   useEffect(() => {
     if (file) {
       const reader = new FileReader();
@@ -142,10 +147,14 @@ const ImageCropper = ({ file, onCrop, onCancel, aspectRatio = 0 }: ImageCropperP
 
     canvas.toBlob((blob) => {
       if (blob) {
-        const croppedFile = new File([blob], file?.name || 'cropped.jpg', { type: 'image/jpeg' });
+        // PNG 保留透明度，其余统一 JPEG
+        const isPng = file?.type === 'image/png';
+        const outType = isPng ? 'image/png' : 'image/jpeg';
+        const outName = file?.name || (isPng ? 'cropped.png' : 'cropped.jpg');
+        const croppedFile = new File([blob], outName, { type: outType });
         onCrop(croppedFile);
       }
-    }, 'image/jpeg', 0.92);
+    }, isPng ? 'image/png' : 'image/jpeg', isPng ? undefined : 0.92);
   }, [cropArea, file, onCrop]);
 
   if (!file) return null;

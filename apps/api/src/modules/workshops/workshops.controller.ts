@@ -6,7 +6,7 @@ export class WorkshopsController {
   constructor(private workshopsService: WorkshopsService) {}
 
   @Get()
-  async getWorkshops(@Query() query: any) {
+  async getWorkshops(@Query() query: Record<string, string>) {
     return this.workshopsService.getWorkshops(query);
   }
 

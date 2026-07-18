@@ -14,7 +14,7 @@ export class ApiExceptionFilter implements ExceptionFilter {
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exResponse = exception.getResponse();
-      message = typeof exResponse === 'string' ? exResponse : (exResponse as any).message || message;
+      message = typeof exResponse === 'string' ? exResponse : (exResponse as { message?: string }).message || message;
 
       if (status === 400) code = 40001;
       else if (status === 401) code = 40101;

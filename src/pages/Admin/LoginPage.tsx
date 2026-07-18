@@ -18,8 +18,8 @@ const LoginPage = () => {
     try {
       await login({ email, password });
       navigate('/admin');
-    } catch (err: any) {
-      setError(err.message || '登录失败，请检查邮箱和密码');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '登录失败，请检查邮箱和密码'));
     } finally {
       setLoading(false);
     }

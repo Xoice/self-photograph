@@ -1,4 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { join } from 'path';
+import { existsSync, unlinkSync, readFileSync } from 'fs';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -18,14 +21,17 @@ export class MediaService {
       throw new BadRequestException('文件大小不能超过 10MB');
     }
 
+    // Multer 不会填充宽高，这里从磁盘文件头解析（避免引入 sharp 依赖）
+    const dimensions = readImageDimensions(file.path);
+
     const media = await this.prisma.mediaAsset.create({
       data: {
         fileName: customName || file.originalname,
         fileType: file.mimetype.split('/')[1] || 'unknown',
         mimeType: file.mimetype,
         url: `/uploads/${file.filename}`,
-        width: (file as any).width || null,
-        height: (file as any).height || null,
+        width: dimensions?.width ?? null,
+        height: dimensions?.height ?? null,
         sizeBytes: file.size,
         provider: 'local',
         createdBy: userId,
@@ -47,7 +53,7 @@ export class MediaService {
     const pageSize = query.pageSize || 20;
     const skip = (page - 1) * pageSize;
 
-    const where: any = {};
+    const where: Prisma.MediaAssetWhereInput = {};
     if (query.type) {
       where.fileType = query.type;
     }
@@ -102,6 +108,83 @@ export class MediaService {
     if (!media) {
       throw new BadRequestException('文件不存在');
     }
+    // 同步删除磁盘源文件，避免孤儿文件累积
+    if (media.url?.startsWith('/uploads/')) {
+      const filePath = join(process.cwd(), media.url);
+      try {
+        if (existsSync(filePath)) unlinkSync(filePath);
+      } catch {
+        // 删盘失败不阻断数据库删除流程
+      }
+    }
     return this.prisma.mediaAsset.delete({ where: { id } });
   }
+}
+
+// 从图片文件头解析宽高（支持 PNG / JPEG / GIF / WebP），无需外部依赖
+function readImageDimensions(filePath: string): { width: number; height: number } | null {
+  try {
+    const buf = readFileSync(filePath);
+    return parseImageDimensions(buf);
+  } catch {
+    return null;
+  }
+}
+
+export function parseImageDimensions(buf: Buffer): { width: number; height: number } | null {
+  if (buf.length < 24) return null;
+
+  // PNG: 89 50 4E 47 ...
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
+    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
+  }
+
+  // JPEG: FFD8，需扫描 SOF0/SOF2 段
+  if (buf[0] === 0xff && buf[1] === 0xd8) {
+    let offset = 2;
+    while (offset < buf.length - 1) {
+      if (buf[offset] !== 0xff) break;
+      const marker = buf[offset + 1];
+      // SOF0 / SOF1 / SOF2 ... SOF15 (不含 RSTn / TEM)
+      if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
+        const height = buf.readUInt16BE(offset + 5);
+        const width = buf.readUInt16BE(offset + 7);
+        if (height && width) return { width, height };
+        return null;
+      }
+      const segLen = buf.readUInt16BE(offset + 2);
+      offset += 2 + segLen;
+    }
+    return null;
+  }
+
+  // GIF: 47 49 46 38
+  if (buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x38) {
+    return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
+  }
+
+  // WebP: RIFF....WEBP
+  if (
+    buf.length > 30 &&
+    buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
+    buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50
+  ) {
+    // VP8X（extended）/ VP8L（lossless）/ VP8（lossy）
+    const fourcc = buf.toString('ascii', 12, 16);
+    if (fourcc === 'VP8X') {
+      return { width: (buf.readUIntLE(24, 3) & 0xffffff) + 1, height: (buf.readUIntLE(27, 3) & 0xffffff) + 1 };
+    }
+    if (fourcc === 'VP8L') {
+      const b0 = buf.readUInt8(21);
+      const b1 = buf.readUInt8(22);
+      const b2 = buf.readUInt8(23);
+      const b3 = buf.readUInt8(24);
+      return { width: 1 + ((b1 & 0x3f) << 8 | b0), height: 1 + ((b3 & 0x0f) << 10 | b2 << 2 | (b1 & 0xc0) >> 6) };
+    }
+    if (fourcc === 'VP8 ') {
+      return { width: buf.readUInt16LE(26) & 0x3fff, height: buf.readUInt16LE(28) & 0x3fff };
+    }
+  }
+
+  return null;
 }

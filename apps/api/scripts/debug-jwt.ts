@@ -28,8 +28,8 @@ async function main() {
     try {
       const decoded = jwt.verify(token, secret);
       console.log(`verify with "${secret.slice(0, 20)}...": OK ->`, JSON.stringify(decoded));
-    } catch (e: any) {
-      console.log(`verify with "${secret.slice(0, 20)}...": FAIL ->`, e.message);
+    } catch (e: unknown) {
+      console.log(`verify with "${secret.slice(0, 20)}...": FAIL ->`, e instanceof Error ? e.message : String(e));
     }
   }
 
@@ -46,10 +46,10 @@ async function main() {
   for (const secret of [process.env.JWT_SECRET, 'dev-secret-key', 'dev-secret-key-change-in-production']) {
     if (!secret) continue;
     try {
-      const decoded = jwt.verify(realToken, secret);
+      jwt.verify(realToken, secret);
       console.log(`real verify with "${secret.slice(0, 20)}...": OK`);
-    } catch (e: any) {
-      console.log(`real verify with "${secret.slice(0, 20)}...": FAIL ->`, e.message);
+    } catch (e: unknown) {
+      console.log(`real verify with "${secret.slice(0, 20)}...": FAIL ->`, e instanceof Error ? e.message : String(e));
     }
   }
 }

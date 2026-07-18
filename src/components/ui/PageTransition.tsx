@@ -12,6 +12,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
       isFirstRender.current = false;
       return;
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 路由切换时触发退场动画，属外部状态同步
     setTransitionStage('exit');
     const timer = setTimeout(() => {
       setTransitionStage('enter');

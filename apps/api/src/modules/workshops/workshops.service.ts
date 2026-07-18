@@ -1,9 +1,21 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class WorkshopsService {
   constructor(private prisma: PrismaService) {}
+
+  // tags 以 JSON 字符串存储（SQLite 不支持原生 String[]），对外返回数组
+  private parseTags(raw: string | null | undefined): string[] {
+    if (!raw) return [];
+    try {
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr.map(String) : [];
+    } catch {
+      return [];
+    }
+  }
 
   async getWorkshops(query: {
     page?: number;
@@ -17,7 +29,7 @@ export class WorkshopsService {
     const pageSize = Number(query.pageSize) || 10;
     const skip = (page - 1) * pageSize;
 
-    const where: any = {};
+    const where: Prisma.WorkshopWhereInput = {};
     if (!query.includeUnpublished) where.isPublished = true;
     if (query.featured) where.isFeatured = true;
     if (query.status) where.status = query.status;
@@ -59,7 +71,7 @@ export class WorkshopsService {
         isFeatured: w.isFeatured,
         isPublished: w.isPublished,
         sortOrder: w.sortOrder,
-        tags: [],
+        tags: this.parseTags(w.tags),
       })),
       pagination: {
         page,
@@ -105,7 +117,7 @@ export class WorkshopsService {
       durationText: workshop.durationText,
       status: workshop.status,
       isFeatured: workshop.isFeatured,
-      tags: [],
+      tags: this.parseTags(workshop.tags),
       highlights: workshop.highlights.map((h) => ({
         title: h.title,
         content: h.content,
@@ -126,14 +138,19 @@ export class WorkshopsService {
     };
   }
 
-  async createWorkshop(data: any) {
+  async createWorkshop(data: Prisma.WorkshopCreateInput & { tags?: string[] }) {
     const existing = await this.prisma.workshop.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
-    return this.prisma.workshop.create({ data });
+    // tags 数组序列化为 JSON 字符串存储
+    const { tags, ...rest } = data;
+    return this.prisma.workshop.create({ data: { ...rest, tags: JSON.stringify(tags ?? []) } });
   }
 
-  async updateWorkshop(id: string, data: any) {
-    return this.prisma.workshop.update({ where: { id }, data });
+  async updateWorkshop(id: string, data: Prisma.WorkshopUpdateInput & { tags?: string[] }) {
+    const { tags, ...rest } = data;
+    const payload: Prisma.WorkshopUpdateInput = { ...rest };
+    if (tags !== undefined) payload.tags = JSON.stringify(tags ?? []);
+    return this.prisma.workshop.update({ where: { id }, data: payload });
   }
 
   async deleteWorkshop(id: string) {

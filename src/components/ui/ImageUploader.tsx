@@ -29,17 +29,18 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
     setUploading(true);
     setError('');
     setProgress(0);
+    // 伪进度：上传期间缓慢推进到 90%，无论成功/失败都要清理定时器
+    const interval = setInterval(() => {
+      setProgress((p) => Math.min(p + 10, 90));
+    }, 200);
     try {
-      const interval = setInterval(() => {
-        setProgress((p) => Math.min(p + 10, 90));
-      }, 200);
       const result: UploadResult = await uploadMedia(file, customName);
-      clearInterval(interval);
       setProgress(100);
       onChange(result.url);
-    } catch (err: any) {
-      setError(err.message || '上传失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '上传失败'));
     } finally {
+      clearInterval(interval);
       setUploading(false);
       setTimeout(() => setProgress(0), 500);
     }
@@ -65,11 +66,15 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
       setCompressing(false);
     }
     setRenameDialog({ file, name: file.name });
-  }, [doUpload]);
+  }, []);
 
+  // 裁剪完成后上传，沿用重命名弹窗里填写的自定义名（避免裁剪后文件名退化为 cropped.jpg）
+  const pendingNameRef = useRef<string | undefined>(undefined);
   const handleCropDone = useCallback((croppedFile: File) => {
     setCropFile(null);
-    doUpload(croppedFile);
+    const customName = pendingNameRef.current;
+    pendingNameRef.current = undefined;
+    doUpload(croppedFile, customName);
   }, [doUpload]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
@@ -264,6 +269,7 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
                 : renameDialog.file;
               setRenameDialog(null);
               if (enableCrop) {
+                pendingNameRef.current = name || undefined;
                 setCropFile(finalFile);
               } else {
                 doUpload(finalFile, name || undefined);

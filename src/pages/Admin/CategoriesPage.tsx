@@ -26,9 +26,9 @@ const CategoriesPage = () => {
   const loadCategories = () => {
     setLoading(true);
     setError('');
-    apiClient.get('/admin/gallery/categories')
-      .then((res: any) => setCategories(res || []))
-      .catch((err) => { setCategories([]); setError(err.message || '加载失败'); })
+    apiClient.get<GalleryCategory[]>('/admin/gallery/categories')
+      .then((res) => setCategories(res || []))
+      .catch((err) => { setCategories([]); setError(getErrorMessage(err, '加载失败')); })
       .finally(() => setLoading(false));
   };
 
@@ -56,7 +56,7 @@ const CategoriesPage = () => {
     setSaving(true);
     setError('');
     try {
-      const payload: any = { ...formData };
+      const payload: Record<string, unknown> = { ...formData };
       if (!payload.parentId) payload.parentId = null;
       if (editItem) {
         await apiClient.patch(`/admin/gallery/categories/${editItem.id}`, payload);
@@ -65,8 +65,8 @@ const CategoriesPage = () => {
       }
       setDialogOpen(false);
       loadCategories();
-    } catch (err: any) {
-      setError(err.message || '保存失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '保存失败'));
     } finally {
       setSaving(false);
     }
@@ -78,8 +78,8 @@ const CategoriesPage = () => {
     try {
       await apiClient.delete(`/admin/gallery/categories/${id}`);
       loadCategories();
-    } catch (err: any) {
-      setError(err.message || '删除失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '删除失败'));
     }
   };
 

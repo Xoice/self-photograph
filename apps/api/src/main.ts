@@ -36,6 +36,8 @@ async function bootstrap() {
 
   app.useStaticAssets(join(__dirname, '..', '..', 'uploads'), {
     prefix: '/uploads',
+    // 上传图片不变，缓存 7 天，减少首屏图片回源
+    maxAge: '7d',
   });
 
   app.useGlobalPipes(

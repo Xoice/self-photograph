@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { Box, Typography, Container, TextField, Button, CircularProgress, Alert, Divider } from '@mui/material';
 import apiClient from '@/api/client';
 import ImageUploader from '@/components/ui/ImageUploader';
+import { getErrorMessage } from '@/utils/error';
 
 interface SiteConfig {
   brandName: string;
@@ -38,15 +39,15 @@ const SiteConfigPage = () => {
     };
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
-  }, [isDirty]);
+  }, [isDirty, config]);
 
   useEffect(() => {
-    apiClient.get('/admin/site/config')
-      .then((res: any) => {
+    apiClient.get<SiteConfig>('/admin/site/config')
+      .then((res) => {
         setConfig(res);
         initialConfigRef.current = res;
       })
-      .catch((err) => setError(err.message || '加载失败'))
+      .catch((err) => setError(getErrorMessage(err, '加载失败')))
       .finally(() => setLoading(false));
   }, []);
 
@@ -102,8 +103,8 @@ const SiteConfigPage = () => {
       setSuccess('保存成功');
       if (timerRef.current) clearTimeout(timerRef.current);
       timerRef.current = setTimeout(() => setSuccess(''), 3000);
-    } catch (err: any) {
-      setError(err.message || '保存失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '保存失败'));
     } finally {
       setSaving(false);
     }

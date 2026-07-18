@@ -1,4 +1,5 @@
 import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsArray } from 'class-validator';
 
 export class CreateWorkshopDto {
   @IsString({ message: '标题必须是字符串' })
@@ -72,6 +73,10 @@ export class CreateWorkshopDto {
   @IsNumber({}, { message: '排序必须是数字' })
   @IsOptional()
   sortOrder?: number;
+  @IsArray({ message: '标签必须是数组' })
+  @IsOptional()
+  @IsString({ each: true, message: '标签必须是字符串数组' })
+  tags?: string[];
 }
 
 export class UpdateWorkshopDto {
@@ -146,4 +151,8 @@ export class UpdateWorkshopDto {
   @IsNumber({}, { message: '排序必须是数字' })
   @IsOptional()
   sortOrder?: number;
+  @IsArray({ message: '标签必须是数组' })
+  @IsOptional()
+  @IsString({ each: true, message: '标签必须是字符串数组' })
+  tags?: string[];
 }

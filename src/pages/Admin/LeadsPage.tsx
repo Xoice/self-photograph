@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import type { PaginatedData } from '@/types/api';
+import { getErrorMessage } from '@/utils/error';
 import { Box, Typography, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, CircularProgress, Alert, Tabs, Tab, TextField, MenuItem, Select, InputLabel, FormControl, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { Refresh } from '@mui/icons-material';
 import apiClient from '@/api/client';
@@ -50,38 +52,39 @@ const LeadsPage = () => {
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailItem, setDetailItem] = useState<ContactLead | null>(null);
 
-  const loadLeads = () => {
+  const loadLeads = useCallback(() => {
     setLoading(true);
-    setError('');
-    const params: any = { pageSize: 100 };
+    const params: Record<string, string | number> = { pageSize: 100 };
     if (statusFilter) params.status = statusFilter;
     if (keyword) params.keyword = keyword;
-    apiClient.get('/admin/leads/contact', { params })
-      .then((res: any) => setLeads(res.items || []))
-      .catch((err) => { setLeads([]); setError(err.message || '加载失败'); })
+    apiClient.get<PaginatedData<ContactLead>>('/admin/leads/contact', { params })
+      .then((res) => { setLeads(res.items || []); setError(''); })
+      .catch((err) => { setLeads([]); setError(getErrorMessage(err, '加载失败')); })
       .finally(() => setLoading(false));
-  };
+  }, [statusFilter, keyword]);
 
-  const loadEnrollments = () => {
+  const loadEnrollments = useCallback(() => {
     setLoading(true);
-    setError('');
-    apiClient.get('/admin/leads/workshop-enrollments', { params: { pageSize: 100 } })
-      .then((res: any) => setEnrollments(res.items || []))
-      .catch((err) => { setEnrollments([]); setError(err.message || '加载失败'); })
+    apiClient.get<PaginatedData<Enrollment>>('/admin/leads/workshop-enrollments', { params: { pageSize: 100 } })
+      .then((res) => { setEnrollments(res.items || []); setError(''); })
+      .catch((err) => { setEnrollments([]); setError(getErrorMessage(err, '加载失败')); })
       .finally(() => setLoading(false));
-  };
+  }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 切换标签/筛选时拉取对应列表
     if (tab === 0) loadLeads();
     else loadEnrollments();
-  }, [tab, statusFilter]);
+  }, [tab, loadLeads, loadEnrollments]);
+
+
 
   const handleUpdateStatus = async (id: string, status: string) => {
     try {
       await apiClient.patch(`/admin/leads/contact/${id}/status`, { status });
       setLeads((prev) => prev.map((l) => l.id === id ? { ...l, status } : l));
-    } catch (err: any) {
-      setError(err.message || '更新失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '更新失败'));
     }
   };
 
@@ -90,8 +93,8 @@ const LeadsPage = () => {
     try {
       await apiClient.delete(`/admin/leads/contact/${id}`);
       setLeads((prev) => prev.filter((l) => l.id !== id));
-    } catch (err: any) {
-      setError(err.message || '删除失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '删除失败'));
     }
   };
 

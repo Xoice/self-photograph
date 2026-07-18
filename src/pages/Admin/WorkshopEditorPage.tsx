@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Container, TextField, Button, Card, CardContent, Grid, Switch, FormControlLabel, Select, InputLabel, FormControl, MenuItem, Alert, Stack, IconButton, Divider, Chip, CircularProgress } from '@mui/material';
 import { Add, Delete, ArrowBack, Save } from '@mui/icons-material';
@@ -11,6 +11,8 @@ import {
 } from '@/api/workshops';
 import ImageUploader from '@/components/ui/ImageUploader';
 import type { WorkshopStatus } from '@/types/api';
+import type { AdminWorkshopDetail } from '@/types/api';
+import { getErrorMessage } from '@/utils/error';
 
 const statusMap: Record<WorkshopStatus, string> = {
   draft: '草稿',
@@ -68,9 +70,10 @@ const WorkshopEditorPage = () => {
   useEffect(() => {
     if (!isNew && id) {
       getWorkshopById(id)
-        .then((res: any) => {
+        .then((res) => {
           setData({
             ...res,
+            content: res.content || '',
             startDate: res.startDate ? res.startDate.split('T')[0] : '',
             endDate: res.endDate ? res.endDate.split('T')[0] : '',
             highlights: res.highlights || [],
@@ -78,7 +81,7 @@ const WorkshopEditorPage = () => {
             feeItems: res.feeItems || [],
           });
         })
-        .catch((err) => setError(err.message || '加载失败'))
+        .catch((err) => setError(getErrorMessage(err, '加载失败')))
         .finally(() => setLoading(false));
     }
   }, [id, isNew]);
@@ -92,7 +95,7 @@ const WorkshopEditorPage = () => {
     setError('');
     setSuccess('');
     try {
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         title: data.title,
         slug: data.slug,
         subtitle: data.subtitle,
@@ -113,15 +116,15 @@ const WorkshopEditorPage = () => {
         endDate: data.endDate || undefined,
       };
       if (isNew) {
-        const res: any = await apiClient.post('/admin/workshops', payload);
+        const res = await apiClient.post<{ id: string }>('/admin/workshops', payload);
         setSuccess('创建成功，正在跳转...');
         navigate(`/admin/workshops/edit/${res.id}`, { replace: true });
       } else {
         await apiClient.patch(`/admin/workshops/${id}`, payload);
         setSuccess('保存成功');
       }
-    } catch (err: any) {
-      setError(err.message || '保存失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '保存失败'));
     } finally {
       setSaving(false);
     }
@@ -131,8 +134,8 @@ const WorkshopEditorPage = () => {
     if (!id) { setError('请先保存活动再添加亮点'); return; }
     try {
       const item = await addWorkshopHighlight(id, { title: '新亮点', content: '', sortOrder: data.highlights.length });
-      setData((prev) => ({ ...prev, highlights: [...prev.highlights, item as any] }));
-    } catch (err: any) { setError(err.message); }
+      setData((prev) => ({ ...prev, highlights: [...prev.highlights, item as unknown as HighlightItem] }));
+    } catch (err) { setError(getErrorMessage(err, '操作失败')); }
   };
 
   const updateHighlight = async (idx: number, patch: Partial<HighlightItem>) => {
@@ -143,14 +146,14 @@ const WorkshopEditorPage = () => {
       return { ...prev, highlights: next };
     });
     if (item.id && id) {
-      try { await updateWorkshopHighlight(id, item.id, patch); } catch {}
+      try { await updateWorkshopHighlight(id, item.id, patch); } catch { /* 编辑器自动保存，失败不阻断 */ }
     }
   };
 
   const removeHighlight = async (idx: number) => {
     const item = data.highlights[idx];
     if (item.id && id) {
-      try { await deleteWorkshopHighlight(id, item.id); } catch {}
+      try { await deleteWorkshopHighlight(id, item.id); } catch { /* 删除失败不阻断编辑 */ }
     }
     setData((prev) => ({ ...prev, highlights: prev.highlights.filter((_, i) => i !== idx) }));
   };
@@ -160,8 +163,8 @@ const WorkshopEditorPage = () => {
     const dayIndex = data.itinerary.length;
     try {
       const item = await addWorkshopItinerary(id, { dayIndex, title: `Day ${dayIndex + 1}`, content: '', sortOrder: dayIndex });
-      setData((prev) => ({ ...prev, itinerary: [...prev.itinerary, item as any] }));
-    } catch (err: any) { setError(err.message); }
+      setData((prev) => ({ ...prev, itinerary: [...prev.itinerary, item as unknown as ItineraryItem] }));
+    } catch (err) { setError(getErrorMessage(err, '操作失败')); }
   };
 
   const updateItinerary = async (idx: number, patch: Partial<ItineraryItem>) => {
@@ -172,14 +175,14 @@ const WorkshopEditorPage = () => {
       return { ...prev, itinerary: next };
     });
     if (item.id && id) {
-      try { await updateWorkshopItinerary(id, item.id, patch); } catch {}
+      try { await updateWorkshopItinerary(id, item.id, patch); } catch { /* 编辑器自动保存，失败不阻断 */ }
     }
   };
 
   const removeItinerary = async (idx: number) => {
     const item = data.itinerary[idx];
     if (item.id && id) {
-      try { await deleteWorkshopItinerary(id, item.id); } catch {}
+      try { await deleteWorkshopItinerary(id, item.id); } catch { /* 删除失败不阻断编辑 */ }
     }
     setData((prev) => ({ ...prev, itinerary: prev.itinerary.filter((_, i) => i !== idx) }));
   };
@@ -188,8 +191,8 @@ const WorkshopEditorPage = () => {
     if (!id) { setError('请先保存活动再添加费用项'); return; }
     try {
       const item = await addWorkshopFeeItem(id, { type, content: '', sortOrder: data.feeItems.filter((f) => f.type === type).length });
-      setData((prev) => ({ ...prev, feeItems: [...prev.feeItems, item as any] }));
-    } catch (err: any) { setError(err.message); }
+      setData((prev) => ({ ...prev, feeItems: [...prev.feeItems, item as unknown as FeeItem] }));
+    } catch (err) { setError(getErrorMessage(err, '操作失败')); }
   };
 
   const updateFeeItem = async (idx: number, patch: Partial<FeeItem>) => {
@@ -200,14 +203,14 @@ const WorkshopEditorPage = () => {
       return { ...prev, feeItems: next };
     });
     if (item.id && id) {
-      try { await updateWorkshopFeeItem(id, item.id, patch); } catch {}
+      try { await updateWorkshopFeeItem(id, item.id, patch); } catch { /* 编辑器自动保存，失败不阻断 */ }
     }
   };
 
   const removeFeeItem = async (idx: number) => {
     const item = data.feeItems[idx];
     if (item.id && id) {
-      try { await deleteWorkshopFeeItem(id, item.id); } catch {}
+      try { await deleteWorkshopFeeItem(id, item.id); } catch { /* 删除失败不阻断编辑 */ }
     }
     setData((prev) => ({ ...prev, feeItems: prev.feeItems.filter((_, i) => i !== idx) }));
   };

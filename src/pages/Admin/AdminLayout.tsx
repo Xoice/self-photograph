@@ -28,6 +28,7 @@ const AdminLayout = () => {
   }, [loading, isAuthenticated, navigate]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 路由变更后关闭侧栏，属外部状态同步
     setSidebarOpen(false);
   }, [location]);
 
@@ -147,7 +148,7 @@ const AdminLayout = () => {
   );
 };
 
-function SidebarContent({ user, location, onLogout, onNavigate }: { user: any; location: any; onLogout: () => void; onNavigate: (path: string) => void }) {
+function SidebarContent({ user, location, onLogout, onNavigate }: { user: UserProfile | null; location: { pathname: string }; onLogout: () => void; onNavigate: (path: string) => void }) {
   return (
     <>
       <Box sx={{ p: 3, pb: 2 }}>

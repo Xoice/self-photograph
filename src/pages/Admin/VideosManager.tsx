@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Box, Typography, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Alert, Switch, FormControlLabel } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import apiClient from '@/api/client';
-import type { VideoItem } from '@/types/api';
+import type { VideoItem, PaginatedData } from '@/types/api';
+import { getErrorMessage } from '@/utils/error';
 import ImageUploader from '@/components/ui/ImageUploader';
 
 interface FormData {
@@ -31,9 +32,9 @@ const VideosManager = () => {
   const loadVideos = () => {
     setLoading(true);
     setError('');
-    apiClient.get('/admin/videos')
-      .then((res: any) => setVideos(res.items || []))
-      .catch((err) => { setVideos([]); setError(err.message || '加载失败'); })
+    apiClient.get<PaginatedData<VideoItem>>('/admin/videos')
+      .then((res) => setVideos(res.items || []))
+      .catch((err) => { setVideos([]); setError(getErrorMessage(err, '加载失败')); })
       .finally(() => setLoading(false));
   };
 
@@ -67,8 +68,8 @@ const VideosManager = () => {
       }
       setDialogOpen(false);
       loadVideos();
-    } catch (err: any) {
-      setError(err.message || '保存失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '保存失败'));
     } finally {
       setSaving(false);
     }
@@ -80,8 +81,8 @@ const VideosManager = () => {
     try {
       await apiClient.delete(`/admin/videos/${id}`);
       loadVideos();
-    } catch (err: any) {
-      setError(err.message || '删除失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '删除失败'));
     }
   };
 

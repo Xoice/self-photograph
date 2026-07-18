@@ -125,6 +125,7 @@ model Workshop {
   isFeatured    Boolean  @default(false) @map("is_featured")
   isPublished   Boolean  @default(false) @map("is_published")
   sortOrder     Int      @default(0) @map("sort_order")
+  tags          String   @default("[]") // JSON 字符串数组，SQLite 不支持原生 String[]
   highlights    WorkshopHighlight[]
   itinerary     WorkshopItinerary[]
   feeItems      WorkshopFeeItem[]

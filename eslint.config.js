@@ -6,7 +6,8 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // 忽略所有层级的 dist（含嵌套的 apps/api/dist 构建产物）
+  globalIgnores(['dist', '**/dist/**', 'apps/api/dist/**']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -18,6 +19,13 @@ export default defineConfig([
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    rules: {
+      // 允许下划线前缀的未使用参数（约定式忽略）
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
 ])

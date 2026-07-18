@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -15,7 +16,7 @@ export class VideosService {
     const pageSize = Number(query.pageSize) || 12;
     const skip = (page - 1) * pageSize;
 
-    const where: any = {};
+    const where: Prisma.VideoWhereInput = {};
     if (query.publishedOnly !== false) where.isPublished = true;
     if (query.category) where.category = query.category;
 
@@ -55,13 +56,13 @@ export class VideosService {
     };
   }
 
-  async createVideo(data: any) {
+  async createVideo(data: Prisma.VideoCreateInput) {
     const existing = await this.prisma.video.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
     return this.prisma.video.create({ data });
   }
 
-  async updateVideo(id: string, data: any) {
+  async updateVideo(id: string, data: Prisma.VideoUpdateInput) {
     return this.prisma.video.update({ where: { id }, data });
   }
 

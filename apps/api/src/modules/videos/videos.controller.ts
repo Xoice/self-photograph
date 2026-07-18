@@ -6,7 +6,7 @@ export class VideosController {
   constructor(private videosService: VideosService) {}
 
   @Get()
-  async getVideos(@Query() query: any) {
+  async getVideos(@Query() query: Record<string, string>) {
     return this.videosService.getVideos(query);
   }
 }

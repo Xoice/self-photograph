@@ -142,6 +142,29 @@ export interface WorkshopDetail extends WorkshopSummary {
   contact: ContactInfo;
 }
 
+// 后台编辑用：highlights/itinerary/feeItems 带有 id 字段
+export interface AdminWorkshopHighlight extends WorkshopHighlight {
+  id: string;
+  sortOrder: number;
+}
+export interface AdminItineraryDay extends ItineraryDay {
+  id: string;
+  sortOrder: number;
+}
+export interface AdminFeeItem {
+  id: string;
+  type: string;
+  content: string;
+  sortOrder: number;
+}
+export interface AdminWorkshopDetail extends Omit<WorkshopSummary, 'tags'> {
+  priceCents?: number | null;
+  tags: string[];
+  highlights: AdminWorkshopHighlight[];
+  itinerary: AdminItineraryDay[];
+  feeItems: AdminFeeItem[];
+}
+
 export interface ContactSubmissionPayload {
   name: string;
   email: string;

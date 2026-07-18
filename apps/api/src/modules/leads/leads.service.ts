@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -37,12 +38,13 @@ export class LeadsService {
       throw new NotFoundException('活动不存在');
     }
 
-    if (workshop.capacity && workshop.enrolledCount >= workshop.capacity) {
-      throw new BadRequestException('该活动已满员');
-    }
-
-    const enrollment = await this.prisma.$transaction([
-      this.prisma.workshopEnrollment.create({
+    // 容量检查 + 创建 + 计数自增放在同一交互式事务内，避免 TOCTOU 超卖
+    const enrollment = await this.prisma.$transaction(async (tx) => {
+      const fresh = await tx.workshop.findUnique({ where: { id: workshop.id } });
+      if (fresh?.capacity && (fresh.enrolledCount >= fresh.capacity)) {
+        throw new BadRequestException('该活动已满员');
+      }
+      const created = await tx.workshopEnrollment.create({
         data: {
           workshopId: workshop.id,
           name: data.name,
@@ -51,14 +53,15 @@ export class LeadsService {
           email: data.email,
           message: data.message,
         },
-      }),
-      this.prisma.workshop.update({
+      });
+      await tx.workshop.update({
         where: { id: workshop.id },
         data: { enrolledCount: { increment: 1 } },
-      }),
-    ]);
+      });
+      return created;
+    });
 
-    return { id: enrollment[0].id };
+    return { id: enrollment.id };
   }
 
   async getContactLeads(query: { page?: number; pageSize?: number; status?: string; keyword?: string }) {
@@ -66,7 +69,7 @@ export class LeadsService {
     const pageSize = Number(query.pageSize) || 20;
     const skip = (page - 1) * pageSize;
 
-    const where: any = {};
+    const where: Prisma.ContactLeadWhereInput = {};
     if (query.status) where.status = query.status;
     if (query.keyword) {
       where.OR = [

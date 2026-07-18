@@ -43,11 +43,7 @@ const ScrollToTop = () => {
       if (element) {
         scrollToElement(element);
       } else {
-        let observer: IntersectionObserver | undefined;
-        let fallbackTimeout: ReturnType<typeof setTimeout> | undefined;
-        let checkInterval: ReturnType<typeof setInterval> | undefined;
-
-        observer = new IntersectionObserver(
+        const observer = new IntersectionObserver(
           (entries) => {
             entries.forEach((entry) => {
               if (entry.isIntersecting) {
@@ -61,14 +57,14 @@ const ScrollToTop = () => {
           { threshold: 0.1 },
         );
 
-        fallbackTimeout = setTimeout(() => {
+        const fallbackTimeout = setTimeout(() => {
           const el = document.getElementById(id);
           if (el) scrollToElement(el);
           observer?.disconnect();
           if (checkInterval) clearInterval(checkInterval);
         }, 2000);
 
-        checkInterval = setInterval(() => {
+        const checkInterval = setInterval(() => {
           const targetElement = document.getElementById(id);
           if (targetElement) {
             observer?.observe(targetElement);

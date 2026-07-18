@@ -32,6 +32,7 @@ const ContactSection = () => {
 
   useEffect(() => {
     if (isSuccess) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 提交成功后展示成功提示，属外部状态同步
       setShowSuccess(true);
       const timer = setTimeout(() => setShowSuccess(false), 5000);
       return () => clearTimeout(timer);

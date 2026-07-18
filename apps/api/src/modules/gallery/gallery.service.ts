@@ -1,4 +1,13 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+﻿import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+
+interface CategoryInput {
+  name?: string;
+  slug?: string;
+  parentId?: string | null;
+  sortOrder?: number;
+  isVisible?: boolean;
+}
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -6,7 +15,7 @@ export class GalleryService {
   constructor(private prisma: PrismaService) {}
 
   async getCategories(visibleOnly = true, includeAll = false) {
-    const where: any = { parentId: null };
+    const where: Prisma.GalleryCategoryWhereInput = { parentId: null };
     if (visibleOnly && !includeAll) where.isVisible = true;
 
     const categories = await this.prisma.galleryCategory.findMany({
@@ -37,17 +46,26 @@ export class GalleryService {
     }));
   }
 
-  async createCategory(data: any) {
+  async createCategory(data: CategoryInput) {
     const existing = await this.prisma.galleryCategory.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
     if (data.parentId) {
       const parent = await this.prisma.galleryCategory.findUnique({ where: { id: data.parentId } });
       if (!parent) throw new NotFoundException('父分类不存在');
     }
-    return this.prisma.galleryCategory.create({ data });
+    const { parentId, ...rest } = data;
+    return this.prisma.galleryCategory.create({
+      data: {
+        name: rest.name!,
+        slug: rest.slug!,
+        sortOrder: rest.sortOrder,
+        isVisible: rest.isVisible,
+        ...(parentId ? { parent: { connect: { id: parentId } } } : {}),
+      } as Prisma.GalleryCategoryCreateInput,
+    });
   }
 
-  async updateCategory(id: string, data: any) {
+  async updateCategory(id: string, data: CategoryInput) {
     if (data.slug) {
       const existing = await this.prisma.galleryCategory.findUnique({ where: { slug: data.slug } });
       if (existing && existing.id !== id) throw new ConflictException('slug 已存在');
@@ -64,7 +82,13 @@ export class GalleryService {
         if (parent.parentId !== null) throw new ConflictException('不能将分类设为子分类的子分类');
       }
     }
-    return this.prisma.galleryCategory.update({ where: { id }, data });
+    const { parentId, ...rest } = data;
+    const payload: Prisma.GalleryCategoryUpdateInput = (rest as Prisma.GalleryCategoryUpdateInput);
+    if (parentId !== undefined) {
+      if (parentId === null) payload.parent = { disconnect: true };
+      else payload.parent = { connect: { id: parentId } };
+    }
+    return this.prisma.galleryCategory.update({ where: { id }, data: payload });
   }
 
   async deleteCategory(id: string) {
@@ -96,7 +120,7 @@ export class GalleryService {
     const sortBy = allowedSortBy.includes(query.sortBy || '') ? query.sortBy! : 'sortOrder';
     const sortOrder = query.sortOrder === 'desc' ? 'desc' : 'asc';
 
-    const where: any = {};
+    const where: Prisma.GalleryWorkWhereInput = {};
     if (!query.includeUnpublished) where.isPublished = true;
     if (query.featured) where.isFeatured = true;
     if (query.category) where.category = { slug: query.category };
@@ -135,7 +159,8 @@ export class GalleryService {
         isFeatured: w.isFeatured,
         isPublished: w.isPublished,
         sortOrder: w.sortOrder,
-        publishedAt: w.createdAt.toISOString(),
+        // 没有 publishedAt 字段：仅在已发布时给一个有意义的日期（拍摄日期优先，否则用创建时间），未发布返回 null
+        publishedAt: w.isPublished ? (w.shootDate ?? w.createdAt).toISOString() : null,
       })),
       pagination: {
         page,
@@ -172,13 +197,13 @@ export class GalleryService {
     };
   }
 
-  async createWork(data: any) {
+  async createWork(data: Prisma.GalleryWorkCreateInput) {
     const existing = await this.prisma.galleryWork.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
     return this.prisma.galleryWork.create({ data });
   }
 
-  async updateWork(id: string, data: any) {
+  async updateWork(id: string, data: Prisma.GalleryWorkUpdateInput) {
     return this.prisma.galleryWork.update({ where: { id }, data });
   }
 

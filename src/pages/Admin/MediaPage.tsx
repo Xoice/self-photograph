@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, Container, Grid, IconButton, CircularProgress, Pagination, Stack, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { Delete, ContentCopy, Check, Edit, Search } from '@mui/icons-material';
+import { getErrorMessage } from '@/utils/error';
 import { Close } from '@mui/icons-material';
 import { TextField, InputAdornment } from '@mui/material';
 import { getMediaList, deleteMedia, renameMedia, type MediaItem } from '@/api/media';
@@ -31,7 +32,7 @@ const MediaPage = () => {
       })
       .catch((err) => {
         setItems([]);
-        setError(err.message || '加载失败');
+        setError(getErrorMessage(err, '加载失败'));
       })
       .finally(() => setLoading(false));
   }, [page, searchQuery]);
@@ -43,7 +44,7 @@ const MediaPage = () => {
       await navigator.clipboard.writeText(url);
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
-    } catch {}
+    } catch { /* 剪贴板不可用时静默 */ }
   };
 
   const handleDelete = async () => {
@@ -53,8 +54,8 @@ const MediaPage = () => {
       await deleteMedia(deleteTarget.id);
       setDeleteTarget(null);
       loadMedia();
-    } catch (err: any) {
-      setError(err.message || '删除失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '删除失败'));
     } finally {
       setDeleting(false);
     }
@@ -67,8 +68,8 @@ const MediaPage = () => {
       await renameMedia(renameTarget.id, renameValue.trim());
       setRenameTarget(null);
       loadMedia();
-    } catch (err: any) {
-      setError(err.message || '重命名失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '重命名失败'));
     } finally {
       setRenaming(false);
     }

@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
@@ -42,6 +42,7 @@ const HeroParticles = () => {
   const meteorRef = useRef<THREE.Points>(null);
 
   const meteorState = useRef({ active: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, life: 0, maxLife: 0 });
+  // eslint-disable-next-line react-hooks/purity -- 首次流星延迟随机一次
   const meteorTimer = useRef(3 + Math.random() * 7);
 
   const isMobile = useMemo(() => typeof window !== 'undefined' && window.innerWidth < 768, []);
@@ -49,6 +50,7 @@ const HeroParticles = () => {
   const galaxyCount = useMemo(() => (isMobile ? 650 : 1600), [isMobile]);
 
   // 背景星场数据
+  /* eslint-disable react-hooks/purity -- 星点位置/颜色/大小用 Math.random 一次性生成，仅在挂载或粒度变化时计算 */
   const bgStars = useMemo<StarData>(() => {
     const positions = new Float32Array(bgCount * 3);
     const colors = new Float32Array(bgCount * 3);
@@ -73,8 +75,10 @@ const HeroParticles = () => {
     }
     return { positions, colors, sizes, phases, speeds };
   }, [bgCount]);
+  /* eslint-enable react-hooks/purity */
 
   // 银河拱桥数据（局部坐标：圆心在原点，由 archRef 平移到 ARCH_CENTER_Y）
+  /* eslint-disable react-hooks/purity -- 银河拱桥星点分布同样一次性随机生成 */
   const galaxyStars = useMemo<StarData>(() => {
     const positions = new Float32Array(galaxyCount * 3);
     const colors = new Float32Array(galaxyCount * 3);
@@ -112,6 +116,7 @@ const HeroParticles = () => {
     }
     return { positions, colors, sizes, phases, speeds };
   }, [galaxyCount]);
+  /* eslint-enable react-hooks/purity */
 
   // 闪烁着色器
   const starMaterial = useMemo(() => {
@@ -240,6 +245,18 @@ const HeroParticles = () => {
     return geo;
   }, []);
 
+  // 组件卸载时释放 GPU 资源，避免页面切换导致显存泄漏
+  useEffect(() => {
+    return () => {
+      starMaterial.dispose();
+      galaxyMaterial.dispose();
+      coreTexture.dispose();
+      dustTexture.dispose();
+      dustGeo.dispose();
+      meteorGeo.dispose();
+    };
+  }, [starMaterial, galaxyMaterial, coreTexture, dustTexture, dustGeo, meteorGeo]);
+
   const mouseWorld = useRef(new THREE.Vector3(999, 999, 0));
 
   useFrame((state) => {
@@ -250,8 +267,10 @@ const HeroParticles = () => {
     // 鼠标 -> 世界坐标
     mouseWorld.current.x += (pointer.x * 25 - mouseWorld.current.x) * 0.06;
     mouseWorld.current.y += (pointer.y * 18 - mouseWorld.current.y) * 0.06;
+    // eslint-disable-next-line react-hooks/immutability -- R3F 每帧更新 ShaderMaterial uniform，属标准做法
     starMaterial.uniforms.uTime.value = time;
     starMaterial.uniforms.uMouse.value.copy(mouseWorld.current);
+    // eslint-disable-next-line react-hooks/immutability -- 同上，银河层 uniform 同步
     galaxyMaterial.uniforms.uTime.value = time;
 
     // 拱桥绕自身圆心极缓慢摇摆（延时摄影感）

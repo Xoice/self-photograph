@@ -33,6 +33,7 @@ function canvasToBlob(
   width: number,
   height: number,
   quality: number,
+  type: 'image/jpeg' | 'image/png' = 'image/jpeg',
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas');
@@ -49,8 +50,8 @@ function canvasToBlob(
         if (blob) resolve(blob);
         else reject(new Error('Canvas 导出失败'));
       },
-      'image/jpeg',
-      quality,
+      type,
+      type === 'image/png' ? undefined : quality,
     );
   });
 }
@@ -80,17 +81,21 @@ export async function compressImage(
 
   const img = await loadImage(file);
 
-  let width = img.naturalWidth;
-  let height = img.naturalHeight;
+  const width = img.naturalWidth;
+  const height = img.naturalHeight;
+  // PNG 保留透明度：无损缩尺寸，不走 JPEG 质量梯度
+  const isPng = file.type === 'image/png';
+  const outType: 'image/jpeg' | 'image/png' = isPng ? 'image/png' : 'image/jpeg';
+  const outExt = isPng ? '.png' : '.jpg';
 
- // 质量梯度：逐步降低
+// 质量梯度：逐步降低
   const qualities = [0.85, 0.7, 0.5, 0.3];
 
   for (const quality of qualities) {
-    const blob = await canvasToBlob(img, width, height, quality);
+    const blob = await canvasToBlob(img, width, height, quality, outType);
     if (blob.size <= maxSize) {
-      return new File([blob], file.name.replace(/\.\w+$/, '.jpg'), {
-        type: 'image/jpeg',
+      return new File([blob], file.name.replace(/\.\w+$/, outExt), {
+        type: outType,
         lastModified: Date.now(),
       });
     }
@@ -101,10 +106,10 @@ export async function compressImage(
   while (scale > 0.1) {
     const scaledWidth = Math.round(width * scale);
     const scaledHeight = Math.round(height * scale);
-    const blob = await canvasToBlob(img, scaledWidth, scaledHeight, 0.5);
+    const blob = await canvasToBlob(img, scaledWidth, scaledHeight, 0.5, outType);
     if (blob.size <= maxSize) {
-      return new File([blob], file.name.replace(/\.\w+$/, '.jpg'), {
-        type: 'image/jpeg',
+      return new File([blob], file.name.replace(/\.\w+$/, outExt), {
+        type: outType,
         lastModified: Date.now(),
       });
     }
@@ -112,9 +117,9 @@ export async function compressImage(
   }
 
   // 极端情况：缩到很小仍然超限，返回最后的结果
-  const blob = await canvasToBlob(img, Math.round(width * 0.1), Math.round(height * 0.1), 0.3);
-  return new File([blob], file.name.replace(/\.\w+$/, '.jpg'), {
-    type: 'image/jpeg',
+  const blob = await canvasToBlob(img, Math.round(width * 0.1), Math.round(height * 0.1), 0.3, outType);
+  return new File([blob], file.name.replace(/\.\w+$/, outExt), {
+    type: outType,
     lastModified: Date.now(),
   });
 }

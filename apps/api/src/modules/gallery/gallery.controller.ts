@@ -11,7 +11,7 @@ export class GalleryController {
   }
 
   @Get('works')
-  async getWorks(@Query() query: any) {
+  async getWorks(@Query() query: Record<string, string>) {
     return this.galleryService.getWorks(query);
   }
 

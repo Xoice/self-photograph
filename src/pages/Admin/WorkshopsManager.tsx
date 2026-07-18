@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Chip, CircularProgress, Alert } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import apiClient from '@/api/client';
-import type { WorkshopSummary, WorkshopStatus } from '@/types/api';
+import type { WorkshopSummary, WorkshopStatus, PaginatedData } from '@/types/api';
+import { getErrorMessage } from '@/utils/error';
 
 const statusMap: Record<WorkshopStatus, string> = {
   draft: '草稿',
@@ -22,13 +23,16 @@ const WorkshopsManager = () => {
   const loadWorkshops = () => {
     setLoading(true);
     setError('');
-    apiClient.get('/admin/workshops')
-      .then((res: any) => setWorkshops(res.items || []))
-      .catch((err) => { setWorkshops([]); setError(err.message || '加载失败'); })
+    apiClient.get<PaginatedData<WorkshopSummary>>('/admin/workshops')
+      .then((res) => setWorkshops(res.items || []))
+      .catch((err) => { setWorkshops([]); setError(getErrorMessage(err, '加载失败')); })
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { loadWorkshops(); }, []);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 挂载时拉取研学列表
+    loadWorkshops();
+  }, []);
 
   const handleDelete = async (id: string) => {
     if (!confirm('确定删除？')) return;
@@ -36,8 +40,8 @@ const WorkshopsManager = () => {
     try {
       await apiClient.delete(`/admin/workshops/${id}`);
       loadWorkshops();
-    } catch (err: any) {
-      setError(err.message || '删除失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '删除失败'));
     }
   };
 

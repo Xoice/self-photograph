@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { Box, Typography, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Alert, Switch, FormControlLabel, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import apiClient from '@/api/client';
-import type { GalleryWorkItem, GalleryCategory } from '@/types/api';
+import type { GalleryWorkItem, GalleryCategory, GalleryWorkDetail, PaginatedData } from '@/types/api';
+import { getErrorMessage } from '@/utils/error';
 import ImageUploader from '@/components/ui/ImageUploader';
 
 interface FormData {
@@ -32,16 +33,16 @@ const WorksManager = () => {
   const loadWorks = () => {
     setLoading(true);
     setError('');
-    apiClient.get('/admin/gallery/works')
-      .then((res: any) => setWorks(res.items || []))
-      .catch((err) => { setWorks([]); setError(err.message || '加载失败'); })
+    apiClient.get<PaginatedData<GalleryWorkItem>>('/admin/gallery/works')
+      .then((res) => setWorks(res.items || []))
+      .catch((err) => { setWorks([]); setError(getErrorMessage(err, '加载失败')); })
       .finally(() => setLoading(false));
   };
 
   const loadCategories = () => {
-    apiClient.get('/admin/gallery/categories')
-      .then((res: any) => setCategories(res || []))
-      .catch((err) => { setError(err.message || '加载分类失败'); });
+    apiClient.get<GalleryCategory[]>('/admin/gallery/categories')
+      .then((res) => setCategories(res || []))
+      .catch((err) => { setError(getErrorMessage(err, '加载分类失败')); });
   };
 
   useEffect(() => { loadWorks(); loadCategories(); }, []);
@@ -49,7 +50,7 @@ const WorksManager = () => {
   const handleEdit = (item: GalleryWorkItem) => {
     setEditItem(item);
     setFormData({
-      title: item.title, slug: item.slug, summary: item.summary, description: (item as any).description || '',
+      title: item.title, slug: item.slug, summary: item.summary, description: (item as GalleryWorkDetail).description || '',
       coverImage: item.coverImage, categoryId: item.categoryId || '',
       isFeatured: item.isFeatured, isPublished: item.isPublished, sortOrder: item.sortOrder,
     });
@@ -66,7 +67,7 @@ const WorksManager = () => {
     setSaving(true);
     setError('');
     try {
-      const payload: any = { ...formData };
+      const payload: Record<string, unknown> = { ...formData };
       if (!payload.categoryId) payload.categoryId = null;
       if (editItem) {
         await apiClient.patch(`/admin/gallery/works/${editItem.id}`, payload);
@@ -75,8 +76,8 @@ const WorksManager = () => {
       }
       setDialogOpen(false);
       loadWorks();
-    } catch (err: any) {
-      setError(err.message || '保存失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '保存失败'));
     } finally {
       setSaving(false);
     }
@@ -88,8 +89,8 @@ const WorksManager = () => {
     try {
       await apiClient.delete(`/admin/gallery/works/${id}`);
       loadWorks();
-    } catch (err: any) {
-      setError(err.message || '删除失败');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, '删除失败'));
     }
   };
 

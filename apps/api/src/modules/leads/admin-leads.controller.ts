@@ -8,7 +8,7 @@ export class AdminLeadsController {
   constructor(private leadsService: LeadsService) {}
 
   @Get('contact')
-  async getContactLeads(@Query() query: any) {
+  async getContactLeads(@Query() query: Record<string, string>) {
     return this.leadsService.getContactLeads(query);
   }
 
@@ -23,7 +23,7 @@ export class AdminLeadsController {
   }
 
   @Get('workshop-enrollments')
-  async getEnrollments(@Query() query: any) {
+  async getEnrollments(@Query() query: Record<string, string>) {
     return this.leadsService.getEnrollments(query);
   }
 }

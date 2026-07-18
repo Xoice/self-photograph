@@ -2,6 +2,7 @@ import apiClient from './client';
 import type {
   WorkshopSummary,
   WorkshopDetail,
+  AdminWorkshopDetail,
   WorkshopsQuery,
   PaginatedData,
 } from '@/types/api';
@@ -16,7 +17,7 @@ export function getWorkshopBySlug(slug: string): Promise<WorkshopDetail> {
   return apiClient.get(`/workshops/${slug}`);
 }
 
-export function getWorkshopById(id: string): Promise<any> {
+export function getWorkshopById(id: string): Promise<AdminWorkshopDetail> {
   return apiClient.get(`/admin/workshops/${id}`);
 }
 

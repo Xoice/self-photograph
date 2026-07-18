@@ -33,6 +33,7 @@ const MediaBrowser = ({ open, onClose, onSelect }: MediaBrowserProps) => {
 
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 打开媒体库时拉取列表，属外部状态同步
       loadMedia();
     }
   }, [open, loadMedia]);
@@ -47,7 +48,7 @@ const MediaBrowser = ({ open, onClose, onSelect }: MediaBrowserProps) => {
       await navigator.clipboard.writeText(url);
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
-    } catch {}
+    } catch { /* 剪贴板不可用时静默 */ }
   };
 
   return (

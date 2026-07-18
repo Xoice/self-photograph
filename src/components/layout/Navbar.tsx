@@ -29,6 +29,7 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 路由变更后关闭移动端抽屉，属外部状态同步
     setMobileOpen(false);
   }, [location]);
 
