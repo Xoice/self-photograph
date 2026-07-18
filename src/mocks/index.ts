@@ -64,7 +64,12 @@ function getMockResponse(method: string, url: string, _data?: unknown): ApiRespo
       height: 600,
       sizeBytes: 102400,
     }),
-    'GET /admin/media': () => paginated([]),
+    'GET /admin/site/config': () => ok(mockSiteConfig),
+    'PUT /admin/site/config': () => ok(mockSiteConfig),
+    'GET /admin/media': () => paginated([
+      { id: 'media_001', url: 'https://picsum.photos/seed/p1/800/600.jpg', fileName: 'DSC0001.jpg', customName: null, width: 800, height: 600, sizeBytes: 245000, createdAt: new Date().toISOString() },
+      { id: 'media_002', url: 'https://picsum.photos/seed/p2/1200/800.jpg', fileName: 'DSC0002.jpg', customName: 'hero-bg', width: 1200, height: 800, sizeBytes: 520000, createdAt: new Date().toISOString() },
+    ]),
   };
 
   if (key in routes) {
@@ -93,6 +98,7 @@ function getMockResponse(method: string, url: string, _data?: unknown): ApiRespo
   if (path.startsWith('/admin/workshops/') && (method === 'PATCH' || method === 'DELETE')) {
     return ok({ success: true });
   }
+  if (path.startsWith('/admin/media/') && method === 'PATCH') { return ok({ id: path.split('/').pop(), customName: 'renamed' }); }
   if (path.startsWith('/admin/media/') && method === 'DELETE') {
     return ok({ success: true });
   }
@@ -107,6 +113,9 @@ function getMockResponse(method: string, url: string, _data?: unknown): ApiRespo
       return ok({ ...ws, content: ws.summary, highlights: [], itinerary: [], feeIncludes: [], feeExcludes: [], contact: mockSiteConfig.contact });
     }
   }
+
+  if (path.startsWith('/admin/leads/contact/') && path.endsWith('/status')) { return ok({ success: true }); }
+  if (path.startsWith('/admin/leads/contact/') && method === 'DELETE') { return ok({ success: true }); }
 
   return { code: 40002, message: 'Not found', data: null };
 }
