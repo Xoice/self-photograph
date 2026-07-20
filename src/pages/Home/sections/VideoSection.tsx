@@ -152,7 +152,7 @@ const VideoSection = () => {
           )}
         </Grid>
 
-        <Box className="video-card" sx={{ mt: 10, textAlign: 'center' }}>
+        <Box sx={{ mt: 10, textAlign: 'center' }}>
           <Button
             variant="outlined"
             href={config?.socialLinks?.bilibili || 'https://space.bilibili.com/xxxxxx'}

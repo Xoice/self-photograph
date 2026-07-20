@@ -1,5 +1,5 @@
 import { useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Link } from 'react-router-dom';
 import { ThemeProvider, CssBaseline, Box, Typography, CircularProgress } from '@mui/material';
 import { HelmetProvider } from 'react-helmet-async';
 import Lenis from 'lenis';
@@ -54,6 +54,8 @@ function Footer() {
   const { data: config } = useSiteConfig();
   const year = new Date().getFullYear();
   const bilibili = config?.socialLinks?.bilibili;
+  const location = useLocation();
+  if (location.pathname.startsWith('/admin')) return null;
 
   return (
     <Box component="footer" sx={{ py: 6, px: { xs: 2, md: 4 }, borderTop: '1px solid #222', bgcolor: '#050505' }}>
@@ -71,16 +73,21 @@ function Footer() {
         {/* 快速导航 */}
         <Box sx={{ display: 'flex', gap: 4 }}>
           {[
-            { label: '首页', href: '#hero' },
-            { label: '画廊', href: '/gallery' },
-            { label: '影视', href: '#video' },
-            { label: '研学', href: '#photographystudy' },
-            { label: '联系', href: '#connect' },
+            { label: '首页', to: '/', hash: '#hero' },
+            { label: '画廊', to: '/gallery' },
+            { label: '影视', to: '/', hash: '#video' },
+            { label: '研学', to: '/', hash: '#photographystudy' },
+            { label: '联系', to: '/', hash: '#connect' },
           ].map((item) => (
             <Typography
               key={item.label}
-              component="a"
-              href={item.href}
+              component={Link}
+              to={item.to}
+              onClick={item.hash ? () => {
+                if (location.pathname !== '/') return;
+                const el = document.querySelector(item.hash!);
+                el?.scrollIntoView({ behavior: 'smooth' });
+              } : undefined}
               sx={{ color: '#666', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.3s', '&:hover': { color: 'primary.main' } }}
             >
               {item.label}
@@ -132,7 +139,6 @@ function App() {
     let rafId: number;
     function raf(time: number) {
       lenis.raf(time);
-      ScrollTrigger.update();
       rafId = requestAnimationFrame(raf);
     }
     rafId = requestAnimationFrame(raf);

@@ -1,8 +1,10 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Response } from 'express';
 
 @Catch()
 export class ApiExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger('ApiExceptionFilter');
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -21,6 +23,8 @@ export class ApiExceptionFilter implements ExceptionFilter {
       else if (status === 403) code = 40301;
       else if (status === 404) code = 40002;
       else if (status === 409) code = 40901;
+    } else {
+      this.logger.error(exception, exception instanceof Error ? exception.stack : undefined);
     }
 
     response.status(status).json({

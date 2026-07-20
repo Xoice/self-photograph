@@ -15,6 +15,9 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('邮箱或密码错误');
     }
+    if (user.status !== 'active') {
+      throw new UnauthorizedException('账户已被停用');
+    }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {

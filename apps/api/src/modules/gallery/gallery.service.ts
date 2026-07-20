@@ -106,11 +106,11 @@ export class GalleryService {
     pageSize?: number;
     category?: string;
     tag?: string;
-    featured?: boolean;
     keyword?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
-    includeUnpublished?: boolean;
+    includeUnpublished?: string;
+    featured?: string;
   }) {
     const page = Number(query.page) || 1;
     const pageSize = Number(query.pageSize) || 12;
@@ -121,8 +121,8 @@ export class GalleryService {
     const sortOrder = query.sortOrder === 'desc' ? 'desc' : 'asc';
 
     const where: Prisma.GalleryWorkWhereInput = {};
-    if (!query.includeUnpublished) where.isPublished = true;
-    if (query.featured) where.isFeatured = true;
+    if (query.includeUnpublished !== 'true') where.isPublished = true;
+    if (query.featured === 'true') where.isFeatured = true;
     if (query.category) where.category = { slug: query.category };
     if (query.tag) where.tags = { some: { slug: query.tag } };
     if (query.keyword) {

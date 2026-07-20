@@ -30,6 +30,7 @@ export default defineConfig({
             if (id.includes('react-dom') || id.includes('react-router')) return 'vendor-react';
             if (id.includes('@mui')) return 'vendor-mui';
             if (id.includes('three') || id.includes('@react-three')) return 'vendor-three';
+            if (id.includes('gsap') || id.includes('@gsap')) return 'vendor-gsap';
             if (id.includes('@tanstack')) return 'vendor-query';
           }
         },

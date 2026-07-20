@@ -46,7 +46,7 @@ const KenyaExpedition = () => {
 
         <Box className="expedition-header" sx={{ mb: 8 }}>
           <Chip
-            label="2025年重磅推出"
+            label={`${new Date().getFullYear()}年重磅推出`}
             sx={{
               mb: 3,
               bgcolor: 'rgba(224, 164, 88, 0.1)',

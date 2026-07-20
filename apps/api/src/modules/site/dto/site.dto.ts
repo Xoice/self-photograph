@@ -1,4 +1,4 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsEmail } from 'class-validator';
 
 export class UpdateSiteConfigDto {
   @IsString()
@@ -29,7 +29,7 @@ export class UpdateSiteConfigDto {
   @IsOptional()
   contactPhone?: string;
 
-  @IsString()
+  @IsEmail({}, { message: '邮箱格式不正确' })
   @IsOptional()
   contactEmail?: string;
 

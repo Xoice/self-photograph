@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty, IsISO8601 } from 'class-validator';
 import { IsArray } from 'class-validator';
 
 export class CreateWorkshopDto {
@@ -38,11 +38,11 @@ export class CreateWorkshopDto {
   @IsOptional()
   location?: string;
 
-  @IsString({ message: '开始日期必须是字符串' })
+  @IsISO8601({}, { message: '开始日期格式不正确' })
   @IsOptional()
   startDate?: string;
 
-  @IsString({ message: '结束日期必须是字符串' })
+  @IsISO8601({}, { message: '结束日期格式不正确' })
   @IsOptional()
   endDate?: string;
 
@@ -116,11 +116,11 @@ export class UpdateWorkshopDto {
   @IsOptional()
   location?: string;
 
-  @IsString({ message: '开始日期必须是字符串' })
+  @IsISO8601({}, { message: '开始日期格式不正确' })
   @IsOptional()
   startDate?: string;
 
-  @IsString({ message: '结束日期必须是字符串' })
+  @IsISO8601({}, { message: '结束日期格式不正确' })
   @IsOptional()
   endDate?: string;
 

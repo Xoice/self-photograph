@@ -33,7 +33,7 @@ export class AdminGalleryController {
     return this.galleryService.getWorks({
       page: page ? parseInt(page) : 1,
       pageSize: pageSize ? parseInt(pageSize) : 100,
-      includeUnpublished: true,
+      includeUnpublished: 'true',
     });
   }
 

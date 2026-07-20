@@ -59,7 +59,7 @@ instance.interceptors.response.use(
 // 401 自动登出：token 过期/失效时清除本地态，避免用户停留在已失效会话
 // 仅在 token 存在时触发，避免未登录场景误清
 instance.interceptors.response.use(undefined, (error) => {
-  if (error.response?.status === 401) {
+  if (error.status === 401 || error.response?.status === 401) {
     try {
       if (localStorage.getItem('auth_token')) {
         localStorage.removeItem('auth_token');

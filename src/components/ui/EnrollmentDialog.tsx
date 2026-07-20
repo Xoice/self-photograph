@@ -98,7 +98,7 @@ export default function EnrollmentDialog({ open, onClose, workshopSlug, workshop
         <Button onClick={handleClose} disabled={isPending}>取消</Button>
         <Button
           onClick={handleSubmit}
-          disabled={isPending || !form.name || !form.phone}
+          disabled={isPending || !form.name || !form.phone || (form.email !== '' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))}
           sx={{ color: 'primary.main' }}
         >
           {isPending ? '提交中...' : '提交报名'}

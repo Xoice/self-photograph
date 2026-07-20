@@ -20,18 +20,18 @@ export class WorkshopsService {
   async getWorkshops(query: {
     page?: number;
     pageSize?: number;
-    featured?: boolean;
+    featured?: string;
     status?: string;
     keyword?: string;
-    includeUnpublished?: boolean;
+    includeUnpublished?: string;
   }) {
     const page = Number(query.page) || 1;
     const pageSize = Number(query.pageSize) || 10;
     const skip = (page - 1) * pageSize;
 
     const where: Prisma.WorkshopWhereInput = {};
-    if (!query.includeUnpublished) where.isPublished = true;
-    if (query.featured) where.isFeatured = true;
+    if (query.includeUnpublished !== 'true') where.isPublished = true;
+    if (query.featured === 'true') where.isFeatured = true;
     if (query.status) where.status = query.status;
     if (query.keyword) {
       where.OR = [
@@ -208,6 +208,7 @@ export class WorkshopsService {
         content: f.content,
         sortOrder: f.sortOrder,
       })),
+      tags: this.parseTags(workshop.tags),
     };
   }
 

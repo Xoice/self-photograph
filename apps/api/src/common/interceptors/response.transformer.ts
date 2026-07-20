@@ -14,7 +14,7 @@ export class ResponseTransformer<T> implements NestInterceptor<T, ApiResponse<T>
       map((data) => ({
         code: 0,
         message: 'ok',
-        data,
+        data: data ?? null,
       })),
     );
   }
