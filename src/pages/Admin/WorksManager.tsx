@@ -102,13 +102,12 @@ const WorksManager = () => {
         </Alert>
       )}
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: 3, mb: 4, flexWrap: 'wrap' }}>
         <Typography variant="h4" sx={{ fontWeight: 700 }}>作品管理</Typography>
         <Button
           variant="contained"
           startIcon={<Add />}
           onClick={handleNew}
-          sx={{ bgcolor: 'primary.main', color: '#000', '&:hover': { bgcolor: 'primary.main', opacity: 0.9 } }}
         >
           新增作品
         </Button>

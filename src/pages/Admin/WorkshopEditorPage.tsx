@@ -230,13 +230,12 @@ const WorkshopEditorPage = () => {
       {error && <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 3 }}>{success}</Alert>}
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', gap: 3, mb: 4, flexWrap: 'wrap' }}>
         <Stack direction="row" spacing={2} alignItems="center">
           <IconButton onClick={() => navigate('/admin/workshops')} sx={{ color: 'text.secondary' }}><ArrowBack /></IconButton>
           <Typography variant="h4" sx={{ fontWeight: 700 }}>{isNew ? '新增研学活动' : '编辑研学活动'}</Typography>
         </Stack>
-        <Button variant="contained" startIcon={<Save />} onClick={handleSave} disabled={saving}
-          sx={{ bgcolor: 'primary.main', color: '#000', '&:hover': { bgcolor: 'primary.main', opacity: 0.9 } }}>
+        <Button variant="contained" startIcon={<Save />} onClick={handleSave} disabled={saving}>
           {saving ? '保存中...' : '保存'}
         </Button>
       </Box>

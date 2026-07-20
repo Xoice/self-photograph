@@ -139,7 +139,7 @@ const AdminLayout = () => {
         sx={{
           flex: 1,
           ml: { xs: 0, md: `${sidebarWidth}px` },
-          mt: { xs: '60px', md: 0 },
+          mt: { xs: '60px', md: '48px' },
           minHeight: '100vh',
         }}
       >

@@ -61,16 +61,45 @@ const xoiceTheme = createTheme({
       },
     },
     MuiButton: {
+      defaultProps: {
+        disableElevation: true,
+      },
       styleOverrides: {
         root: {
           borderRadius: 0,
           textTransform: 'uppercase',
-          padding: '1rem 2rem',
+          padding: '0.75rem 1.75rem',
           border: '1px solid #EAEAEA',
           color: '#EAEAEA',
+          fontSize: '0.85rem',
+          letterSpacing: '0.05em',
+          transition: 'all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1)',
           '&:hover': {
             backgroundColor: '#EAEAEA',
             color: '#050505',
+            borderColor: '#EAEAEA',
+          },
+        },
+        contained: {
+          border: 'none',
+          bgcolor: 'primary.main',
+          color: '#050505',
+          '&:hover': {
+            bgcolor: 'primary.main',
+            filter: 'brightness(1.1)',
+            boxShadow: '0 0 20px rgba(224,164,88,0.3)',
+          },
+          '&.Mui-disabled': {
+            bgcolor: 'rgba(224,164,88,0.3)',
+            color: 'rgba(0,0,0,0.5)',
+          },
+        },
+        outlined: {
+          borderColor: 'rgba(234,234,234,0.2)',
+          '&:hover': {
+            borderColor: 'primary.main',
+            bgcolor: 'rgba(224,164,88,0.08)',
+            color: 'primary.main',
           },
         },
       },
