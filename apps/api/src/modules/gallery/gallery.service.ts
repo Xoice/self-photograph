@@ -204,10 +204,24 @@ export class GalleryService {
   }
 
   async updateWork(id: string, data: Prisma.GalleryWorkUpdateInput) {
-    return this.prisma.galleryWork.update({ where: { id }, data });
+    try {
+      return await this.prisma.galleryWork.update({ where: { id }, data });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('作品不存在');
+      }
+      throw e;
+    }
   }
 
   async deleteWork(id: string) {
-    return this.prisma.galleryWork.delete({ where: { id } });
+    try {
+      return await this.prisma.galleryWork.delete({ where: { id } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('作品不存在');
+      }
+      throw e;
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty, IsISO8601 } from 'class-validator';
 
 export class CreateCategoryDto {
   @IsString({ message: '名称必须是字符串' })
@@ -31,6 +31,7 @@ export class UpdateCategoryDto {
   @IsOptional()
   slug?: string;
 
+  @IsString({ message: '父分类ID必须是字符串' })
   @IsOptional()
   parentId?: string | null;
 
@@ -64,8 +65,25 @@ export class CreateWorkDto {
   @IsNotEmpty({ message: '封面图不能为空' })
   coverImage: string;
 
+  @IsString({ message: '分类ID必须是字符串' })
   @IsOptional()
   categoryId?: string | null;
+
+  @IsString({ message: '缩略图必须是字符串' })
+  @IsOptional()
+  thumbnailImage?: string;
+
+  @IsISO8601({}, { message: '拍摄日期必须是有效的ISO8601日期' })
+  @IsOptional()
+  shootDate?: string;
+
+  @IsString({ message: '拍摄地点必须是字符串' })
+  @IsOptional()
+  location?: string;
+
+  @IsString({ message: '相机信息必须是字符串' })
+  @IsOptional()
+  cameraInfo?: string;
 
   @IsBoolean({ message: '精选必须是布尔值' })
   @IsOptional()
@@ -101,8 +119,25 @@ export class UpdateWorkDto {
   @IsOptional()
   coverImage?: string;
 
+  @IsString({ message: '分类ID必须是字符串' })
   @IsOptional()
   categoryId?: string | null;
+
+  @IsString({ message: '缩略图必须是字符串' })
+  @IsOptional()
+  thumbnailImage?: string;
+
+  @IsISO8601({}, { message: '拍摄日期必须是有效的ISO8601日期' })
+  @IsOptional()
+  shootDate?: string;
+
+  @IsString({ message: '拍摄地点必须是字符串' })
+  @IsOptional()
+  location?: string;
+
+  @IsString({ message: '相机信息必须是字符串' })
+  @IsOptional()
+  cameraInfo?: string;
 
   @IsBoolean({ message: '精选必须是布尔值' })
   @IsOptional()

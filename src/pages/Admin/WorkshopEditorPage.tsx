@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Box, Typography, Container, TextField, Button, Card, CardContent, Grid, Switch, FormControlLabel, Select, InputLabel, FormControl, MenuItem, Alert, Stack, IconButton, Divider, Chip, CircularProgress } from '@mui/material';
 import { Add, Delete, ArrowBack, Save } from '@mui/icons-material';
@@ -65,6 +65,7 @@ const WorkshopEditorPage = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
     if (!isNew && id) {
@@ -84,6 +85,12 @@ const WorkshopEditorPage = () => {
         .finally(() => setLoading(false));
     }
   }, [id, isNew]);
+
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimers.current).forEach(clearTimeout);
+    };
+  }, []);
 
   const update = useCallback((patch: Partial<WorkshopData>) => {
     setData((prev) => ({ ...prev, ...patch }));
@@ -137,7 +144,7 @@ const WorkshopEditorPage = () => {
     } catch (err) { setError(getErrorMessage(err, '操作失败')); }
   };
 
-  const updateHighlight = async (idx: number, patch: Partial<HighlightItem>) => {
+  const updateHighlight = (idx: number, patch: Partial<HighlightItem>) => {
     const item = data.highlights[idx];
     setData((prev) => {
       const next = [...prev.highlights];
@@ -145,7 +152,11 @@ const WorkshopEditorPage = () => {
       return { ...prev, highlights: next };
     });
     if (item.id && id) {
-      try { await updateWorkshopHighlight(id, item.id, patch); } catch { /* 编辑器自动保存，失败不阻断 */ }
+      const key = `highlight-${item.id}`;
+      clearTimeout(debounceTimers.current[key]);
+      debounceTimers.current[key] = setTimeout(() => {
+        updateWorkshopHighlight(id, item.id!, patch).catch(() => {});
+      }, 600);
     }
   };
 
@@ -166,7 +177,7 @@ const WorkshopEditorPage = () => {
     } catch (err) { setError(getErrorMessage(err, '操作失败')); }
   };
 
-  const updateItinerary = async (idx: number, patch: Partial<ItineraryItem>) => {
+  const updateItinerary = (idx: number, patch: Partial<ItineraryItem>) => {
     const item = data.itinerary[idx];
     setData((prev) => {
       const next = [...prev.itinerary];
@@ -174,7 +185,11 @@ const WorkshopEditorPage = () => {
       return { ...prev, itinerary: next };
     });
     if (item.id && id) {
-      try { await updateWorkshopItinerary(id, item.id, patch); } catch { /* 编辑器自动保存，失败不阻断 */ }
+      const key = `itinerary-${item.id}`;
+      clearTimeout(debounceTimers.current[key]);
+      debounceTimers.current[key] = setTimeout(() => {
+        updateWorkshopItinerary(id, item.id!, patch).catch(() => {});
+      }, 600);
     }
   };
 
@@ -194,7 +209,7 @@ const WorkshopEditorPage = () => {
     } catch (err) { setError(getErrorMessage(err, '操作失败')); }
   };
 
-  const updateFeeItem = async (idx: number, patch: Partial<FeeItem>) => {
+  const updateFeeItem = (idx: number, patch: Partial<FeeItem>) => {
     const item = data.feeItems[idx];
     setData((prev) => {
       const next = [...prev.feeItems];
@@ -202,7 +217,11 @@ const WorkshopEditorPage = () => {
       return { ...prev, feeItems: next };
     });
     if (item.id && id) {
-      try { await updateWorkshopFeeItem(id, item.id, patch); } catch { /* 编辑器自动保存，失败不阻断 */ }
+      const key = `fee-${item.id}`;
+      clearTimeout(debounceTimers.current[key]);
+      debounceTimers.current[key] = setTimeout(() => {
+        updateWorkshopFeeItem(id, item.id!, patch).catch(() => {});
+      }, 600);
     }
   };
 

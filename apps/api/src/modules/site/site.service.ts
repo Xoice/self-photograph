@@ -63,9 +63,12 @@ export class SiteService {
         },
       });
     }
+    const updateData = Object.fromEntries(
+      Object.entries(data).filter(([, v]) => v !== null),
+    );
     return this.prisma.siteConfig.update({
       where: { id: existing.id },
-      data,
+      data: updateData,
     });
   }
 }

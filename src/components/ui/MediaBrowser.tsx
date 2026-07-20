@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, Typography, Dialog, DialogTitle, DialogContent, Grid, IconButton, CircularProgress, Pagination, Stack, TextField, InputAdornment } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Close, ContentCopy, Check } from '@mui/icons-material';
@@ -17,10 +17,11 @@ const MediaBrowser = ({ open, onClose, onSelect }: MediaBrowserProps) => {
   const [totalPages, setTotalPages] = useState(1);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const loadMedia = useCallback(() => {
     setLoading(true);
-    getMediaList({ page, pageSize: 20, type: undefined })
+    getMediaList({ page, pageSize: 20, q: searchQuery || undefined })
       .then((res) => {
         setItems(res.items || []);
         setTotalPages(res.pagination?.totalPages || 1);
@@ -29,7 +30,7 @@ const MediaBrowser = ({ open, onClose, onSelect }: MediaBrowserProps) => {
         setItems([]);
       })
       .finally(() => setLoading(false));
-  }, [page]);
+  }, [page, searchQuery]);
 
   useEffect(() => {
     if (open) {
@@ -47,7 +48,8 @@ const MediaBrowser = ({ open, onClose, onSelect }: MediaBrowserProps) => {
     try {
       await navigator.clipboard.writeText(url);
       setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 2000);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
     } catch { /* 剪贴板不可用时静默 */ }
   };
 
@@ -76,7 +78,7 @@ const MediaBrowser = ({ open, onClose, onSelect }: MediaBrowserProps) => {
               size="small"
               placeholder="搜索文件名..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
               fullWidth
               sx={{ mb: 2 }}
               InputProps={{
@@ -88,7 +90,7 @@ const MediaBrowser = ({ open, onClose, onSelect }: MediaBrowserProps) => {
               }}
             />
             <Grid container spacing={2}>
-              {items.filter((item) => !searchQuery || item.fileName.toLowerCase().includes(searchQuery.toLowerCase())).map((item) => (
+              {items.map((item) => (
                 <Grid key={item.id} size={{ xs: 6, sm: 4, md: 3 }}>
                   <Box
                     onClick={() => handleSelect(item.url)}

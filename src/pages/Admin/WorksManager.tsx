@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Box, Typography, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Alert, Switch, FormControlLabel, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import apiClient from '@/api/client';
-import type { GalleryWorkItem, GalleryCategory, GalleryWorkDetail, PaginatedData } from '@/types/api';
+import type { GalleryWorkItem, GalleryCategory, PaginatedData } from '@/types/api';
 import { getErrorMessage } from '@/utils/error';
 import ImageUploader from '@/components/ui/ImageUploader';
 
@@ -50,7 +50,7 @@ const WorksManager = () => {
   const handleEdit = (item: GalleryWorkItem) => {
     setEditItem(item);
     setFormData({
-      title: item.title, slug: item.slug, summary: item.summary, description: (item as GalleryWorkDetail).description || '',
+      title: item.title, slug: item.slug, summary: item.summary,       description: item.description || '',
       coverImage: item.coverImage, categoryId: item.categoryId || '',
       isFeatured: item.isFeatured, isPublished: item.isPublished, sortOrder: item.sortOrder,
     });

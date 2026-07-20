@@ -44,12 +44,12 @@ export class AdminWorkshopsController {
 
   @Patch(':id/highlights/:highlightId')
   async updateHighlight(@Param('id', ParseUUIDPipe) id: string, @Param('highlightId', ParseUUIDPipe) highlightId: string, @Body() data: { title?: string; content?: string; sortOrder?: number }) {
-    return this.workshopsService.updateHighlight(highlightId, data);
+    return this.workshopsService.updateHighlight(id, highlightId, data);
   }
 
   @Delete(':id/highlights/:highlightId')
   async deleteHighlight(@Param('id', ParseUUIDPipe) id: string, @Param('highlightId', ParseUUIDPipe) highlightId: string) {
-    return this.workshopsService.deleteHighlight(highlightId);
+    return this.workshopsService.deleteHighlight(id, highlightId);
   }
 
   @Post(':id/itinerary')
@@ -59,12 +59,12 @@ export class AdminWorkshopsController {
 
   @Patch(':id/itinerary/:itineraryId')
   async updateItinerary(@Param('id', ParseUUIDPipe) id: string, @Param('itineraryId', ParseUUIDPipe) itineraryId: string, @Body() data: { dayIndex?: number; title?: string; content?: string; sortOrder?: number }) {
-    return this.workshopsService.updateItinerary(itineraryId, data);
+    return this.workshopsService.updateItinerary(id, itineraryId, data);
   }
 
   @Delete(':id/itinerary/:itineraryId')
   async deleteItinerary(@Param('id', ParseUUIDPipe) id: string, @Param('itineraryId', ParseUUIDPipe) itineraryId: string) {
-    return this.workshopsService.deleteItinerary(itineraryId);
+    return this.workshopsService.deleteItinerary(id, itineraryId);
   }
 
   @Post(':id/fee-items')
@@ -74,11 +74,11 @@ export class AdminWorkshopsController {
 
   @Patch(':id/fee-items/:feeItemId')
   async updateFeeItem(@Param('id', ParseUUIDPipe) id: string, @Param('feeItemId', ParseUUIDPipe) feeItemId: string, @Body() data: { type?: string; content?: string; sortOrder?: number }) {
-    return this.workshopsService.updateFeeItem(feeItemId, data);
+    return this.workshopsService.updateFeeItem(id, feeItemId, data);
   }
 
   @Delete(':id/fee-items/:feeItemId')
   async deleteFeeItem(@Param('id', ParseUUIDPipe) id: string, @Param('feeItemId', ParseUUIDPipe) feeItemId: string) {
-    return this.workshopsService.deleteFeeItem(feeItemId);
+    return this.workshopsService.deleteFeeItem(id, feeItemId);
   }
 }

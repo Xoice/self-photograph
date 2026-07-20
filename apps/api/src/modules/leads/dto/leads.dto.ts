@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsEmail, IsOptional, MaxLength } from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsOptional, MaxLength, IsIn } from 'class-validator';
 
 export class CreateContactLeadDto {
   @IsString({ message: '姓名必须是字符串' })
@@ -49,4 +49,9 @@ export class CreateEnrollmentDto {
   @IsOptional()
   @MaxLength(2000, { message: '留言不能超过2000个字符' })
   message?: string;
+}
+
+export class UpdateLeadStatusDto {
+  @IsIn(['new', 'contacted', 'resolved', 'rejected'], { message: '状态值无效' })
+  status: string;
 }

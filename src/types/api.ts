@@ -59,6 +59,7 @@ export interface GalleryWorkItem {
   title: string;
   slug: string;
   summary: string;
+  description?: string;
   coverImage: string;
   categoryId: string | null;
   category: { name: string; slug: string };

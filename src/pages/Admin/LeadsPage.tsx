@@ -48,6 +48,7 @@ const LeadsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [keywordInput, setKeywordInput] = useState('');
   const [keyword, setKeyword] = useState('');
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailItem, setDetailItem] = useState<ContactLead | null>(null);
@@ -76,6 +77,11 @@ const LeadsPage = () => {
     if (tab === 0) loadLeads();
     else loadEnrollments();
   }, [tab, loadLeads, loadEnrollments]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setKeyword(keywordInput), 400);
+    return () => clearTimeout(timer);
+  }, [keywordInput]);
 
 
 
@@ -142,8 +148,8 @@ const LeadsPage = () => {
         <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
           <TextField
             label="搜索姓名/邮箱/内容"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            value={keywordInput}
+            onChange={(e) => setKeywordInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
             size="small"
             sx={{ minWidth: 250 }}

@@ -1,4 +1,4 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -63,10 +63,24 @@ export class VideosService {
   }
 
   async updateVideo(id: string, data: Prisma.VideoUpdateInput) {
-    return this.prisma.video.update({ where: { id }, data });
+    try {
+      return await this.prisma.video.update({ where: { id }, data });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('视频不存在');
+      }
+      throw e;
+    }
   }
 
   async deleteVideo(id: string) {
-    return this.prisma.video.delete({ where: { id } });
+    try {
+      return await this.prisma.video.delete({ where: { id } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('视频不存在');
+      }
+      throw e;
+    }
   }
 }

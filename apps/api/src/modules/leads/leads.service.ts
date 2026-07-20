@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -43,6 +43,12 @@ export class LeadsService {
       const fresh = await tx.workshop.findUnique({ where: { id: workshop.id } });
       if (fresh?.capacity && (fresh.enrolledCount >= fresh.capacity)) {
         throw new BadRequestException('该活动已满员');
+      }
+      const existingEnrollment = await tx.workshopEnrollment.findFirst({
+        where: { workshopId: workshop.id, phone: data.phone },
+      });
+      if (existingEnrollment) {
+        throw new ConflictException('您已报名该活动');
       }
       const created = await tx.workshopEnrollment.create({
         data: {
@@ -96,11 +102,25 @@ export class LeadsService {
   }
 
   async updateContactLeadStatus(id: string, status: string) {
-    return this.prisma.contactLead.update({ where: { id }, data: { status } });
+    try {
+      return await this.prisma.contactLead.update({ where: { id }, data: { status } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('线索不存在');
+      }
+      throw e;
+    }
   }
 
   async deleteContactLead(id: string) {
-    return this.prisma.contactLead.delete({ where: { id } });
+    try {
+      return await this.prisma.contactLead.delete({ where: { id } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('线索不存在');
+      }
+      throw e;
+    }
   }
 
   async getEnrollments(query: { page?: number; pageSize?: number }) {

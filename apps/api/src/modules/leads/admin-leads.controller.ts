@@ -1,6 +1,7 @@
 import { Controller, Get, Patch, Delete, Param, Body, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { UpdateLeadStatusDto } from './dto/leads.dto';
 
 @Controller('admin/leads')
 @UseGuards(JwtAuthGuard)
@@ -13,8 +14,11 @@ export class AdminLeadsController {
   }
 
   @Patch('contact/:id/status')
-  async updateContactLeadStatus(@Param('id', ParseUUIDPipe) id: string, @Body('status') status: string) {
-    return this.leadsService.updateContactLeadStatus(id, status);
+  async updateContactLeadStatus(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() body: UpdateLeadStatusDto,
+  ) {
+    return this.leadsService.updateContactLeadStatus(id, body.status);
   }
 
   @Delete('contact/:id')

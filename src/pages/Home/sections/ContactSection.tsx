@@ -1,5 +1,4 @@
-import { useRef, useState, useEffect } from 'react';
-import { Box, Typography, Container, Button, Card, CardContent, Grid, Stack, IconButton, Tooltip, Fade, TextField, Alert } from '@mui/material';
+import { useRef, useState, useEffect } from 'react';import { Box, Typography, Container, Button, Card, CardContent, Grid, Stack, IconButton, Tooltip, Fade, TextField, Alert } from '@mui/material';
 import { Phone, Email, LocationOn, Send, ContentCopy, Check, Chat } from '@mui/icons-material';
 import { useGSAP } from '@gsap/react';
 import { gsap, ScrollTrigger } from '@/utils/gsap';
@@ -23,6 +22,7 @@ const ContactSection = () => {
   const { data: config } = useSiteConfig();
   const { mutate: submitContact, isPending, isSuccess, error } = useSubmitContact();
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -50,7 +50,8 @@ const ContactSection = () => {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedField(field);
-      setTimeout(() => setCopiedField(null), 2000);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedField(null), 2000);
     } catch (err) {
       console.error('复制失败:', err);
     }

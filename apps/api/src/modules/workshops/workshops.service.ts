@@ -150,11 +150,25 @@ export class WorkshopsService {
     const { tags, ...rest } = data;
     const payload: Prisma.WorkshopUpdateInput = { ...rest };
     if (tags !== undefined) payload.tags = JSON.stringify(tags ?? []);
-    return this.prisma.workshop.update({ where: { id }, data: payload });
+    try {
+      return await this.prisma.workshop.update({ where: { id }, data: payload });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('活动不存在');
+      }
+      throw e;
+    }
   }
 
   async deleteWorkshop(id: string) {
-    return this.prisma.workshop.delete({ where: { id } });
+    try {
+      return await this.prisma.workshop.delete({ where: { id } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('活动不存在');
+      }
+      throw e;
+    }
   }
 
   async getWorkshopById(id: string) {
@@ -218,12 +232,30 @@ export class WorkshopsService {
     });
   }
 
-  async updateHighlight(id: string, data: { title?: string; content?: string; sortOrder?: number }) {
-    return this.prisma.workshopHighlight.update({ where: { id }, data });
+  async updateHighlight(workshopId: string, id: string, data: { title?: string; content?: string; sortOrder?: number }) {
+    const existing = await this.prisma.workshopHighlight.findFirst({ where: { id, workshopId } });
+    if (!existing) throw new NotFoundException('亮点不存在');
+    try {
+      return await this.prisma.workshopHighlight.update({ where: { id }, data });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('亮点不存在');
+      }
+      throw e;
+    }
   }
 
-  async deleteHighlight(id: string) {
-    return this.prisma.workshopHighlight.delete({ where: { id } });
+  async deleteHighlight(workshopId: string, id: string) {
+    const existing = await this.prisma.workshopHighlight.findFirst({ where: { id, workshopId } });
+    if (!existing) throw new NotFoundException('亮点不存在');
+    try {
+      return await this.prisma.workshopHighlight.delete({ where: { id } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('亮点不存在');
+      }
+      throw e;
+    }
   }
 
   async addItinerary(workshopId: string, data: { dayIndex: number; title: string; content: string; sortOrder?: number }) {
@@ -232,12 +264,30 @@ export class WorkshopsService {
     });
   }
 
-  async updateItinerary(id: string, data: { dayIndex?: number; title?: string; content?: string; sortOrder?: number }) {
-    return this.prisma.workshopItinerary.update({ where: { id }, data });
+  async updateItinerary(workshopId: string, id: string, data: { dayIndex?: number; title?: string; content?: string; sortOrder?: number }) {
+    const existing = await this.prisma.workshopItinerary.findFirst({ where: { id, workshopId } });
+    if (!existing) throw new NotFoundException('行程不存在');
+    try {
+      return await this.prisma.workshopItinerary.update({ where: { id }, data });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('行程不存在');
+      }
+      throw e;
+    }
   }
 
-  async deleteItinerary(id: string) {
-    return this.prisma.workshopItinerary.delete({ where: { id } });
+  async deleteItinerary(workshopId: string, id: string) {
+    const existing = await this.prisma.workshopItinerary.findFirst({ where: { id, workshopId } });
+    if (!existing) throw new NotFoundException('行程不存在');
+    try {
+      return await this.prisma.workshopItinerary.delete({ where: { id } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('行程不存在');
+      }
+      throw e;
+    }
   }
 
   async addFeeItem(workshopId: string, data: { type: string; content: string; sortOrder?: number }) {
@@ -246,11 +296,29 @@ export class WorkshopsService {
     });
   }
 
-  async updateFeeItem(id: string, data: { type?: string; content?: string; sortOrder?: number }) {
-    return this.prisma.workshopFeeItem.update({ where: { id }, data });
+  async updateFeeItem(workshopId: string, id: string, data: { type?: string; content?: string; sortOrder?: number }) {
+    const existing = await this.prisma.workshopFeeItem.findFirst({ where: { id, workshopId } });
+    if (!existing) throw new NotFoundException('费用项不存在');
+    try {
+      return await this.prisma.workshopFeeItem.update({ where: { id }, data });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('费用项不存在');
+      }
+      throw e;
+    }
   }
 
-  async deleteFeeItem(id: string) {
-    return this.prisma.workshopFeeItem.delete({ where: { id } });
+  async deleteFeeItem(workshopId: string, id: string) {
+    const existing = await this.prisma.workshopFeeItem.findFirst({ where: { id, workshopId } });
+    if (!existing) throw new NotFoundException('费用项不存在');
+    try {
+      return await this.prisma.workshopFeeItem.delete({ where: { id } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
+        throw new NotFoundException('费用项不存在');
+      }
+      throw e;
+    }
   }
 }

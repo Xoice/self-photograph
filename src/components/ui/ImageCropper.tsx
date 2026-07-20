@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Box, Button, Stack, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { readExifOrientation } from '@/utils/exif';
 
 interface ImageCropperProps {
   file: File | null;
@@ -53,7 +52,6 @@ const ImageCropper = ({ file, onCrop, onCancel, aspectRatio = 0 }: ImageCropperP
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const orientationRef = useRef<number>(1);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const boundsRef = useRef<ImageBounds>({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
@@ -71,14 +69,12 @@ const ImageCropper = ({ file, onCrop, onCancel, aspectRatio = 0 }: ImageCropperP
     }
   }, [file]);
 
-  // file 用于读 EXIF，imageSrc 已跟随 file 变化
-   
+  // imageSrc 加载后计算图片显示区域和初始裁剪框
   useEffect(() => {
     if (!imageSrc || !containerRef.current) return;
     const img = new Image();
     img.onload = () => {
       imgRef.current = img;
-      readExifOrientation(file!).then((o) => { orientationRef.current = o; });
       const container = containerRef.current;
       if (!container) return;
 
@@ -96,7 +92,7 @@ const ImageCropper = ({ file, onCrop, onCancel, aspectRatio = 0 }: ImageCropperP
       });
     };
     img.src = imageSrc;
-  }, [imageSrc, ratio, file]);
+  }, [imageSrc, ratio]);
 
   const handleStart = useCallback((clientX: number, clientY: number) => {
     if (!containerRef.current) return;
@@ -138,10 +134,8 @@ const ImageCropper = ({ file, onCrop, onCancel, aspectRatio = 0 }: ImageCropperP
 
     const bounds = getImageBounds(img, container.clientWidth, container.clientHeight);
 
-    const orientation = orientationRef.current;
-    const isSwapped = orientation >= 5 && orientation <= 8;
-    const scaleX = isSwapped ? img.height / bounds.width : img.width / bounds.width;
-    const scaleY = isSwapped ? img.width / bounds.height : img.height / bounds.height;
+    const scaleX = img.width / bounds.width;
+    const scaleY = img.height / bounds.height;
 
     const sx = (cropArea.x - bounds.offsetX) * scaleX;
     const sy = (cropArea.y - bounds.offsetY) * scaleY;

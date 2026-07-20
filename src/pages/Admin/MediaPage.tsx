@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, Typography, Container, Grid, IconButton, CircularProgress, Pagination, Stack, Alert, Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
 import { Delete, ContentCopy, Check, Edit, Search } from '@mui/icons-material';
 import { getErrorMessage } from '@/utils/error';
@@ -17,6 +17,7 @@ const MediaPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<MediaItem | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [previewItem, setPreviewItem] = useState<MediaItem | null>(null);
+  const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [renameTarget, setRenameTarget] = useState<MediaItem | null>(null);
   const [renameValue, setRenameValue] = useState('');
@@ -39,11 +40,19 @@ const MediaPage = () => {
 
   useEffect(() => { loadMedia(); }, [loadMedia]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => { setSearchQuery(searchInput); setPage(1); }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const copyTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+
   const handleCopyUrl = async (url: string, id: string) => {
     try {
       await navigator.clipboard.writeText(url);
       setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 2000);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setCopiedId(null), 2000);
     } catch { /* 剪贴板不可用时静默 */ }
   };
 
@@ -103,8 +112,8 @@ const MediaPage = () => {
       <TextField
         size="small"
         placeholder="搜索图片名称..."
-        value={searchQuery}
-        onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
         sx={{ mb: 3, maxWidth: 400 }}
         InputProps={{
           startAdornment: (<InputAdornment position="start"><Search sx={{ color: 'text.secondary', fontSize: 20 }} /></InputAdornment>),

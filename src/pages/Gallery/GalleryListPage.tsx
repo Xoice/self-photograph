@@ -6,6 +6,7 @@ import { gsap } from '@/utils/gsap';
 import { useGalleryWorks } from '@/hooks/useGalleryWorks';
 import { useGalleryCategories } from '@/hooks/useGalleryCategories';
 import SEOHead from '@/components/ui/SEOHead';
+import ResponsiveImage from '@/components/ui/ResponsiveImage';
 import { Home } from '@mui/icons-material';
 
 const GalleryListPage = () => {
@@ -121,10 +122,10 @@ const GalleryListPage = () => {
                     '&:hover .info': { transform: 'translateY(0)' },
                   }}
                 >
-                  <Box
-                    component="img"
+                  <ResponsiveImage
                     src={work.coverImage}
-                    loading="lazy"
+                    alt={work.title}
+                    sizes="(min-width: 1200px) 25vw, (min-width: 900px) 33vw, 100vw"
                     sx={{
                       width: '100%',
                       height: '100%',

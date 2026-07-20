@@ -14,7 +14,7 @@ const ScrollToTop = () => {
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
     const scrollToElement = (element: HTMLElement) => {
-      const offsetTop = element.offsetTop - 100;
+      const offsetTop = element.offsetTop - (window.innerWidth >= 900 ? 80 : 60);
 
       if (lenisInstance) lenisInstance.stop();
 

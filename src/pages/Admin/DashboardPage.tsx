@@ -32,25 +32,31 @@ const DashboardPage = () => {
     if (!user) return;
     setLoading(true);
     setError(false);
-    Promise.all([
-      apiClient.get('/admin/gallery/works').catch(() => ({ pagination: { total: 0 } })),
-      apiClient.get('/admin/videos').catch(() => ({ pagination: { total: 0 } })),
-      apiClient.get('/admin/workshops').catch(() => ({ pagination: { total: 0 } })),
-      apiClient.get('/admin/leads/contact').catch(() => ({ pagination: { total: 0 } })),
-      apiClient.get('/admin/leads/workshop-enrollments').catch(() => ({ pagination: { total: 0 } })),
-      apiClient.get('/admin/media').catch(() => ({ pagination: { total: 0 } })),
-    ]).then(([works, videos, workshops, leads, enrollments, media]) => {
+    Promise.allSettled([
+      apiClient.get('/admin/gallery/works'),
+      apiClient.get('/admin/videos'),
+      apiClient.get('/admin/workshops'),
+      apiClient.get('/admin/leads/contact'),
+      apiClient.get('/admin/leads/workshop-enrollments'),
+      apiClient.get('/admin/media'),
+    ]).then((results) => {
+      const failed = results.filter((r) => r.status === 'rejected');
+      if (failed.length === results.length) {
+        setError(true);
+        return;
+      }
+      const values = results.map((r) =>
+        r.status === 'fulfilled' ? r.value : { pagination: { total: 0 } }
+      );
       setStats({
-        works: (works as PaginatedData<unknown>)?.pagination?.total || 0,
-        videos: (videos as PaginatedData<unknown>)?.pagination?.total || 0,
-        workshops: (workshops as PaginatedData<unknown>)?.pagination?.total || 0,
-        leads: (leads as PaginatedData<unknown>)?.pagination?.total || 0,
-        enrollments: (enrollments as PaginatedData<unknown>)?.pagination?.total || 0,
-        media: (media as PaginatedData<unknown>)?.pagination?.total || 0,
+        works: (values[0] as PaginatedData<unknown>)?.pagination?.total || 0,
+        videos: (values[1] as PaginatedData<unknown>)?.pagination?.total || 0,
+        workshops: (values[2] as PaginatedData<unknown>)?.pagination?.total || 0,
+        leads: (values[3] as PaginatedData<unknown>)?.pagination?.total || 0,
+        enrollments: (values[4] as PaginatedData<unknown>)?.pagination?.total || 0,
+        media: (values[5] as PaginatedData<unknown>)?.pagination?.total || 0,
       });
       setError(false);
-    }).catch(() => {
-      setError(true);
     }).finally(() => {
       setLoading(false);
     });
