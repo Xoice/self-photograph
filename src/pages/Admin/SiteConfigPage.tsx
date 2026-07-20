@@ -12,7 +12,7 @@ interface SiteConfig {
   bioContent: string;
   bioImage?: string;
   contact: { phone: string; email: string; wechat: string; location: string };
-  socialLinks: { bilibili: string };
+  socialLinks: { bilibili?: string };
   footerText: string;
 }
 
@@ -190,7 +190,7 @@ const SiteConfigPage = () => {
 
       <Typography variant="h6" sx={{ mb: 2, color: 'primary.main' }}>社交媒体</Typography>
       <Box sx={{ display: 'grid', gap: 2, mb: 4 }}>
-        <TextField label="B站空间链接" value={config.socialLinks.bilibili} onChange={(e) => updateSocial({ bilibili: e.target.value })} fullWidth />
+        <TextField label="B站空间链接" value={config.socialLinks.bilibili || ''} onChange={(e) => updateSocial({ bilibili: e.target.value })} fullWidth />
       </Box>
     </Container>
   );

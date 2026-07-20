@@ -13,6 +13,7 @@ export const mockVideos: VideoItem[] = [
     durationText: '15:30',
     category: '教学视频',
     isPublished: true,
+    publishedAt: '2025-01-01T00:00:00.000Z',
     sortOrder: 1,
   },
   {
@@ -27,6 +28,7 @@ export const mockVideos: VideoItem[] = [
     durationText: '20:15',
     category: '教学视频',
     isPublished: true,
+    publishedAt: '2025-01-01T00:00:00.000Z',
     sortOrder: 2,
   },
   {
@@ -41,6 +43,7 @@ export const mockVideos: VideoItem[] = [
     durationText: '18:45',
     category: '教学视频',
     isPublished: true,
+    publishedAt: '2025-01-01T00:00:00.000Z',
     sortOrder: 3,
   },
   {
@@ -55,6 +58,7 @@ export const mockVideos: VideoItem[] = [
     durationText: '12:20',
     category: '摄影县城',
     isPublished: true,
+    publishedAt: '2025-01-01T00:00:00.000Z',
     sortOrder: 4,
   },
   {
@@ -69,6 +73,7 @@ export const mockVideos: VideoItem[] = [
     durationText: '16:40',
     category: '摄影县城',
     isPublished: true,
+    publishedAt: '2025-01-01T00:00:00.000Z',
     sortOrder: 5,
   },
   {
@@ -83,6 +88,7 @@ export const mockVideos: VideoItem[] = [
     durationText: '22:10',
     category: '教学视频',
     isPublished: true,
+    publishedAt: '2025-01-01T00:00:00.000Z',
     sortOrder: 6,
   },
 ];

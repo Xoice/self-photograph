@@ -39,7 +39,8 @@ const Navbar = () => {
 
   const handleMobileNavClick = (targetId: string) => {
     setMobileOpen(false);
-    setTimeout(() => handleNavClick(targetId), 100);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => handleNavClick(targetId), 100);
   };
 
   const handleCategoryClick = (slug: string) => {

@@ -90,6 +90,7 @@ export interface VideoItem {
   durationText: string;
   category: string;
   isPublished: boolean;
+  publishedAt: string | null;
   sortOrder: number;
 }
 

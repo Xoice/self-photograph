@@ -12,6 +12,7 @@ const ScrollToTop = () => {
     }
 
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let rafId: number;
 
     const scrollToElement = (element: HTMLElement) => {
       const offsetTop = element.offsetTop - (window.innerWidth >= 900 ? 80 : 60);
@@ -27,58 +28,29 @@ const ScrollToTop = () => {
             lenisInstance.start();
             lenisInstance.scrollTo(offsetTop, { immediate: true });
           }
-          // 清掉 URL hash，避免刷新时跳回锚点位置
           window.history.replaceState(null, '', window.location.pathname);
         }, 500);
       } else {
-        // 清掉 URL hash
         window.history.replaceState(null, '', window.location.pathname);
       }
     };
 
     if (hash) {
       const id = hash.replace('#', '');
-      const element = document.getElementById(id);
+      const startTime = Date.now();
+      const MAX_WAIT = 2000;
 
-      if (element) {
-        scrollToElement(element);
-      } else {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                scrollToElement(entry.target as HTMLElement);
-                observer?.disconnect();
-                if (fallbackTimeout) clearTimeout(fallbackTimeout);
-                if (checkInterval) clearInterval(checkInterval);
-              }
-            });
-          },
-          { threshold: 0.1 },
-        );
-
-        const fallbackTimeout = setTimeout(() => {
-          const el = document.getElementById(id);
-          if (el) scrollToElement(el);
-          observer?.disconnect();
-          if (checkInterval) clearInterval(checkInterval);
-        }, 2000);
-
-        const checkInterval = setInterval(() => {
-          const targetElement = document.getElementById(id);
-          if (targetElement) {
-            observer?.observe(targetElement);
-            clearInterval(checkInterval);
-          }
-        }, 100);
-
-        return () => {
-          if (timeoutId) clearTimeout(timeoutId);
-          clearTimeout(fallbackTimeout);
-          clearInterval(checkInterval);
-          observer?.disconnect();
-        };
-      }
+      const tryScroll = () => {
+        const element = document.getElementById(id);
+        if (element) {
+          scrollToElement(element);
+          return;
+        }
+        if (Date.now() - startTime < MAX_WAIT) {
+          rafId = requestAnimationFrame(tryScroll);
+        }
+      };
+      tryScroll();
     } else {
       if (lenisInstance) {
         lenisInstance.scrollTo(0, { immediate: true });
@@ -89,6 +61,7 @@ const ScrollToTop = () => {
 
     return () => {
       if (timeoutId) clearTimeout(timeoutId);
+      cancelAnimationFrame(rafId);
     };
   }, [pathname, hash]);
 

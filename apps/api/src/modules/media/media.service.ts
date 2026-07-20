@@ -1,7 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { join } from 'path';
-import { existsSync, unlinkSync, readFileSync } from 'fs';
+import { existsSync, unlinkSync, openSync, readSync, closeSync } from 'fs';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
@@ -123,11 +123,16 @@ export class MediaService {
 
 // 从图片文件头解析宽高（支持 PNG / JPEG / GIF / WebP），无需外部依赖
 function readImageDimensions(filePath: string): { width: number; height: number } | null {
+  let fd: number | undefined;
   try {
-    const buf = readFileSync(filePath);
-    return parseImageDimensions(buf);
+    fd = openSync(filePath, 'r');
+    const buf = Buffer.alloc(65536);
+    const bytesRead = readSync(fd, buf, 0, buf.length, 0);
+    return parseImageDimensions(buf.subarray(0, bytesRead));
   } catch {
     return null;
+  } finally {
+    if (fd !== undefined) closeSync(fd);
   }
 }
 

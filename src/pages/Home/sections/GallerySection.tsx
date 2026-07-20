@@ -78,13 +78,7 @@ const GallerySection = () => {
       ro.disconnect();
       cancelAnimationFrame(rafRef.current);
     };
-  }, [measure, updateHorizontalScroll, works.length]);
-
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- 数据加载后重新量取横滚尺寸
-    measure();
-    updateHorizontalScroll();
-  }, [works, measure, updateHorizontalScroll]);
+  }, [measure, updateHorizontalScroll, works]);
 
   const handleWorkClick = (slug: string) => {
     navigate(`/gallery/${slug}`);

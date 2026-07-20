@@ -10,6 +10,13 @@ import SEOHead from '@/components/ui/SEOHead';
 import ShareButton from '@/components/ui/ShareButton';
 import EnrollmentDialog from '@/components/ui/EnrollmentDialog';
 
+const formatDate = (dateStr?: string | null) => {
+  if (!dateStr) return '--';
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return '--';
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+};
+
 const WorkshopDetailPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -86,13 +93,6 @@ const WorkshopDetailPage = () => {
       </Box>
     );
   }
-
-  const formatDate = (dateStr?: string | null) => {
-    if (!dateStr) return '--';
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return '--';
-    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
-  };
 
   return (
     <Box ref={containerRef} sx={{ bgcolor: '#050505', minHeight: '100vh', pt: 15, pb: 10 }}>

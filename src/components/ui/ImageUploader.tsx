@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { Box, Typography, IconButton, LinearProgress, Stack, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 import { Delete, AddPhotoAlternate, PhotoLibrary } from '@mui/icons-material';
 import { uploadMedia, type UploadResult } from '@/api/media';
@@ -25,12 +25,16 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
   const [compressing, setCompressing] = useState(false);
   const [renameDialog, setRenameDialog] = useState<{ file: File; name: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const progressTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => {
+    return () => { if (progressTimerRef.current) clearTimeout(progressTimerRef.current); };
+  }, []);
 
   const doUpload = useCallback(async (file: File, customName?: string) => {
     setUploading(true);
     setError('');
     setProgress(0);
-    // 伪进度：上传期间缓慢推进到 90%，无论成功/失败都要清理定时器
     const interval = setInterval(() => {
       setProgress((p) => Math.min(p + 10, 90));
     }, 200);
@@ -43,7 +47,8 @@ const ImageUploader = ({ value, onChange, label = '上传图片', aspectRatio = 
     } finally {
       clearInterval(interval);
       setUploading(false);
-      setTimeout(() => setProgress(0), 500);
+      if (progressTimerRef.current) clearTimeout(progressTimerRef.current);
+      progressTimerRef.current = setTimeout(() => setProgress(0), 500);
     }
   }, [onChange]);
 

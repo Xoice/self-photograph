@@ -45,6 +45,7 @@ export class VideosService {
           : null,
         category: v.category,
         isPublished: v.isPublished,
+        publishedAt: v.publishedAt?.toISOString() || null,
         sortOrder: v.sortOrder,
       })),
       pagination: {
@@ -59,10 +60,16 @@ export class VideosService {
   async createVideo(data: Prisma.VideoCreateInput) {
     const existing = await this.prisma.video.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
+    if (data.isPublished === true) {
+      data.publishedAt = new Date();
+    }
     return this.prisma.video.create({ data });
   }
 
   async updateVideo(id: string, data: Prisma.VideoUpdateInput) {
+    if (data.isPublished === true) {
+      data.publishedAt = new Date();
+    }
     try {
       return await this.prisma.video.update({ where: { id }, data });
     } catch (e) {

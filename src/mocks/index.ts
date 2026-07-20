@@ -5,6 +5,17 @@ import { mockGalleryWorks } from './gallery';
 import { mockVideos } from './videos';
 import { mockWorkshops, mockWorkshopDetail } from './workshops';
 
+const mockCategories = [
+  { id: 'cat_portrait', name: '人像', slug: 'portrait', parentId: null, sortOrder: 1, isVisible: true, children: [
+    { id: 'cat_private', name: '私房', slug: 'private', parentId: 'cat_portrait', sortOrder: 1, isVisible: true },
+  ]},
+  { id: 'cat_landscape', name: '风景', slug: 'landscape', parentId: null, sortOrder: 2, isVisible: true, children: [
+    { id: 'cat_mountain', name: '山峦', slug: 'mountain', parentId: 'cat_landscape', sortOrder: 1, isVisible: true },
+  ]},
+  { id: 'cat_county', name: '县城', slug: 'county', parentId: null, sortOrder: 3, isVisible: true, children: [] },
+  { id: 'cat_stars', name: '星空', slug: 'stars', parentId: null, sortOrder: 4, isVisible: true, children: [] },
+];
+
 function ok<T>(data: T): ApiResponse<T> {
   return { code: 0, message: 'ok', data };
 }
@@ -21,17 +32,6 @@ function paginated<T>(items: T[], page = 1, pageSize = 12): ApiResponse<Paginate
 function getMockResponse(method: string, url: string, _data?: unknown): ApiResponse<unknown> | null {
   const path = url.split('?')[0];
   const key = `${method} ${path}`;
-
-  const mockCategories = [
-    { id: 'cat_portrait', name: '人像', slug: 'portrait', parentId: null, sortOrder: 1, isVisible: true, children: [
-      { id: 'cat_private', name: '私房', slug: 'private', parentId: 'cat_portrait', sortOrder: 1, isVisible: true },
-    ]},
-    { id: 'cat_landscape', name: '风景', slug: 'landscape', parentId: null, sortOrder: 2, isVisible: true, children: [
-      { id: 'cat_mountain', name: '山峦', slug: 'mountain', parentId: 'cat_landscape', sortOrder: 1, isVisible: true },
-    ]},
-    { id: 'cat_county', name: '县城', slug: 'county', parentId: null, sortOrder: 3, isVisible: true, children: [] },
-    { id: 'cat_stars', name: '星空', slug: 'stars', parentId: null, sortOrder: 4, isVisible: true, children: [] },
-  ];
 
   const routes: Record<string, () => ApiResponse<unknown>> = {
     'GET /site/config': () => ok(mockSiteConfig),
