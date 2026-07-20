@@ -14,6 +14,17 @@
 | 数据库 | 开发 SQLite，生产 PostgreSQL |
 | 媒体存储 | 本地 `uploads/`，后续切云存储 |
 
+## 环境要求
+
+- Node.js >= 20
+- npm（非 pnpm/yarn）
+
+## 目录结构
+
+- `/` - 前端（Vite + React）
+- `/apps/api/` - 后端（NestJS）
+- `/uploads/` - 媒体文件（gitignore）
+
 ## 常用命令
 
 **前端（根目录）：**
@@ -29,24 +40,29 @@ npm run start:dev    # -> http://localhost:3000
 npm run build        # nest build
 npm run prisma:generate
 npm run prisma:migrate
-npm run prisma:seed  # admin@xoice.com / admin123
+npm run prisma:seed  # 首次部署后立即修改默认管理员密码
 ```
 
 ## ⚠️ 常见陷阱
 
+### 前端
+
 - **GSAP/Lenis 是高危区域**：不要移除 Lenis 或破坏 ScrollTrigger。GallerySection 横向滚动的 `useGSAP` 依赖 `[works]`，异步数据加载后需 `ScrollTrigger.refresh()`
 - **API 客户端已解包**：`src/api/client.ts` 响应拦截器返回 `body.data`（领域对象），不是 AxiosResponse。不要加 `.data`
 - **图片上传不要手动设 Content-Type**：让 Axios 自动处理 `multipart/form-data`，手动设会导致上传失败
-- **SQLite 不支持 `mode: "insensitive"`**：不要删除迁移历史
-- **后端全局 Pipe/Interceptor/Filter 通过 DI 注册**：在 `app.module.ts` 用 `APP_PIPE`/`APP_INTERCEPTOR`/`APP_FILTER`/`APP_GUARD`，不要在 `main.ts` 中 `new`
-- **后端所有 Admin 接口必须用 DTO**：gallery / videos / workshops / leads 均有 class-validator DTO，不要回退到 `any`
 - **主色调是 `#E0A458` 暖琥珀色**：在 `src/theme/index.ts` 定义。不要回退到荧光绿 `#CCFF00`
 - **类型定义统一在 `src/types/api.ts`**：后端字段变更必须同步更新前端类型
 - **图片上传组件链路**：`ImageUploader` -> `ImageCropper` -> `MediaBrowser`，不要跳过或另建
 - **Mock 模式**：`VITE_USE_MOCK=true` 用 `src/mocks/` AxiosAdapter，按 URL 路径匹配返回
+- **`KenyaExpedition.tsx` 是旧兼容入口**：不要删除，用通用详情页替代是后续计划
+
+### 后端
+
+- **SQLite 不支持 `mode: "insensitive"`**：开发用 `contains` 代替；生产 PostgreSQL 可用 insensitive，但迁移文件需兼容两者。不要删除迁移历史
+- **后端全局 Pipe/Interceptor/Filter 通过 DI 注册**：在 `app.module.ts` 用 `APP_PIPE`/`APP_INTERCEPTOR`/`APP_FILTER`/`APP_GUARD`，不要在 `main.ts` 中 `new`
+- **后端所有 Admin 接口必须用 DTO**：gallery / videos / workshops / leads 均有 class-validator DTO，不要回退到 `any`
 - **P2025 已统一处理**：gallery/videos/workshops/leads 的 update/delete 包了 P2025 -> NotFoundException，新模块照此模式
 - **workshops 子资源有 IDOR 防护**：子资源 CRUD 校验 workshopId 归属
-- **`KenyaExpedition.tsx` 是旧兼容入口**：不要删除，用通用详情页替代是后续计划
 
 ## 后端约定
 

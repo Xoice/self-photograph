@@ -235,4 +235,4 @@ npm run lint
 - `AGENTS.md`：构建规则与接手顺序
 - `工作.md`：项目推进记录
 - `问题.md`：代码审查与问题追踪
-- `docs/01-项目规划.md` ~ `docs/06-推进记录.md`
+- `docs/01-项目规划.md` ~ `docs/04-API接口文档.md`
