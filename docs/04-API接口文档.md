@@ -227,7 +227,8 @@
         "coverImage": "https://via.placeholder.com/400x225/1a1a1a/ffffff?text=摄影基础入门",
         "durationSeconds": 930,
         "durationText": "15:30",
-        "category": "教学视频"
+        "category": "教学视频",
+        "publishedAt": "2026-06-14T00:00:00.000Z"
       }
     ],
     "pagination": {
@@ -503,6 +504,55 @@
 
 `DELETE /api/v1/admin/gallery/works/:id`
 
+## 分类管理
+
+### 获取全部分类
+
+`GET /api/v1/admin/gallery/categories`
+
+说明：
+
+- 返回全部分类，含 `isVisible=false` 的不可见分类
+- 公开接口 `GET /api/v1/gallery/categories` 默认仅返回可见分类
+
+### 创建分类
+
+`POST /api/v1/admin/gallery/categories`
+
+请求体：
+
+```json
+{
+  "name": "人像",
+  "slug": "portrait",
+  "parentId": "uuid",
+  "sortOrder": 0,
+  "isVisible": true
+}
+```
+
+字段说明：
+
+- `name`：必填，分类名称
+- `slug`：必填，URL 标识
+- `parentId`：可选，父分类 ID，用于构建层级
+- `sortOrder`：可选，排序权重，默认 0
+- `isVisible`：可选，是否在公开站点可见，默认 `true`
+
+### 更新分类
+
+`PATCH /api/v1/admin/gallery/categories/:id`
+
+请求体支持 `name`、`slug`、`parentId`、`sortOrder`、`isVisible` 等字段的部分更新。
+
+### 删除分类
+
+`DELETE /api/v1/admin/gallery/categories/:id`
+
+说明：
+
+- 当分类下存在关联作品或子分类时返回 `409 Conflict`，需先解除关联再删除
+
 ## 视频管理
 
 ### 获取视频列表
@@ -602,6 +652,22 @@
 - `page`
 - `pageSize`
 
+### 更新报名状态
+
+`PATCH /api/v1/admin/leads/workshop-enrollments/:id/status`
+
+请求体：
+
+```json
+{
+  "status": "contacted"
+}
+```
+
+说明：
+
+- 用于标记报名记录的处理进度（如 `pending`、`contacted`、`confirmed`、`cancelled`）
+
 ## 媒体管理
 
 ### 上传媒体
@@ -645,6 +711,22 @@
 - `pageSize`
 - `type`
 
+### 重命名媒体
+
+`PATCH /api/v1/admin/media/:id`
+
+请求体：
+
+```json
+{
+  "fileName": "new-name.jpg"
+}
+```
+
+说明：
+
+- 用于修改媒体文件的展示名称，不影响物理文件路径
+
 ### 删除媒体
 
 `DELETE /api/v1/admin/media/:id`
@@ -653,10 +735,22 @@
 
 - `401`：未登录或 token 无效
 - `404`：资源不存在
-- `409`：`slug` 冲突
+- `409`：`slug` 冲突，或分类删除时存在关联作品 / 子分类
 - `400`：参数错误或业务状态不允许
 
-## 5. 当前前端重点依赖接口
+## 5. 安全特性
+
+后端在全局层面内置以下安全机制，所有后台接口默认受其保护：
+
+- **JWT 策略校验用户存在且活跃**：解析 token 后会再次查询数据库，确认用户仍然存在且 `isActive=true`，否则返回 `401`
+- **IDOR 防护**：workshops 子资源 CRUD 校验 `workshopId` 归属，防止越权访问他人资源
+- **报名重复检查**：同一手机号 + 同一研学不可重复报名，重复提交返回 `409`
+- **P2025 错误自动转 404**：Prisma 的 `P2025`（记录不存在）错误在 gallery / videos / workshops / leads 模块自动转换为 `404 NotFoundException`
+- **Throttler 限流**：全局限流 100 req/min，超过返回 `429 Too Many Requests`
+- **Helmet 安全头**：通过 Helmet 中间件自动设置 `X-Content-Type-Options`、`X-Frame-Options`、`Strict-Transport-Security` 等安全响应头
+- **ValidationPipe forbidNonWhitelisted**：全局 `ValidationPipe` 开启 `forbidNonWhitelisted`，请求体中出现未声明的字段直接返回 `400`
+
+## 6. 当前前端重点依赖接口
 
 前端当前核心依赖这些接口：
 
@@ -680,14 +774,23 @@
 13. `POST /api/v1/admin/gallery/works`
 14. `PATCH /api/v1/admin/gallery/works/:id`
 15. `DELETE /api/v1/admin/gallery/works/:id`
-16. `GET /api/v1/admin/videos`
-17. `POST /api/v1/admin/videos`
-18. `PATCH /api/v1/admin/videos/:id`
-19. `DELETE /api/v1/admin/videos/:id`
-20. `GET /api/v1/admin/workshops`
-21. `POST /api/v1/admin/workshops`
-22. `PATCH /api/v1/admin/workshops/:id`
-23. `DELETE /api/v1/admin/workshops/:id`
-24. `GET /api/v1/admin/media`
-25. `POST /api/v1/admin/media/upload`
-26. `DELETE /api/v1/admin/media/:id`
+16. `GET /api/v1/admin/gallery/categories`
+17. `POST /api/v1/admin/gallery/categories`
+18. `PATCH /api/v1/admin/gallery/categories/:id`
+19. `DELETE /api/v1/admin/gallery/categories/:id`
+20. `GET /api/v1/admin/videos`
+21. `POST /api/v1/admin/videos`
+22. `PATCH /api/v1/admin/videos/:id`
+23. `DELETE /api/v1/admin/videos/:id`
+24. `GET /api/v1/admin/workshops`
+25. `POST /api/v1/admin/workshops`
+26. `PATCH /api/v1/admin/workshops/:id`
+27. `DELETE /api/v1/admin/workshops/:id`
+28. `GET /api/v1/admin/leads/contact`
+29. `PATCH /api/v1/admin/leads/contact/:id/status`
+30. `GET /api/v1/admin/leads/workshop-enrollments`
+31. `PATCH /api/v1/admin/leads/workshop-enrollments/:id/status`
+32. `GET /api/v1/admin/media`
+33. `POST /api/v1/admin/media/upload`
+34. `PATCH /api/v1/admin/media/:id`
+35. `DELETE /api/v1/admin/media/:id`
