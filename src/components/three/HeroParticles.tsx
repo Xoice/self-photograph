@@ -12,6 +12,7 @@ const STAR_COLORS = [
   new THREE.Color(0xffffff),
   new THREE.Color(0xb0c4ff),
   new THREE.Color(0xffe4a0),
+  new THREE.Color(0xff66aa), // 氢α发射线（M8/M16 星云，长曝光呈粉红色）
 ];
 
 /**
@@ -26,6 +27,7 @@ const ARCH_END = THREE.MathUtils.degToRad(200); // 左端沉入地平线以下
 const ARCH_SPAN = ARCH_END - ARCH_START;
 const CORE_ANGLE = THREE.MathUtils.degToRad(160); // 银心位于弧的左下段
 const CORE_U = (CORE_ANGLE - ARCH_START) / ARCH_SPAN; // 银心在暗带纹理上的 u 坐标
+const ARCH_MID = (ARCH_START + ARCH_END) / 2; // 拱顶角度
 
 interface StarData {
   positions: Float32Array;
@@ -67,7 +69,7 @@ const HeroParticles = () => {
       positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
       positions[i3 + 2] = r * Math.cos(phi) - 10;
       const cr = Math.random();
-      const c = cr < 0.6 ? STAR_COLORS[0] : cr < 0.85 ? STAR_COLORS[1] : STAR_COLORS[2];
+      const c = cr < 0.55 ? STAR_COLORS[0] : cr < 0.9 ? STAR_COLORS[1] : STAR_COLORS[2];
       colors[i3] = c.r; colors[i3 + 1] = c.g; colors[i3 + 2] = c.b;
       sizes[i] = Math.random() < 0.92 ? 0.3 + Math.random() * 0.4 : 0.8 + Math.random() * 0.8;
       phases[i] = Math.random() * Math.PI * 2;
@@ -88,9 +90,9 @@ const HeroParticles = () => {
 
     for (let i = 0; i < galaxyCount; i++) {
       const i3 = i * 3;
-      // 40% 星点聚集在银心附近，其余沿弧均匀采样 + 切向微扰
+      // 25% 星点聚集在银心附近（降低左偏置），其余沿弧均匀采样 + 切向微扰
       const theta = THREE.MathUtils.clamp(
-        (Math.random() < 0.4
+        (Math.random() < 0.25
           ? gaussian(CORE_ANGLE, 0.24)
           : ARCH_START + Math.random() * ARCH_SPAN) + gaussian(0, 1.2 / ARCH_RADIUS),
         ARCH_START,
@@ -98,19 +100,55 @@ const HeroParticles = () => {
       );
       const dCore = Math.abs(theta - CORE_ANGLE);
       const coreBoost = Math.exp(-(dCore * dCore) / (2 * 0.25 * 0.25));
-      // 沿法线方向高斯偏移形成带厚，银心附近更厚
-      const r = ARCH_RADIUS + gaussian(0, 2.2 + 1.6 * coreBoost);
+      // 拱顶亮度加成：让弧线最高点更醒目，增强"拱桥"辨识度
+      const dMid = Math.abs(theta - ARCH_MID);
+      const peakBoost = Math.exp(-(dMid * dMid) / (2 * 0.4 * 0.4));
+      // 沿弧线归一化进度：0=右端, 1=左端
+      const archProgress = (theta - ARCH_START) / ARCH_SPAN;
+      // 沿法线方向高斯偏移形成带厚，银心 + 暖金区更厚
+      const goldWidthBoost = (archProgress > 0.20 && archProgress <= 0.36)
+        ? 1.8 * Math.max(0, 1.0 - Math.abs(archProgress - 0.25) / 0.10)
+        : 0;
+      const r = ARCH_RADIUS + gaussian(0, 2.2 + 1.6 * coreBoost + goldWidthBoost);
       positions[i3] = r * Math.cos(theta);
       positions[i3 + 1] = r * Math.sin(theta);
       positions[i3 + 2] = -10 + gaussian(0, 1.2);
-      // 颜色：银心暖金 → 白 → 蓝白
-      const t = Math.min(dCore / (ARCH_SPAN * 0.5), 1);
-      const c = t < 0.3
-        ? STAR_COLORS[2].clone().lerp(STAR_COLORS[0], t / 0.3)
-        : STAR_COLORS[0].clone().lerp(STAR_COLORS[1], (t - 0.3) / 0.7);
+
+      // 颜色分区（基于真实银河拱桥特征）：
+      // 粉红区 (0.52-1.0, theta 95°-200°)：拱顶偏左到左端，Hα 发射主导
+      // 过渡区 (0.36-0.52, theta 60°-95°)：拱顶附近，蓝白 + 粉红残留
+      // 暖金区 (0.20-0.36, theta 25°-60°)：暖金集中，M6/M7 星团处峰值
+      // 银尾区 (0-0.20, theta -20°-25°)：暗金渐消
+      let c: THREE.Color;
+      if (archProgress > 0.52) {
+        // 粉红区：银心附近（archProgress ~0.82）最浓
+        const pinkDist = Math.abs(archProgress - 0.82);
+        const pinkIntensity = Math.exp(-(pinkDist * pinkDist) / (2 * 0.18 * 0.18));
+        const haChance = 0.25 + 0.35 * pinkIntensity;
+        if (Math.random() < haChance) {
+          c = STAR_COLORS[3].clone().lerp(STAR_COLORS[0], Math.random() * 0.3);
+        } else {
+          c = STAR_COLORS[0].clone().lerp(STAR_COLORS[3], 0.15 * pinkIntensity);
+        }
+      } else if (archProgress > 0.36) {
+        // 过渡区：蓝白为主 + 15% 粉红残留
+        c = STAR_COLORS[1].clone().lerp(STAR_COLORS[0], (archProgress - 0.36) / 0.16);
+        if (Math.random() < 0.15) {
+          c.lerp(STAR_COLORS[3], 0.2);
+        }
+      } else if (archProgress > 0.20) {
+        // 暖金集中区：M6/M7 星团（archProgress ~0.25）处最亮
+        const goldT = Math.max(0, 1.0 - Math.abs(archProgress - 0.25) / 0.10);
+        c = STAR_COLORS[0].clone().lerp(STAR_COLORS[2], goldT);
+      } else {
+        // 银尾消散：暗金渐消
+        const fadeT = archProgress / 0.20;
+        c = STAR_COLORS[1].clone().lerp(STAR_COLORS[2], fadeT * 0.4);
+      }
       colors[i3] = c.r; colors[i3 + 1] = c.g; colors[i3 + 2] = c.b;
-      // 银心附近星点更大更亮
-      sizes[i] = (0.4 + Math.random() * 0.6) * (1 + 1.4 * coreBoost);
+      // 银心 + 拱顶 + M6/M7 星团 size 加成
+      const m6m7Boost = Math.exp(-Math.pow((archProgress - 0.25) / 0.05, 2)) * 1.0;
+      sizes[i] = (0.4 + Math.random() * 0.6) * (1 + 0.8 * coreBoost + 0.6 * peakBoost + m6m7Boost);
       phases[i] = Math.random() * Math.PI * 2;
       speeds[i] = 0.5 + Math.random() * 1.5;
     }
@@ -191,7 +229,7 @@ const HeroParticles = () => {
     const ctx = canvas.getContext('2d')!;
     const grad = ctx.createLinearGradient(0, 0, 0, 128);
     grad.addColorStop(0, 'rgba(0, 0, 0, 0)');
-    grad.addColorStop(0.5, 'rgba(5, 5, 5, 0.85)');
+    grad.addColorStop(0.5, 'rgba(5, 5, 5, 0.92)');
     grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, 512, 128);
@@ -376,7 +414,7 @@ const HeroParticles = () => {
 
         {/* 暗带（沿弧弯曲） */}
         <mesh geometry={dustGeo}>
-          <meshBasicMaterial map={dustTexture} transparent opacity={0.85} depthWrite={false} side={THREE.DoubleSide} />
+          <meshBasicMaterial map={dustTexture} transparent opacity={0.9} depthWrite={false} side={THREE.DoubleSide} />
         </mesh>
       </group>
 

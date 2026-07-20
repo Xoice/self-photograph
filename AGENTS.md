@@ -46,6 +46,7 @@ Vite proxies `/api` and `/uploads` to `localhost:3000`.
 - **Admin DTOs**: Gallery/videos/workshops admin endpoints use `class-validator` DTOs. Don't revert to `any`.
 - **Backend response**: `{ code: 0, message: "ok", data }` on success. Errors: `{ code, message, data: null }` via `ApiExceptionFilter`.
 - **Work log**: After any real work, append to `工作.md` with: 完成内容, 文件变更 (新建/修改分类), 验证结果, 注意事项.
+- **问题.md**: All code review findings and problem lists go to `问题.md`. Never create separate dated files like `2026-7-18日优化.md`. Append new review records to `问题.md` with a dated section header. Mark fixed items with `[x]`.
 
 ## Backend Modules
 

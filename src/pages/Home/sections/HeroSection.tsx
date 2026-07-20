@@ -33,8 +33,8 @@ const HeroSection = () => {
   const { data: galleryData } = useGalleryWorks({ featured: true, pageSize: 1 });
   const heroImage = galleryData?.items?.[0]?.coverImage;
 
-  const titleParts = config?.heroTitle?.split(' ') || ['XOICE', 'PHOTOGRAPH'];
-  const subtitle = config?.heroSubtitle || 'Capturing the soul of the county & stars.';
+  const titleParts = config?.heroTitle?.trim().split(/\s+/) ?? [];
+  const subtitle = config?.heroSubtitle?.trim() ?? '';
 
   // 滚出视口后暂停 R3F 渲染循环，省 CPU
   useEffect(() => {
@@ -167,36 +167,40 @@ const HeroSection = () => {
         alignItems="center"
         sx={{ height: '100%', position: 'relative', zIndex: 10, pointerEvents: 'none', perspective: '800px' }}
       >
-        <Typography
-          variant="h1"
-          className="hero-title"
-          sx={{
-            textAlign: 'center',
-            fontSize: { xs: '10vw', md: '8vw' },
-            fontWeight: 700,
-            lineHeight: 0.9,
-            textShadow: '0 4px 30px rgba(0,0,0,0.8)',
-            transformStyle: 'preserve-3d',
-            willChange: 'transform',
-          }}
-        >
-          {titleParts.map((part, idx) => (
-            <Box key={idx} component="span" sx={{ display: 'block' }}>{part}</Box>
-          ))}
-        </Typography>
-        <Typography
-          className="hero-subtitle"
-          sx={{
-            mt: 4,
-            letterSpacing: '0.2em',
-            color: 'rgba(234,234,234,0.7)',
-            textTransform: 'uppercase',
-            textShadow: '0 2px 10px rgba(0,0,0,0.8)',
-            willChange: 'transform',
-          }}
-        >
-          {subtitle}
-        </Typography>
+        {titleParts.length > 0 && (
+          <Typography
+            variant="h1"
+            className="hero-title"
+            sx={{
+              textAlign: 'center',
+              fontSize: { xs: '10vw', md: '8vw' },
+              fontWeight: 700,
+              lineHeight: 0.9,
+              textShadow: '0 4px 30px rgba(0,0,0,0.8)',
+              transformStyle: 'preserve-3d',
+              willChange: 'transform',
+            }}
+          >
+            {titleParts.map((part, idx) => (
+              <Box key={idx} component="span" sx={{ display: 'block' }}>{part}</Box>
+            ))}
+          </Typography>
+        )}
+        {subtitle && (
+          <Typography
+            className="hero-subtitle"
+            sx={{
+              mt: 4,
+              letterSpacing: '0.2em',
+              color: 'rgba(234,234,234,0.7)',
+              textTransform: 'uppercase',
+              textShadow: '0 2px 10px rgba(0,0,0,0.8)',
+              willChange: 'transform',
+            }}
+          >
+            {subtitle}
+          </Typography>
+        )}
       </Stack>
     </Box>
   );
