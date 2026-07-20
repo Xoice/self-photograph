@@ -222,11 +222,13 @@ npm run lint
 
 ## 后续建议
 
-1. 真实分类与标签管理增强
-2. 媒体存储切换到云端（Cloudinary / S3）
-3. SEO 增强：动态 meta、sitemap、robots
-4. 测试体系：Vitest + Playwright
-5. 部署脚本与 CI/CD
+1. Gallery 列表页改为瀑布流布局（当前等高网格，未发挥不同比例作品的表现力）
+2. 首页区块动画节奏差异化（当前各 Section 统一用 `y:50, opacity:0` 入场，缺乏起伏）
+3. 真实分类与标签管理增强
+4. 媒体存储切换到云端（Cloudinary / S3）
+5. SEO 增强：动态 meta、sitemap、robots
+6. 测试体系：Vitest + Playwright
+7. 部署脚本与 CI/CD
 
 ## 文档入口
 
