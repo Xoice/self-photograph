@@ -29,3 +29,12 @@ export function login(payload: LoginPayload): Promise<LoginResponse> {
 export function getProfile(): Promise<UserProfile> {
   return apiClient.get('/admin/auth/me');
 }
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export function changePassword(payload: ChangePasswordPayload): Promise<{ success: boolean }> {
+  return apiClient.post('/admin/auth/change-password', payload);
+}

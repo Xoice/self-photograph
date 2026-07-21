@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Box, Typography, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Alert, Switch, FormControlLabel, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Box, Typography, Container, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Chip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, CircularProgress, Alert, Switch, FormControlLabel, MenuItem, Select, InputLabel, FormControl, InputAdornment } from '@mui/material';
 import { Add, Edit, Delete } from '@mui/icons-material';
 import apiClient from '@/api/client';
 import type { GalleryWorkItem, GalleryCategory, PaginatedData } from '@/types/api';
 import { getErrorMessage } from '@/utils/error';
+import { titleToSlug } from '@/utils/slug';
+import { checkSlug } from '@/api/gallery';
 import ImageUploader from '@/components/ui/ImageUploader';
 
 interface FormData {
@@ -29,6 +31,10 @@ const WorksManager = () => {
   const [editItem, setEditItem] = useState<GalleryWorkItem | null>(null);
   const [formData, setFormData] = useState<FormData>(emptyForm);
   const [saving, setSaving] = useState(false);
+  // slug 自动化状态：是否被用户手动编辑过、查重中、查重结果提示
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [slugChecking, setSlugChecking] = useState(false);
+  const [slugHint, setSlugHint] = useState<{ type: 'available' | 'conflict' | 'error'; text: string } | null>(null);
 
   const loadWorks = () => {
     setLoading(true);
@@ -54,13 +60,61 @@ const WorksManager = () => {
       coverImage: item.coverImage, categoryId: item.categoryId || '',
       isFeatured: item.isFeatured, isPublished: item.isPublished, sortOrder: item.sortOrder,
     });
+    // 编辑模式：已有 slug 视为手动设置，不被标题自动覆盖
+    setSlugTouched(true);
+    setSlugHint(null);
     setDialogOpen(true);
   };
 
   const handleNew = () => {
     setEditItem(null);
     setFormData(emptyForm);
+    // 新建模式：slug 空白，允许标题失焦时自动填充
+    setSlugTouched(false);
+    setSlugHint(null);
     setDialogOpen(true);
+  };
+
+  // 标题失焦：未手动编辑过 slug 时，自动从标题生成
+  const handleTitleBlur = async () => {
+    if (slugTouched) return;
+    const title = formData.title.trim();
+    if (!title) return;
+    const autoSlug = titleToSlug(title);
+    if (!autoSlug || autoSlug === formData.slug) return;
+    setFormData((prev) => ({ ...prev, slug: autoSlug }));
+    await verifySlug(autoSlug);
+  };
+
+  // slug 失焦：实时查重，冲突自动采用建议后缀
+  const handleSlugBlur = async () => {
+    const slug = formData.slug.trim();
+    if (!slug) { setSlugHint(null); return; }
+    if (slug !== formData.slug) setFormData((prev) => ({ ...prev, slug }));
+    await verifySlug(slug);
+  };
+
+  const verifySlug = async (slug: string) => {
+    if (!slug) { setSlugHint(null); return; }
+    setSlugChecking(true);
+    setSlugHint(null);
+    try {
+      const result = await checkSlug(slug, editItem?.id);
+      if (result.available) {
+        setSlugHint({ type: 'available', text: 'URL 可用' });
+      } else if (result.suggestion) {
+        // 冲突：自动采用建议，并标记为未手动编辑（允许后续标题再覆盖）
+        setFormData((prev) => ({ ...prev, slug: result.suggestion }));
+        setSlugTouched(false);
+        setSlugHint({ type: 'conflict', text: `原 slug 已存在，已自动改为 ${result.suggestion}` });
+      } else {
+        setSlugHint({ type: 'error', text: 'slug 已存在且无可用建议' });
+      }
+    } catch (err: unknown) {
+      setSlugHint({ type: 'error', text: getErrorMessage(err, '校验失败，请提交时确认唯一性') });
+    } finally {
+      setSlugChecking(false);
+    }
   };
 
   const handleSave = async () => {
@@ -157,8 +211,41 @@ const WorksManager = () => {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="sm" fullWidth >
         <DialogTitle>{editItem ? '编辑作品' : '新增作品'}</DialogTitle>
         <DialogContent data-lenis-prevent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
-          <TextField label="标题" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} fullWidth sx={{ mb: 2, mt: 1 }} />
-          <TextField label="URL标识（英文）" value={formData.slug} onChange={(e) => setFormData({ ...formData, slug: e.target.value })} fullWidth sx={{ mb: 2 }} helperText="URL标识，英文，如 silent-ridge" />
+          <TextField
+            label="标题"
+            value={formData.title}
+            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+            onBlur={handleTitleBlur}
+            fullWidth
+            sx={{ mb: 2, mt: 1 }}
+            helperText={!slugTouched && formData.title ? '失焦后将自动生成 URL 标识' : ' '}
+          />
+          <TextField
+            label="URL标识（英文）"
+            value={formData.slug}
+            onChange={(e) => {
+              setFormData({ ...formData, slug: e.target.value });
+              setSlugTouched(true);
+              setSlugHint(null);
+            }}
+            onBlur={handleSlugBlur}
+            fullWidth
+            sx={{ mb: 2 }}
+            helperText={
+              slugChecking ? '校验中…' :
+              slugHint?.type === 'available' ? `✓ ${slugHint.text}` :
+              slugHint?.type === 'conflict' ? `↻ ${slugHint.text}` :
+              slugHint?.type === 'error' ? slugHint.text :
+              'URL 标识，英文，如 silent-ridge；留空或失焦自动从标题生成'
+            }
+            InputProps={{
+              endAdornment: slugChecking ? (
+                <InputAdornment position="end">
+                  <CircularProgress size={16} sx={{ color: 'primary.main' }} />
+                </InputAdornment>
+              ) : null,
+            }}
+          />
           <TextField label="摘要" value={formData.summary} onChange={(e) => setFormData({ ...formData, summary: e.target.value })} fullWidth sx={{ mb: 2 }} />
           <TextField label="描述" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} fullWidth multiline rows={3} sx={{ mb: 2 }} />
           <Box sx={{ mb: 2 }}>

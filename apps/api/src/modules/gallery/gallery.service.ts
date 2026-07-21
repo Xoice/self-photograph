@@ -197,6 +197,32 @@ export class GalleryService {
     };
   }
 
+  // 检查 slug 可用性，冲突时自动给出 -2/-3... 建议（最多到 -100 防死循环）
+  async checkSlug(slug: string, excludeId?: string) {
+    const baseWhere: Prisma.GalleryWorkWhereInput = {};
+    if (excludeId) baseWhere.id = { not: excludeId };
+
+    const exists = await this.prisma.galleryWork.findFirst({
+      where: { ...baseWhere, slug },
+    });
+    if (!exists) {
+      return { available: true, suggestion: slug };
+    }
+
+    let suffix = 2;
+    while (suffix <= 100) {
+      const candidate = `${slug}-${suffix}`;
+      const candidateExists = await this.prisma.galleryWork.findFirst({
+        where: { ...baseWhere, slug: candidate },
+      });
+      if (!candidateExists) {
+        return { available: false, suggestion: candidate };
+      }
+      suffix++;
+    }
+    return { available: false, suggestion: `${slug}-${Date.now()}` };
+  }
+
   async createWork(data: Prisma.GalleryWorkCreateInput) {
     const existing = await this.prisma.galleryWork.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');

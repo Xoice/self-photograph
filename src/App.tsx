@@ -37,6 +37,7 @@ const CategoriesPage = lazy(() => import('./pages/Admin/CategoriesPage'));
 const LeadsPage = lazy(() => import('./pages/Admin/LeadsPage'));
 const SiteConfigPage = lazy(() => import('./pages/Admin/SiteConfigPage'));
 const MediaPage = lazy(() => import('./pages/Admin/MediaPage'));
+const AccountPage = lazy(() => import('./pages/Admin/AccountPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 function PageLoader() {
@@ -191,6 +192,7 @@ function App() {
             <Route path="leads" element={<Suspense fallback={<PageLoader />}><LeadsPage /></Suspense>} />
             <Route path="site-config" element={<Suspense fallback={<PageLoader />}><SiteConfigPage /></Suspense>} />
             <Route path="media" element={<Suspense fallback={<PageLoader />}><MediaPage /></Suspense>} />
+            <Route path="account" element={<Suspense fallback={<PageLoader />}><AccountPage /></Suspense>} />
           </Route>
           <Route path="*" element={<Suspense fallback={<PageLoader />}><NotFoundPage /></Suspense>} />
           </Routes>

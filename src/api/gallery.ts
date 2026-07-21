@@ -27,6 +27,17 @@ export function deleteCategory(id: string): Promise<void> {
   return apiClient.delete(`/admin/gallery/categories/${id}`);
 }
 
+export interface SlugCheckResult {
+  available: boolean;
+  suggestion: string;
+}
+
+export function checkSlug(slug: string, excludeId?: string): Promise<SlugCheckResult> {
+  return apiClient.get('/admin/gallery/works/check-slug', {
+    params: { slug, excludeId },
+  });
+}
+
 export function getGalleryWorks(
   query?: GalleryWorksQuery,
 ): Promise<PaginatedData<GalleryWorkItem>> {

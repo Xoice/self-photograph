@@ -28,6 +28,14 @@ export class AdminGalleryController {
     return this.galleryService.deleteCategory(id);
   }
 
+  @Get('works/check-slug')
+  async checkSlug(@Query('slug') slug?: string, @Query('excludeId') excludeId?: string) {
+    if (!slug || !slug.trim()) {
+      return { available: false, suggestion: '' };
+    }
+    return this.galleryService.checkSlug(slug.trim(), excludeId);
+  }
+
   @Get('works')
   async getWorks(@Query('page') page?: string, @Query('pageSize') pageSize?: string) {
     return this.galleryService.getWorks({

@@ -33,6 +33,23 @@ function getMockResponse(method: string, url: string, _data?: unknown): ApiRespo
   const path = url.split('?')[0];
   const key = `${method} ${path}`;
 
+  // slug 查重：需要解析 query 参数，单独处理（routes 表用纯路径匹配）
+  if (method === 'GET' && path === '/admin/gallery/works/check-slug') {
+    const params = new URLSearchParams(url.split('?')[1] || '');
+    const slug = params.get('slug') || '';
+    const excludeId = params.get('excludeId') || undefined;
+    const isOwn = (s: string) => !!excludeId && !!mockGalleryWorks.find((w) => w.slug === s && w.id === excludeId);
+    const taken = (s: string) => mockGalleryWorks.some((w) => w.slug === s) && !isOwn(s);
+    if (!taken(slug)) return ok({ available: true, suggestion: slug });
+    let suffix = 2;
+    while (suffix <= 100) {
+      const candidate = `${slug}-${suffix}`;
+      if (!taken(candidate)) return ok({ available: false, suggestion: candidate });
+      suffix++;
+    }
+    return ok({ available: false, suggestion: `${slug}-${Date.now()}` });
+  }
+
   const routes: Record<string, () => ApiResponse<unknown>> = {
     'GET /site/config': () => ok(mockSiteConfig),
     'GET /gallery/categories': () => ok(mockCategories),
@@ -46,6 +63,7 @@ function getMockResponse(method: string, url: string, _data?: unknown): ApiRespo
       user: { id: 'user_001', email: 'admin@xoice.com', name: 'Xoice', role: 'admin' },
     }),
     'GET /admin/auth/me': () => ok({ id: 'user_001', email: 'admin@xoice.com', name: 'Xoice', role: 'admin' }),
+    'POST /admin/auth/change-password': () => ok({ success: true }),
     'GET /admin/gallery/categories': () => ok(mockCategories),
     'POST /admin/gallery/categories': () => ok({ id: `mock_cat_${Date.now()}`, name: '新分类', slug: 'new-cat', parentId: null, sortOrder: 0, isVisible: true, children: [] }),
     'GET /admin/gallery/works': () => paginated(mockGalleryWorks),

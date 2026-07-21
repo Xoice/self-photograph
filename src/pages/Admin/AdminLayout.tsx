@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Outlet } from 'react-router-dom';
 import { Box, Typography, List, ListItem, ListItemButton, ListItemIcon, ListItemText, IconButton, Divider, CircularProgress } from '@mui/material';
-import { Dashboard, Image, OndemandVideo, School, Logout, Menu as MenuIcon, Close, PhotoLibrary, Category, Mail, Settings } from '@mui/icons-material';
+import { Dashboard, Image, OndemandVideo, School, Logout, Menu as MenuIcon, Close, PhotoLibrary, Category, Mail, Settings, AccountCircle } from '@mui/icons-material';
 import { useAuth } from '@/contexts/AuthContext';
 import type { UserProfile } from '@/api/auth';
 
@@ -14,6 +14,7 @@ const menuItems = [
   { label: '线索管理', path: '/admin/leads', icon: <Mail /> },
   { label: '站点配置', path: '/admin/site-config', icon: <Settings /> },
   { label: '媒体库', path: '/admin/media', icon: <PhotoLibrary /> },
+  { label: '账号设置', path: '/admin/account', icon: <AccountCircle /> },
 ];
 
 const AdminLayout = () => {
