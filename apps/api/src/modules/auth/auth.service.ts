@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -78,5 +78,38 @@ export class AuthService {
     });
 
     return { success: true };
+  }
+
+  async changeEmail(userId: string, currentPassword: string, newEmail: string) {
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new UnauthorizedException('用户不存在');
+    }
+    if (user.status !== 'active') {
+      throw new UnauthorizedException('账户已被停用');
+    }
+
+    const isCurrentValid = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!isCurrentValid) {
+      throw new BadRequestException('当前密码错误');
+    }
+
+    // 新旧邮箱相同（不区分大小写比较，因为邮箱本身不区分大小写）
+    if (user.email.toLowerCase() === newEmail.toLowerCase()) {
+      throw new BadRequestException('新邮箱不能与当前邮箱相同');
+    }
+
+    // 唯一性检查
+    const existing = await this.prisma.user.findUnique({ where: { email: newEmail } });
+    if (existing) {
+      throw new ConflictException('该邮箱已被注册');
+    }
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { email: newEmail },
+    });
+
+    return { success: true, email: newEmail };
   }
 }

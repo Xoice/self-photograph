@@ -10,6 +10,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   logout: () => void;
+  updateUser: (patch: Partial<UserProfile>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -82,8 +83,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  // 局部更新用户信息（如改邮箱后同步全局状态，避免侧边栏/顶栏显示旧数据）
+  const updateUser = useCallback((patch: Partial<UserProfile>) => {
+    setUser((prev) => (prev ? { ...prev, ...patch } : prev));
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, isAuthenticated: !!user, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

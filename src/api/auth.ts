@@ -38,3 +38,17 @@ export interface ChangePasswordPayload {
 export function changePassword(payload: ChangePasswordPayload): Promise<{ success: boolean }> {
   return apiClient.post('/admin/auth/change-password', payload);
 }
+
+export interface ChangeEmailPayload {
+  currentPassword: string;
+  newEmail: string;
+}
+
+export interface ChangeEmailResponse {
+  success: boolean;
+  email: string;
+}
+
+export function changeEmail(payload: ChangeEmailPayload): Promise<ChangeEmailResponse> {
+  return apiClient.post('/admin/auth/change-email', payload);
+}

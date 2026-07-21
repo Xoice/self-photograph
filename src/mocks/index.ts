@@ -64,6 +64,7 @@ function getMockResponse(method: string, url: string, _data?: unknown): ApiRespo
     }),
     'GET /admin/auth/me': () => ok({ id: 'user_001', email: 'admin@xoice.com', name: 'Xoice', role: 'admin' }),
     'POST /admin/auth/change-password': () => ok({ success: true }),
+    'POST /admin/auth/change-email': () => ok({ success: true, email: 'new@example.com' }),
     'GET /admin/gallery/categories': () => ok(mockCategories),
     'POST /admin/gallery/categories': () => ok({ id: `mock_cat_${Date.now()}`, name: '新分类', slug: 'new-cat', parentId: null, sortOrder: 0, isVisible: true, children: [] }),
     'GET /admin/gallery/works': () => paginated(mockGalleryWorks),
