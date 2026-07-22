@@ -50,6 +50,10 @@ export class CreateWorkshopDto {
   @IsOptional()
   capacity?: number;
 
+  @IsNumber({}, { message: '已报名人数必须是数字' })
+  @IsOptional()
+  enrolledCount?: number;
+
   @IsString({ message: '等级必须是字符串' })
   @IsOptional()
   level?: string;
@@ -127,6 +131,10 @@ export class UpdateWorkshopDto {
   @IsNumber({}, { message: '名额必须是数字' })
   @IsOptional()
   capacity?: number;
+
+  @IsNumber({}, { message: '已报名人数必须是数字' })
+  @IsOptional()
+  enrolledCount?: number;
 
   @IsString({ message: '等级必须是字符串' })
   @IsOptional()

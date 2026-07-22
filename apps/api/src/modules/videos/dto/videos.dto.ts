@@ -56,6 +56,10 @@ export class UpdateVideoDto {
   @IsOptional()
   description?: string;
 
+  @IsString({ message: '平台必须是字符串' })
+  @IsOptional()
+  platform?: string;
+
   @IsString({ message: '视频链接必须是字符串' })
   @IsOptional()
   @Matches(/^https?:\/\//, { message: '视频链接必须以 http:// 或 https:// 开头' })

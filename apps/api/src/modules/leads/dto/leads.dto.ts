@@ -52,6 +52,6 @@ export class CreateEnrollmentDto {
 }
 
 export class UpdateLeadStatusDto {
-  @IsIn(['new', 'contacted', 'resolved', 'rejected'], { message: '状态值无效' })
+  @IsIn(['new', 'read', 'replied', 'archived'], { message: '状态值无效' })
   status: string;
 }
