@@ -89,7 +89,7 @@ const ContactSection = () => {
   ] : [];
 
   return (
-    <Box component="section" ref={sectionRef} id="connect" sx={{ minHeight: '100vh', py: 15, bgcolor: '#080808', scrollMarginTop: '100px' }}>
+    <Box component="section" ref={sectionRef} id="connect" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: 15, bgcolor: '#080808', scrollMarginTop: '100px' }}>
       <Container maxWidth="xl">
         <Box className="section-title" sx={{ mb: 10 }}>
           <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 3 }}>
@@ -136,6 +136,8 @@ const ContactSection = () => {
                                 onClick={() => handleCopy(item.copyValue!, item.field!)}
                                 size="small"
                                 sx={{
+                                  minWidth: { xs: 44, md: 30 },
+                                  minHeight: { xs: 44, md: 30 },
                                   color: copiedField === item.field ? 'primary.main' : 'rgba(255,255,255,0.3)',
                                   '&:hover': { color: 'primary.main', bgcolor: 'rgba(224, 164, 88, 0.1)' }
                                 }}

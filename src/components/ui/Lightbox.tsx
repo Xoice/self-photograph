@@ -45,7 +45,13 @@ export default function Lightbox({ open, images, currentIndex, onClose, onNaviga
         onClick={onClose}
         aria-label="关闭"
         autoFocus
-        sx={{ position: 'absolute', top: 16, right: 16, color: 'white', zIndex: 1 }}
+        sx={{
+          position: 'absolute',
+          top: 'calc(16px + env(safe-area-inset-top))',
+          right: 'calc(16px + env(safe-area-inset-right))',
+          color: 'white',
+          zIndex: 1,
+        }}
       >
         <Close />
       </IconButton>
@@ -82,7 +88,7 @@ export default function Lightbox({ open, images, currentIndex, onClose, onNaviga
       <Box
         sx={{
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          width: '100%', height: '100%', p: 8,
+          width: '100%', height: '100%', p: { xs: 2, md: 8 },
         }}
       >
         <Box

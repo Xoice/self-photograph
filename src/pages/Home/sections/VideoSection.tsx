@@ -15,6 +15,7 @@ const VideoSection = () => {
   const videos = data?.items ?? [];
 
   useGSAP(() => {
+    if (!data?.items?.length) return;
     gsap.fromTo('.video-card',
       { y: 50, opacity: 0 },
       {
@@ -29,7 +30,8 @@ const VideoSection = () => {
         scrollTrigger: { trigger: sectionRef.current, start: 'top 90%' },
       },
     );
-  }, { scope: sectionRef });
+
+  }, { scope: sectionRef, dependencies: [data] });
 
   // 异步数据加载后刷新 ScrollTrigger 位置
   useEffect(() => {
@@ -37,7 +39,7 @@ const VideoSection = () => {
   }, [data]);
 
   return (
-    <Box component="section" ref={sectionRef} id="video" sx={{ minHeight: '100vh', py: 15, bgcolor: '#080808', scrollMarginTop: '100px' }}>
+    <Box component="section" ref={sectionRef} id="video" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: 15, bgcolor: '#080808', scrollMarginTop: '100px' }}>
       <Container maxWidth="xl">
         <Box className="section-title" sx={{ mb: 10 }}>
           <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 3 }}>
@@ -72,12 +74,14 @@ const VideoSection = () => {
                   }}
                 >
                   <Box sx={{ position: 'relative', aspectRatio: '16/9' }}>
+                    {video.coverImage && (
                     <ResponsiveImage
                       src={video.coverImage}
                       alt={video.title}
                       sizes="(min-width: 900px) 33vw, 100vw"
                       sx={{ height: '100%', objectFit: 'cover' }}
                     />
+                    )}
                     <Box
                       sx={{
                         position: 'absolute',

@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Container, Card, CardContent, Grid, Button, Chip, Skeleton, Alert, Stack } from '@mui/material';
+import { Box, Typography, Container, Card, CardContent, Grid, Button, Chip, Skeleton, Alert, Stack, Link } from '@mui/material';
 import { CalendarToday, LocationOn, People, CheckCircle, ArrowBack, Phone, Email, Chat, ExpandMore, ExpandLess } from '@mui/icons-material';
 import { LinearProgress, Collapse } from '@mui/material';
 import { useRef, useState, useCallback } from 'react';
@@ -353,15 +353,25 @@ const WorkshopDetailPage = () => {
             <Stack spacing={1}>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Phone sx={{ color: 'primary.main', fontSize: 20 }} />
-                <Typography variant="body1" sx={{ color: '#aaa' }}>
-                  <a href={`tel:${workshop.contact.phone}`} style={{ color: '#aaa', textDecoration: 'none' }}>{workshop.contact.phone}</a>
-                </Typography>
+                <Link
+                  href={`tel:${workshop.contact.phone}`}
+                  underline="none"
+                  variant="body1"
+                  sx={{ color: '#aaa', display: 'inline-block', py: { xs: 1.5, md: 0 } }}
+                >
+                  {workshop.contact.phone}
+                </Link>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Email sx={{ color: 'primary.main', fontSize: 20 }} />
-                <Typography variant="body1" sx={{ color: '#aaa' }}>
-                  <a href={`mailto:${workshop.contact.email}`} style={{ color: '#aaa', textDecoration: 'none' }}>{workshop.contact.email}</a>
-                </Typography>
+                <Link
+                  href={`mailto:${workshop.contact.email}`}
+                  underline="none"
+                  variant="body1"
+                  sx={{ color: '#aaa', display: 'inline-block', py: { xs: 1.5, md: 0 } }}
+                >
+                  {workshop.contact.email}
+                </Link>
               </Stack>
               <Stack direction="row" spacing={1} alignItems="center">
                 <Chat sx={{ color: 'primary.main', fontSize: 20 }} />

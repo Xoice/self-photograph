@@ -126,7 +126,7 @@ const HeroSection = () => {
       ref={containerRef}
       component="section"
       id="hero"
-      sx={{ height: '100vh', width: '100%', position: 'relative', overflow: 'hidden', scrollMarginTop: '100px' }}
+      sx={{ height: '100vh', '@supports (height: 100dvh)': { height: '100dvh' }, width: '100%', position: 'relative', overflow: 'hidden', scrollMarginTop: '100px' }}
     >
       {/* 真实代表作背景图 */}
       {heroImage && (
@@ -191,6 +191,7 @@ const HeroSection = () => {
             className="hero-subtitle"
             sx={{
               mt: 4,
+              textAlign: 'center',
               letterSpacing: '0.2em',
               color: 'rgba(234,234,234,0.7)',
               textTransform: 'uppercase',

@@ -6,6 +6,7 @@
 
 html {
   scroll-behavior: auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -13,4 +14,11 @@ body {
   font-family: 'Space Grotesk', 'Noto Sans SC', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 899.95px) {
+  .MuiChip-clickable {
+    min-height: 44px;
+  }
 }

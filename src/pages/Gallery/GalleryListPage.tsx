@@ -114,11 +114,11 @@ const GalleryListPage = () => {
                     cursor: 'pointer',
                     transition: 'transform 0.5s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.5s ease',
                     '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: '0 20px 40px rgba(0,0,0,0.5)',
+                      transform: { xs: 'none', md: 'translateY(-8px)' },
+                      boxShadow: { xs: 'none', md: '0 20px 40px rgba(0,0,0,0.5)' },
                     },
-                    '&:hover img': { transform: 'scale(1.08)' },
-                    '&:hover .overlay': { opacity: 1 },
+                    '&:hover img': { transform: { xs: 'none', md: 'scale(1.08)' } },
+                    '&:hover .overlay': { opacity: { xs: 0, md: 1 } },
                     '&:hover .info': { transform: 'translateY(0)' },
                   }}
                 >
@@ -155,7 +155,7 @@ const GalleryListPage = () => {
                       width: '100%',
                       p: 3,
                       background: 'linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.6) 50%, transparent 100%)',
-                      transform: 'translateY(100%)',
+                      transform: { xs: 'translateY(0)', md: 'translateY(100%)' },
                       transition: 'transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1)',
                     }}
                   >

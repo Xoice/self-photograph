@@ -59,7 +59,8 @@ const AdminLayout = () => {
           top: 0,
           left: 0,
           right: 0,
-          height: 56,
+          height: 'calc(56px + env(safe-area-inset-top))',
+          pt: 'env(safe-area-inset-top)',
           bgcolor: '#0a0a0a',
           borderBottom: '1px solid #222',
           alignItems: 'center',
@@ -140,7 +141,7 @@ const AdminLayout = () => {
         sx={{
           flex: 1,
           ml: { xs: 0, md: `${sidebarWidth}px` },
-          mt: { xs: '60px', md: '48px' },
+          mt: { xs: 'calc(60px + env(safe-area-inset-top))', md: '48px' },
           minHeight: '100vh',
         }}
       >

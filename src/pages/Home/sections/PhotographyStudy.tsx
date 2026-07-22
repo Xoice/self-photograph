@@ -22,6 +22,7 @@ const PhotographyStudy = () => {
   const workshops = data?.items ?? [];
 
   useGSAP(() => {
+    if (!data?.items?.length) return;
     gsap.fromTo('.photography-study-card',
       { y: 50, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.8, stagger: 0.15, ease: 'power3.out',
@@ -32,7 +33,7 @@ const PhotographyStudy = () => {
       { y: 0, opacity: 1, duration: 1, ease: 'power3.out',
         scrollTrigger: { trigger: sectionRef.current, start: 'top 90%' } },
     );
-  }, { scope: sectionRef });
+  }, { scope: sectionRef, dependencies: [data] });
 
   // 异步数据加载后刷新 ScrollTrigger 位置
   useEffect(() => {
@@ -53,10 +54,10 @@ const PhotographyStudy = () => {
   const isOpen = (status: WorkshopStatus) => status === 'registration_open';
 
   return (
-    <Box component="section" ref={sectionRef} id="photographystudy" sx={{ minHeight: '100vh', py: 15, bgcolor: '#0a0a0a', scrollMarginTop: '100px' }}>
+    <Box component="section" ref={sectionRef} id="photographystudy" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: 15, bgcolor: '#0a0a0a', scrollMarginTop: '100px' }}>
       <Container maxWidth="xl">
         <Box className="section-title" sx={{ mb: 10 }}>
-          <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 3 }}>
+          <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 3, overflowWrap: { xs: 'anywhere', md: 'normal' } }}>
             摄影研学 PHOTOGRAPHYSTUDY
           </Typography>
           <Typography variant="body1" sx={{ fontSize: '1.2rem', color: 'text.secondary', maxWidth: '600px' }}>

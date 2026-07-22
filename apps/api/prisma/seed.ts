@@ -88,12 +88,12 @@ async function main() {
 
   // Create videos
   const videos = [
-    { slug: 'photo-basic', title: '摄影基础入门', description: '从零开始学习摄影基础知识', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=摄影基础入门', durationSeconds: 930, category: '教学视频' },
-    { slug: 'portrait-tips', title: '人像摄影技巧', description: '掌握人像摄影的构图、光线和姿势指导', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=人像摄影技巧', durationSeconds: 1215, category: '教学视频' },
-    { slug: 'landscape-practice', title: '风景摄影实战', description: '探索风景摄影的拍摄技巧和后期处理方法', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=风景摄影实战', durationSeconds: 1125, category: '教学视频' },
-    { slug: 'county-record', title: '县城摄影记录', description: '记录县城的日常生活和人文风情', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=县城摄影记录', durationSeconds: 740, category: '摄影县城' },
-    { slug: 'boudoir-art', title: '私房摄影艺术', description: '私房摄影的艺术表达与创作思路', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=私房摄影艺术', durationSeconds: 1000, category: '摄影县城' },
-    { slug: 'post-processing', title: '后期处理教程', description: 'Lightroom和Photoshop后期处理技巧分享', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=后期处理教程', durationSeconds: 1330, category: '教学视频' },
+    { slug: 'photo-basic', title: '摄影基础入门', description: '从零开始学习摄影基础知识', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', durationSeconds: 930, category: '教学视频' },
+    { slug: 'portrait-tips', title: '人像摄影技巧', description: '掌握人像摄影的构图、光线和姿势指导', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', durationSeconds: 1215, category: '教学视频' },
+    { slug: 'landscape-practice', title: '风景摄影实战', description: '探索风景摄影的拍摄技巧和后期处理方法', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', durationSeconds: 1125, category: '教学视频' },
+    { slug: 'county-record', title: '县城摄影记录', description: '记录县城的日常生活和人文风情', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', durationSeconds: 740, category: '摄影县城' },
+    { slug: 'boudoir-art', title: '私房摄影艺术', description: '私房摄影的艺术表达与创作思路', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', durationSeconds: 1000, category: '摄影县城' },
+    { slug: 'post-processing', title: '后期处理教程', description: 'Lightroom和Photoshop后期处理技巧分享', platform: 'bilibili', videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD', durationSeconds: 1330, category: '教学视频' },
   ];
 
   for (const video of videos) {
@@ -107,10 +107,10 @@ async function main() {
 
   // Create workshops
   const workshops = [
-    { slug: 'portrait-practice', title: '人像摄影实战班', subtitle: 'Portrait Photography Practice', summary: '深入学习人像摄影的构图技巧', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=人像摄影实战班', priceText: '¥1,280', location: '县城摄影基地', level: '中级', durationText: '3天2晚', status: 'registration_open', capacity: 12, enrolledCount: 8 },
-    { slug: 'landscape-camp', title: '风景摄影创作营', subtitle: 'Landscape Photography Camp', summary: '探索自然风光的拍摄技巧', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=风景摄影创作营', priceText: '¥1,580', location: '山峦风景区', level: '高级', durationText: '4天3晚', status: 'registration_open', capacity: 8, enrolledCount: 5 },
-    { slug: 'county-record-class', title: '县城摄影记录班', subtitle: 'County Documentary Photography', summary: '记录县城的日常生活和人文风情', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=县城摄影记录班', priceText: '¥980', location: '县城老街', level: '初级', durationText: '2天', status: 'full', capacity: 15, enrolledCount: 15 },
-    { slug: 'advanced-postprocessing', title: '后期处理进阶班', subtitle: 'Advanced Post-Processing', summary: '深入学习Lightroom和Photoshop的高级调色技巧', coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=后期处理进阶班', priceText: '¥680', location: '线上直播', level: '中级', durationText: '3周', status: 'registration_open', capacity: 20, enrolledCount: 12 },
+    { slug: 'portrait-practice', title: '人像摄影实战班', subtitle: 'Portrait Photography Practice', summary: '深入学习人像摄影的构图技巧', priceText: '¥1,280', location: '县城摄影基地', level: '中级', durationText: '3天2晚', status: 'registration_open', capacity: 12, enrolledCount: 8 },
+    { slug: 'landscape-camp', title: '风景摄影创作营', subtitle: 'Landscape Photography Camp', summary: '探索自然风光的拍摄技巧', priceText: '¥1,580', location: '山峦风景区', level: '高级', durationText: '4天3晚', status: 'registration_open', capacity: 8, enrolledCount: 5 },
+    { slug: 'county-record-class', title: '县城摄影记录班', subtitle: 'County Documentary Photography', summary: '记录县城的日常生活和人文风情', priceText: '¥980', location: '县城老街', level: '初级', durationText: '2天', status: 'full', capacity: 15, enrolledCount: 15 },
+    { slug: 'advanced-postprocessing', title: '后期处理进阶班', subtitle: 'Advanced Post-Processing', summary: '深入学习Lightroom和Photoshop的高级调色技巧', priceText: '¥680', location: '线上直播', level: '中级', durationText: '3周', status: 'registration_open', capacity: 20, enrolledCount: 12 },
     { slug: 'kenya-wildlife-expedition', title: '肯尼亚"野生动物行为"摄影远征团', subtitle: 'Kenya Wildlife Expedition', summary: '深入马赛马拉国家保护区', coverImage: 'https://picsum.photos/seed/kenya/600/900.jpg', priceText: '¥36,800/人', location: '马赛马拉国家保护区', level: '高级', durationText: '11天', status: 'registration_open', capacity: 8, enrolledCount: 3, isFeatured: true },
   ];
 

@@ -59,7 +59,7 @@ function Footer() {
   if (location.pathname.startsWith('/admin')) return null;
 
   return (
-    <Box component="footer" sx={{ py: 6, px: { xs: 2, md: 4 }, borderTop: '1px solid #222', bgcolor: '#050505' }}>
+    <Box component="footer" sx={{ py: 6, pb: 'calc(3rem + env(safe-area-inset-bottom))', px: { xs: 2, md: 4 }, borderTop: '1px solid #222', bgcolor: '#050505' }}>
       <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 3, mb: 4 }}>
         {/* 品牌 + 版权 */}
         <Box>
@@ -72,7 +72,7 @@ function Footer() {
         </Box>
 
         {/* 快速导航 */}
-        <Box sx={{ display: 'flex', gap: 4 }}>
+        <Box sx={{ display: 'flex', gap: { xs: 2, md: 4 }, flexWrap: 'wrap' }}>
           {[
             { label: '首页', to: '/', hash: '#hero' },
             { label: '画廊', to: '/gallery' },
@@ -89,7 +89,7 @@ function Footer() {
                 const el = document.querySelector(item.hash!);
                 el?.scrollIntoView({ behavior: 'smooth' });
               } : undefined}
-              sx={{ color: '#666', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.3s', '&:hover': { color: 'primary.main' } }}
+              sx={{ color: '#666', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.3s', py: { xs: 1.5, md: 0 }, '&:hover': { color: 'primary.main' } }}
             >
               {item.label}
             </Typography>
@@ -104,7 +104,7 @@ function Footer() {
               href={bilibili}
               target="_blank"
               rel="noopener noreferrer"
-              sx={{ color: '#555', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.3s', '&:hover': { color: 'primary.main' } }}
+              sx={{ color: '#555', fontSize: '0.85rem', textDecoration: 'none', transition: 'color 0.3s', py: { xs: 1.5, md: 0 }, '&:hover': { color: 'primary.main' } }}
             >
               B站空间
             </Typography>

@@ -23,7 +23,7 @@ const BioSection = () => {
         scrollTrigger: { trigger: sectionRef.current, start: 'top 90%' },
       },
     );
-  }, { scope: sectionRef });
+  }, { scope: sectionRef, dependencies: [config] });
 
   // 异步数据加载后刷新 ScrollTrigger 位置
   useEffect(() => {
@@ -31,7 +31,7 @@ const BioSection = () => {
   }, [config]);
 
   return (
-    <Box ref={sectionRef} component="section" id="bio" sx={{ minHeight: '100vh', py: 10, display: 'flex', alignItems: 'center' }}>
+    <Box ref={sectionRef} component="section" id="bio" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: 10, display: 'flex', alignItems: 'center' }}>
       <Container maxWidth="xl">
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 6, md: 10 }, alignItems: 'center' }}>
           {bioImage && (

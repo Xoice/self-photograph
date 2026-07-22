@@ -68,6 +68,7 @@ const Navbar = () => {
           alignItems: 'center',
           px: { xs: 2, md: 4 },
           py: 2,
+          pt: 'calc(1rem + env(safe-area-inset-top))',
           zIndex: 100,
           mixBlendMode: 'difference',
         }}
@@ -257,6 +258,8 @@ const Navbar = () => {
             maxWidth: 320,
             bgcolor: '#050505',
             color: '#EAEAEA',
+            pt: 'env(safe-area-inset-top)',
+            pb: 'env(safe-area-inset-bottom)',
           },
         }}
       >
@@ -310,7 +313,7 @@ const Navbar = () => {
                         fontSize: '0.9rem',
                         color: 'primary.main',
                         fontWeight: 600,
-                        py: 0.5,
+                        py: 1,
                         cursor: 'pointer',
                         '&:hover': { opacity: 0.8 },
                       }}
@@ -326,6 +329,7 @@ const Navbar = () => {
                             color: 'primary.main',
                             fontWeight: 600,
                             mb: 0.5,
+                            py: 0.5,
                             textTransform: 'uppercase',
                             cursor: 'pointer',
                             '&:hover': { opacity: 0.8 },
@@ -343,6 +347,7 @@ const Navbar = () => {
                                   fontSize: '0.85rem',
                                   color: '#888',
                                   cursor: 'pointer',
+                                  py: 1,
                                   '&:hover': { color: 'primary.main' },
                                 }}
                               >

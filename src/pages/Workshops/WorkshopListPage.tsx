@@ -97,6 +97,7 @@ const WorkshopListPage = () => {
                   }}
                 >
                   <Box sx={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
+                    {ws.coverImage && (
                     <Box
                       component="img"
                       src={ws.coverImage}
@@ -108,6 +109,7 @@ const WorkshopListPage = () => {
                         transition: 'transform 0.7s cubic-bezier(0.165, 0.84, 0.44, 1)',
                       }}
                     />
+                    )}
                     {ws.isFeatured && (
                       <Chip
                         label="重磅推出"

@@ -27,7 +27,7 @@ const LoginPage = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#050505', display: 'flex', alignItems: 'center' }}>
+    <Box sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, bgcolor: '#050505', display: 'flex', alignItems: 'center' }}>
       <Container maxWidth="sm">
         <Paper
           elevation={0}
