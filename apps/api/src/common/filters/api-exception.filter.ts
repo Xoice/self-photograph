@@ -1,5 +1,6 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, BadRequestException, PayloadTooLargeException, Logger } from '@nestjs/common';
 import { Response } from 'express';
+import { MulterError } from 'multer';
 
 @Catch()
 export class ApiExceptionFilter implements ExceptionFilter {
@@ -23,6 +24,21 @@ export class ApiExceptionFilter implements ExceptionFilter {
       else if (status === 403) code = 40301;
       else if (status === 404) code = 40002;
       else if (status === 409) code = 40901;
+      else if (status === 413) code = 40001;
+    } else if (exception instanceof MulterError) {
+      if (exception.code === 'LIMIT_FILE_SIZE') {
+        status = HttpStatus.PAYLOAD_TOO_LARGE;
+        code = 40001;
+        message = '文件大小不能超过 10MB';
+      } else {
+        status = HttpStatus.BAD_REQUEST;
+        code = 40001;
+        message = exception.message || '文件上传失败';
+      }
+    } else if (exception instanceof Error && exception.message.includes('仅支持')) {
+      status = HttpStatus.BAD_REQUEST;
+      code = 40001;
+      message = exception.message;
     } else {
       this.logger.error(exception, exception instanceof Error ? exception.stack : undefined);
     }

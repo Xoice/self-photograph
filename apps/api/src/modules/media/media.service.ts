@@ -1,8 +1,29 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { join } from 'path';
 import { existsSync, unlinkSync, openSync, readSync, closeSync } from 'fs';
 import { PrismaService } from '../../prisma/prisma.service';
+
+const MAGIC_BYTES: Record<string, number[]> = {
+  'image/jpeg': [0xFF, 0xD8, 0xFF],
+  'image/png': [0x89, 0x50, 0x4E, 0x47],
+  'image/gif': [0x47, 0x49, 0x46, 0x38],
+  'image/webp': [0x52, 0x49, 0x46, 0x46],
+};
+
+function detectMimeType(buf: Buffer): string | null {
+  for (const [mime, bytes] of Object.entries(MAGIC_BYTES)) {
+    if (buf.length >= bytes.length && bytes.every((b, i) => buf[i] === b)) {
+      if (mime === 'image/webp' && buf.length >= 12) {
+        const sig = buf.toString('ascii', 8, 12);
+        if (sig === 'WEBP') return mime;
+        continue;
+      }
+      return mime;
+    }
+  }
+  return null;
+}
 
 @Injectable()
 export class MediaService {
@@ -21,7 +42,14 @@ export class MediaService {
       throw new BadRequestException('文件大小不能超过 10MB');
     }
 
-    // Multer 不会填充宽高，这里从磁盘文件头解析（避免引入 sharp 依赖）
+    const detected = readAndDetectMime(file.path);
+    if (!detected || detected !== file.mimetype) {
+      if (file.path && existsSync(file.path)) {
+        try { unlinkSync(file.path); } catch {}
+      }
+      throw new BadRequestException('文件内容与声明的类型不匹配');
+    }
+
     const dimensions = readImageDimensions(file.path);
 
     const media = await this.prisma.mediaAsset.create({
@@ -95,7 +123,7 @@ export class MediaService {
   async renameMedia(id: string, fileName: string) {
     const media = await this.prisma.mediaAsset.findUnique({ where: { id } });
     if (!media) {
-      throw new BadRequestException('文件不存在');
+      throw new NotFoundException('文件不存在');
     }
     return this.prisma.mediaAsset.update({
       where: { id },
@@ -106,9 +134,8 @@ export class MediaService {
   async deleteMedia(id: string) {
     const media = await this.prisma.mediaAsset.findUnique({ where: { id } });
     if (!media) {
-      throw new BadRequestException('文件不存在');
+      throw new NotFoundException('文件不存在');
     }
-    // 同步删除磁盘源文件，避免孤儿文件累积
     if (media.url?.startsWith('/uploads/')) {
       const filePath = join(process.cwd(), media.url);
       try {
@@ -121,7 +148,20 @@ export class MediaService {
   }
 }
 
-// 从图片文件头解析宽高（支持 PNG / JPEG / GIF / WebP），无需外部依赖
+function readAndDetectMime(filePath: string): string | null {
+  let fd: number | undefined;
+  try {
+    fd = openSync(filePath, 'r');
+    const buf = Buffer.alloc(16);
+    const bytesRead = readSync(fd, buf, 0, buf.length, 0);
+    return detectMimeType(buf.subarray(0, bytesRead));
+  } catch {
+    return null;
+  } finally {
+    if (fd !== undefined) closeSync(fd);
+  }
+}
+
 function readImageDimensions(filePath: string): { width: number; height: number } | null {
   let fd: number | undefined;
   try {
@@ -139,18 +179,15 @@ function readImageDimensions(filePath: string): { width: number; height: number 
 export function parseImageDimensions(buf: Buffer): { width: number; height: number } | null {
   if (buf.length < 24) return null;
 
-  // PNG: 89 50 4E 47 ...
   if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
     return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20) };
   }
 
-  // JPEG: FFD8，需扫描 SOF0/SOF2 段
   if (buf[0] === 0xff && buf[1] === 0xd8) {
     let offset = 2;
     while (offset < buf.length - 1) {
       if (buf[offset] !== 0xff) break;
       const marker = buf[offset + 1];
-      // SOF0 / SOF1 / SOF2 ... SOF15 (不含 RSTn / TEM)
       if (marker >= 0xc0 && marker <= 0xcf && marker !== 0xc4 && marker !== 0xc8 && marker !== 0xcc) {
         const height = buf.readUInt16BE(offset + 5);
         const width = buf.readUInt16BE(offset + 7);
@@ -163,18 +200,15 @@ export function parseImageDimensions(buf: Buffer): { width: number; height: numb
     return null;
   }
 
-  // GIF: 47 49 46 38
   if (buf[0] === 0x47 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x38) {
     return { width: buf.readUInt16LE(6), height: buf.readUInt16LE(8) };
   }
 
-  // WebP: RIFF....WEBP
   if (
     buf.length > 30 &&
     buf[0] === 0x52 && buf[1] === 0x49 && buf[2] === 0x46 && buf[3] === 0x46 &&
     buf[8] === 0x57 && buf[9] === 0x45 && buf[10] === 0x42 && buf[11] === 0x50
   ) {
-    // VP8X（extended）/ VP8L（lossless）/ VP8（lossy）
     const fourcc = buf.toString('ascii', 12, 16);
     if (fourcc === 'VP8X') {
       return { width: (buf.readUIntLE(24, 3) & 0xffffff) + 1, height: (buf.readUIntLE(27, 3) & 0xffffff) + 1 };

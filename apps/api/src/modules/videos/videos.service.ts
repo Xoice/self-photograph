@@ -1,6 +1,7 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { sanitizeHtml } from '../../common/utils/sanitize';
 
 @Injectable()
 export class VideosService {
@@ -60,18 +61,26 @@ export class VideosService {
   async createVideo(data: Prisma.VideoCreateInput) {
     const existing = await this.prisma.video.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
-    if (data.isPublished === true) {
-      data.publishedAt = new Date();
+    const sanitized = {
+      ...data,
+      title: data.title ? sanitizeHtml(data.title as string) : data.title,
+      description: data.description ? sanitizeHtml(data.description as string) : data.description,
+    };
+    if (sanitized.isPublished === true) {
+      sanitized.publishedAt = new Date();
     }
-    return this.prisma.video.create({ data });
+    return this.prisma.video.create({ data: sanitized });
   }
 
   async updateVideo(id: string, data: Prisma.VideoUpdateInput) {
-    if (data.isPublished === true) {
-      data.publishedAt = new Date();
+    const sanitized = { ...data };
+    if (sanitized.title) sanitized.title = sanitizeHtml(sanitized.title as string);
+    if (sanitized.description) sanitized.description = sanitizeHtml(sanitized.description as string);
+    if (sanitized.isPublished === true) {
+      sanitized.publishedAt = new Date();
     }
     try {
-      return await this.prisma.video.update({ where: { id }, data });
+      return await this.prisma.video.update({ where: { id }, data: sanitized });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
         throw new NotFoundException('视频不存在');

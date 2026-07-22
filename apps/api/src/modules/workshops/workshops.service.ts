@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { sanitizeHtml } from '../../common/utils/sanitize';
 
 @Injectable()
 export class WorkshopsService {
@@ -141,14 +142,26 @@ export class WorkshopsService {
   async createWorkshop(data: Omit<Prisma.WorkshopCreateInput, 'tags'> & { tags?: string[] }) {
     const existing = await this.prisma.workshop.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
-    // tags 数组序列化为 JSON 字符串存储
     const { tags, ...rest } = data;
-    return this.prisma.workshop.create({ data: { ...rest, tags: JSON.stringify(tags ?? []) } });
+    const sanitized = {
+      ...rest,
+      title: rest.title ? sanitizeHtml(rest.title as string) : rest.title,
+      subtitle: rest.subtitle ? sanitizeHtml(rest.subtitle as string) : rest.subtitle,
+      summary: rest.summary ? sanitizeHtml(rest.summary as string) : rest.summary,
+      content: rest.content ? sanitizeHtml(rest.content as string) : rest.content,
+      location: rest.location ? sanitizeHtml(rest.location as string) : rest.location,
+    };
+    return this.prisma.workshop.create({ data: { ...sanitized, tags: JSON.stringify(tags ?? []) } });
   }
 
   async updateWorkshop(id: string, data: Omit<Prisma.WorkshopUpdateInput, 'tags'> & { tags?: string[] }) {
     const { tags, ...rest } = data;
     const payload: Prisma.WorkshopUpdateInput = { ...rest };
+    if (payload.title) payload.title = sanitizeHtml(payload.title as string);
+    if (payload.subtitle) payload.subtitle = sanitizeHtml(payload.subtitle as string);
+    if (payload.summary) payload.summary = sanitizeHtml(payload.summary as string);
+    if (payload.content) payload.content = sanitizeHtml(payload.content as string);
+    if (payload.location) payload.location = sanitizeHtml(payload.location as string);
     if (tags !== undefined) payload.tags = JSON.stringify(tags ?? []);
     try {
       return await this.prisma.workshop.update({ where: { id }, data: payload });
@@ -227,16 +240,21 @@ export class WorkshopsService {
   }
 
   async addHighlight(workshopId: string, data: { title: string; content: string; sortOrder?: number }) {
+    const workshop = await this.prisma.workshop.findUnique({ where: { id: workshopId } });
+    if (!workshop) throw new NotFoundException('活动不存在');
     return this.prisma.workshopHighlight.create({
-      data: { workshopId, title: data.title, content: data.content, sortOrder: data.sortOrder ?? 0 },
+      data: { workshopId, title: sanitizeHtml(data.title), content: sanitizeHtml(data.content), sortOrder: data.sortOrder ?? 0 },
     });
   }
 
   async updateHighlight(workshopId: string, id: string, data: { title?: string; content?: string; sortOrder?: number }) {
     const existing = await this.prisma.workshopHighlight.findFirst({ where: { id, workshopId } });
     if (!existing) throw new NotFoundException('亮点不存在');
+    const sanitized: Record<string, unknown> = { ...data };
+    if (sanitized.title) sanitized.title = sanitizeHtml(sanitized.title as string);
+    if (sanitized.content) sanitized.content = sanitizeHtml(sanitized.content as string);
     try {
-      return await this.prisma.workshopHighlight.update({ where: { id }, data });
+      return await this.prisma.workshopHighlight.update({ where: { id }, data: sanitized });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
         throw new NotFoundException('亮点不存在');
@@ -259,16 +277,21 @@ export class WorkshopsService {
   }
 
   async addItinerary(workshopId: string, data: { dayIndex: number; title: string; content: string; sortOrder?: number }) {
+    const workshop = await this.prisma.workshop.findUnique({ where: { id: workshopId } });
+    if (!workshop) throw new NotFoundException('活动不存在');
     return this.prisma.workshopItinerary.create({
-      data: { workshopId, dayIndex: data.dayIndex, title: data.title, content: data.content, sortOrder: data.sortOrder ?? 0 },
+      data: { workshopId, dayIndex: data.dayIndex, title: sanitizeHtml(data.title), content: sanitizeHtml(data.content), sortOrder: data.sortOrder ?? 0 },
     });
   }
 
   async updateItinerary(workshopId: string, id: string, data: { dayIndex?: number; title?: string; content?: string; sortOrder?: number }) {
     const existing = await this.prisma.workshopItinerary.findFirst({ where: { id, workshopId } });
     if (!existing) throw new NotFoundException('行程不存在');
+    const sanitized: Record<string, unknown> = { ...data };
+    if (sanitized.title) sanitized.title = sanitizeHtml(sanitized.title as string);
+    if (sanitized.content) sanitized.content = sanitizeHtml(sanitized.content as string);
     try {
-      return await this.prisma.workshopItinerary.update({ where: { id }, data });
+      return await this.prisma.workshopItinerary.update({ where: { id }, data: sanitized });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
         throw new NotFoundException('行程不存在');
@@ -291,16 +314,20 @@ export class WorkshopsService {
   }
 
   async addFeeItem(workshopId: string, data: { type: string; content: string; sortOrder?: number }) {
+    const workshop = await this.prisma.workshop.findUnique({ where: { id: workshopId } });
+    if (!workshop) throw new NotFoundException('活动不存在');
     return this.prisma.workshopFeeItem.create({
-      data: { workshopId, type: data.type, content: data.content, sortOrder: data.sortOrder ?? 0 },
+      data: { workshopId, type: data.type, content: sanitizeHtml(data.content), sortOrder: data.sortOrder ?? 0 },
     });
   }
 
   async updateFeeItem(workshopId: string, id: string, data: { type?: string; content?: string; sortOrder?: number }) {
     const existing = await this.prisma.workshopFeeItem.findFirst({ where: { id, workshopId } });
     if (!existing) throw new NotFoundException('费用项不存在');
+    const sanitized: Record<string, unknown> = { ...data };
+    if (sanitized.content) sanitized.content = sanitizeHtml(sanitized.content as string);
     try {
-      return await this.prisma.workshopFeeItem.update({ where: { id }, data });
+      return await this.prisma.workshopFeeItem.update({ where: { id }, data: sanitized });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
         throw new NotFoundException('费用项不存在');

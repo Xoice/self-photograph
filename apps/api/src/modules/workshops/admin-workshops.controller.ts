@@ -1,7 +1,16 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
 import { WorkshopsService } from './workshops.service';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CreateWorkshopDto, UpdateWorkshopDto } from './dto/workshops.dto';
+import {
+  CreateWorkshopDto,
+  UpdateWorkshopDto,
+  CreateHighlightDto,
+  UpdateHighlightDto,
+  CreateItineraryDto,
+  UpdateItineraryDto,
+  CreateFeeItemDto,
+  UpdateFeeItemDto,
+} from './dto/workshops.dto';
 
 @Controller('admin/workshops')
 @UseGuards(JwtAuthGuard)
@@ -38,12 +47,12 @@ export class AdminWorkshopsController {
   }
 
   @Post(':id/highlights')
-  async addHighlight(@Param('id', ParseUUIDPipe) id: string, @Body() data: { title: string; content: string; sortOrder?: number }) {
+  async addHighlight(@Param('id', ParseUUIDPipe) id: string, @Body() data: CreateHighlightDto) {
     return this.workshopsService.addHighlight(id, data);
   }
 
   @Patch(':id/highlights/:highlightId')
-  async updateHighlight(@Param('id', ParseUUIDPipe) id: string, @Param('highlightId', ParseUUIDPipe) highlightId: string, @Body() data: { title?: string; content?: string; sortOrder?: number }) {
+  async updateHighlight(@Param('id', ParseUUIDPipe) id: string, @Param('highlightId', ParseUUIDPipe) highlightId: string, @Body() data: UpdateHighlightDto) {
     return this.workshopsService.updateHighlight(id, highlightId, data);
   }
 
@@ -53,12 +62,12 @@ export class AdminWorkshopsController {
   }
 
   @Post(':id/itinerary')
-  async addItinerary(@Param('id', ParseUUIDPipe) id: string, @Body() data: { dayIndex: number; title: string; content: string; sortOrder?: number }) {
+  async addItinerary(@Param('id', ParseUUIDPipe) id: string, @Body() data: CreateItineraryDto) {
     return this.workshopsService.addItinerary(id, data);
   }
 
   @Patch(':id/itinerary/:itineraryId')
-  async updateItinerary(@Param('id', ParseUUIDPipe) id: string, @Param('itineraryId', ParseUUIDPipe) itineraryId: string, @Body() data: { dayIndex?: number; title?: string; content?: string; sortOrder?: number }) {
+  async updateItinerary(@Param('id', ParseUUIDPipe) id: string, @Param('itineraryId', ParseUUIDPipe) itineraryId: string, @Body() data: UpdateItineraryDto) {
     return this.workshopsService.updateItinerary(id, itineraryId, data);
   }
 
@@ -68,12 +77,12 @@ export class AdminWorkshopsController {
   }
 
   @Post(':id/fee-items')
-  async addFeeItem(@Param('id', ParseUUIDPipe) id: string, @Body() data: { type: string; content: string; sortOrder?: number }) {
+  async addFeeItem(@Param('id', ParseUUIDPipe) id: string, @Body() data: CreateFeeItemDto) {
     return this.workshopsService.addFeeItem(id, data);
   }
 
   @Patch(':id/fee-items/:feeItemId')
-  async updateFeeItem(@Param('id', ParseUUIDPipe) id: string, @Param('feeItemId', ParseUUIDPipe) feeItemId: string, @Body() data: { type?: string; content?: string; sortOrder?: number }) {
+  async updateFeeItem(@Param('id', ParseUUIDPipe) id: string, @Param('feeItemId', ParseUUIDPipe) feeItemId: string, @Body() data: UpdateFeeItemDto) {
     return this.workshopsService.updateFeeItem(id, feeItemId, data);
   }
 

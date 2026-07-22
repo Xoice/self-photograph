@@ -156,3 +156,95 @@ export class UpdateWorkshopDto {
   @IsString({ each: true, message: '标签必须是字符串数组' })
   tags?: string[];
 }
+
+export class CreateHighlightDto {
+  @IsString({ message: '亮点标题必须是字符串' })
+  @IsNotEmpty({ message: '亮点标题不能为空' })
+  title: string;
+
+  @IsString({ message: '亮点内容必须是字符串' })
+  @IsNotEmpty({ message: '亮点内容不能为空' })
+  content: string;
+
+  @IsNumber({}, { message: '排序必须是数字' })
+  @IsOptional()
+  sortOrder?: number;
+}
+
+export class UpdateHighlightDto {
+  @IsString({ message: '亮点标题必须是字符串' })
+  @IsOptional()
+  title?: string;
+
+  @IsString({ message: '亮点内容必须是字符串' })
+  @IsOptional()
+  content?: string;
+
+  @IsNumber({}, { message: '排序必须是数字' })
+  @IsOptional()
+  sortOrder?: number;
+}
+
+export class CreateItineraryDto {
+  @IsNumber({}, { message: '天数必须是数字' })
+  @IsNotEmpty({ message: '天数不能为空' })
+  dayIndex: number;
+
+  @IsString({ message: '行程标题必须是字符串' })
+  @IsNotEmpty({ message: '行程标题不能为空' })
+  title: string;
+
+  @IsString({ message: '行程内容必须是字符串' })
+  @IsNotEmpty({ message: '行程内容不能为空' })
+  content: string;
+
+  @IsNumber({}, { message: '排序必须是数字' })
+  @IsOptional()
+  sortOrder?: number;
+}
+
+export class UpdateItineraryDto {
+  @IsNumber({}, { message: '天数必须是数字' })
+  @IsOptional()
+  dayIndex?: number;
+
+  @IsString({ message: '行程标题必须是字符串' })
+  @IsOptional()
+  title?: string;
+
+  @IsString({ message: '行程内容必须是字符串' })
+  @IsOptional()
+  content?: string;
+
+  @IsNumber({}, { message: '排序必须是数字' })
+  @IsOptional()
+  sortOrder?: number;
+}
+
+export class CreateFeeItemDto {
+  @IsString({ message: '费用类型必须是字符串' })
+  @IsNotEmpty({ message: '费用类型不能为空' })
+  type: string;
+
+  @IsString({ message: '费用内容必须是字符串' })
+  @IsNotEmpty({ message: '费用内容不能为空' })
+  content: string;
+
+  @IsNumber({}, { message: '排序必须是数字' })
+  @IsOptional()
+  sortOrder?: number;
+}
+
+export class UpdateFeeItemDto {
+  @IsString({ message: '费用类型必须是字符串' })
+  @IsOptional()
+  type?: string;
+
+  @IsString({ message: '费用内容必须是字符串' })
+  @IsOptional()
+  content?: string;
+
+  @IsNumber({}, { message: '排序必须是数字' })
+  @IsOptional()
+  sortOrder?: number;
+}

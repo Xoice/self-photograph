@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import { sanitizeHtml } from '../../common/utils/sanitize';
 
 @Injectable()
 export class LeadsService {
@@ -14,9 +15,9 @@ export class LeadsService {
   }) {
     const lead = await this.prisma.contactLead.create({
       data: {
-        name: data.name,
+        name: sanitizeHtml(data.name),
         email: data.email,
-        message: data.message,
+        message: sanitizeHtml(data.message),
         sourcePage: data.sourcePage,
       },
     });
@@ -53,11 +54,11 @@ export class LeadsService {
       const created = await tx.workshopEnrollment.create({
         data: {
           workshopId: workshop.id,
-          name: data.name,
+          name: sanitizeHtml(data.name),
           phone: data.phone,
           wechat: data.wechat,
           email: data.email,
-          message: data.message,
+          message: data.message ? sanitizeHtml(data.message) : undefined,
         },
       });
       await tx.workshop.update({

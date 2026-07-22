@@ -1,6 +1,8 @@
 ﻿import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
+import { sanitizeHtml } from '../../common/utils/sanitize';
+
 interface CategoryInput {
   name?: string;
   slug?: string;
@@ -226,12 +228,26 @@ export class GalleryService {
   async createWork(data: Prisma.GalleryWorkCreateInput) {
     const existing = await this.prisma.galleryWork.findUnique({ where: { slug: data.slug } });
     if (existing) throw new ConflictException('slug 已存在');
-    return this.prisma.galleryWork.create({ data });
+    const sanitized = {
+      ...data,
+      title: sanitizeHtml(data.title as string),
+      summary: sanitizeHtml(data.summary as string),
+      description: data.description ? sanitizeHtml(data.description as string) : undefined,
+      location: data.location ? sanitizeHtml(data.location as string) : undefined,
+      cameraInfo: data.cameraInfo ? sanitizeHtml(data.cameraInfo as string) : undefined,
+    };
+    return this.prisma.galleryWork.create({ data: sanitized });
   }
 
   async updateWork(id: string, data: Prisma.GalleryWorkUpdateInput) {
+    const sanitized = { ...data };
+    if (sanitized.title) sanitized.title = sanitizeHtml(sanitized.title as string);
+    if (sanitized.summary) sanitized.summary = sanitizeHtml(sanitized.summary as string);
+    if (sanitized.description) sanitized.description = sanitizeHtml(sanitized.description as string);
+    if (sanitized.location) sanitized.location = sanitizeHtml(sanitized.location as string);
+    if (sanitized.cameraInfo) sanitized.cameraInfo = sanitizeHtml(sanitized.cameraInfo as string);
     try {
-      return await this.prisma.galleryWork.update({ where: { id }, data });
+      return await this.prisma.galleryWork.update({ where: { id }, data: sanitized });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
         throw new NotFoundException('作品不存在');

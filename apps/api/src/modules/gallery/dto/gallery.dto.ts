@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty, IsISO8601 } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty, IsISO8601, IsUUID } from 'class-validator';
 
 export class CreateCategoryDto {
   @IsString({ message: '名称必须是字符串' })
@@ -9,7 +9,7 @@ export class CreateCategoryDto {
   @IsNotEmpty({ message: 'URL标识不能为空' })
   slug: string;
 
-  @IsString({ message: '父分类ID必须是字符串' })
+  @IsUUID('4', { message: '父分类ID必须是有效的UUID' })
   @IsOptional()
   parentId?: string;
 
@@ -31,7 +31,7 @@ export class UpdateCategoryDto {
   @IsOptional()
   slug?: string;
 
-  @IsString({ message: '父分类ID必须是字符串' })
+  @IsUUID('4', { message: '父分类ID必须是有效的UUID' })
   @IsOptional()
   parentId?: string | null;
 
@@ -65,7 +65,7 @@ export class CreateWorkDto {
   @IsNotEmpty({ message: '封面图不能为空' })
   coverImage: string;
 
-  @IsString({ message: '分类ID必须是字符串' })
+  @IsUUID('4', { message: '分类ID必须是有效的UUID' })
   @IsOptional()
   categoryId?: string | null;
 
@@ -119,7 +119,7 @@ export class UpdateWorkDto {
   @IsOptional()
   coverImage?: string;
 
-  @IsString({ message: '分类ID必须是字符串' })
+  @IsUUID('4', { message: '分类ID必须是有效的UUID' })
   @IsOptional()
   categoryId?: string | null;
 

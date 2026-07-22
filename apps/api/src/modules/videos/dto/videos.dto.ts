@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsBoolean, IsNumber, IsNotEmpty, Matches } from 'class-validator';
 
 export class CreateVideoDto {
   @IsString({ message: '标题必须是字符串' })
@@ -19,6 +19,7 @@ export class CreateVideoDto {
 
   @IsString({ message: '视频链接必须是字符串' })
   @IsNotEmpty({ message: '视频链接不能为空' })
+  @Matches(/^https?:\/\//, { message: '视频链接必须以 http:// 或 https:// 开头' })
   videoUrl: string;
 
   @IsString({ message: '封面图必须是字符串' })
@@ -57,6 +58,7 @@ export class UpdateVideoDto {
 
   @IsString({ message: '视频链接必须是字符串' })
   @IsOptional()
+  @Matches(/^https?:\/\//, { message: '视频链接必须以 http:// 或 https:// 开头' })
   videoUrl?: string;
 
   @IsString({ message: '封面图必须是字符串' })

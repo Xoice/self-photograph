@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import { sanitizeHtml } from '../../common/utils/sanitize';
 
 @Injectable()
 export class SiteService {
@@ -44,27 +45,35 @@ export class SiteService {
     bilibiliUrl?: string;
     footerText?: string;
   }) {
+    const sanitized: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (typeof value === 'string') {
+        sanitized[key] = sanitizeHtml(value);
+      } else {
+        sanitized[key] = value;
+      }
+    }
     const existing = await this.prisma.siteConfig.findFirst();
     if (!existing) {
       return this.prisma.siteConfig.create({
         data: {
-          brandName: data.brandName || '',
-          heroTitle: data.heroTitle || '',
-          heroSubtitle: data.heroSubtitle || '',
-          bioTitle: data.bioTitle || '',
-         bioContent: data.bioContent || '',
-         bioImage: data.bioImage,
-         contactPhone: data.contactPhone || '',
-          contactEmail: data.contactEmail || '',
-          contactWechat: data.contactWechat || '',
-          locationText: data.locationText || '',
-          bilibiliUrl: data.bilibiliUrl,
-          footerText: data.footerText || '',
+          brandName: (sanitized.brandName as string) || '',
+          heroTitle: (sanitized.heroTitle as string) || '',
+          heroSubtitle: (sanitized.heroSubtitle as string) || '',
+          bioTitle: (sanitized.bioTitle as string) || '',
+         bioContent: (sanitized.bioContent as string) || '',
+         bioImage: sanitized.bioImage as string | undefined,
+         contactPhone: (sanitized.contactPhone as string) || '',
+          contactEmail: (sanitized.contactEmail as string) || '',
+          contactWechat: (sanitized.contactWechat as string) || '',
+          locationText: (sanitized.locationText as string) || '',
+          bilibiliUrl: sanitized.bilibiliUrl as string | undefined,
+          footerText: (sanitized.footerText as string) || '',
         },
       });
     }
     const updateData = Object.fromEntries(
-      Object.entries(data).filter(([, v]) => v !== null),
+      Object.entries(sanitized).filter(([, v]) => v !== null),
     );
     return this.prisma.siteConfig.update({
       where: { id: existing.id },
