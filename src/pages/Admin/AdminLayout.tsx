@@ -81,7 +81,7 @@ const AdminLayout = () => {
       {/* Sidebar */}
       <Box
         sx={{
-          width: sidebarWidth,
+          width: { xs: 'min(86vw, 320px)', sm: sidebarWidth },
           flexShrink: 0,
           bgcolor: '#0a0a0a',
           borderRight: '1px solid #222',
@@ -127,7 +127,7 @@ const AdminLayout = () => {
           flexDirection: 'column',
         }}
       >
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1, pt: 'calc(0.5rem + env(safe-area-inset-top))' }}>
           <IconButton onClick={() => setSidebarOpen(false)} sx={{ color: 'inherit' }}>
             <Close />
           </IconButton>

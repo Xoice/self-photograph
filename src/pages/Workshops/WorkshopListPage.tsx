@@ -140,7 +140,7 @@ const WorkshopListPage = () => {
                     />
                   </Box>
 
-                  <Stack spacing={1.5} sx={{ p: 3 }}>
+                  <Stack spacing={1.5} sx={{ p: { xs: 2, sm: 3 } }}>
                     <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
                       {ws.tags.map((tag) => (
                         <Chip

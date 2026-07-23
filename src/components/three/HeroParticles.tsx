@@ -48,8 +48,8 @@ const HeroParticles = () => {
   const meteorTimer = useRef(3 + Math.random() * 7);
 
   const isMobile = useMemo(() => typeof window !== 'undefined' && window.innerWidth < 768, []);
-  const bgCount = useMemo(() => (isMobile ? 1200 : 2500), [isMobile]);
-  const galaxyCount = useMemo(() => (isMobile ? 650 : 1600), [isMobile]);
+  const bgCount = useMemo(() => (isMobile ? 800 : 2500), [isMobile]);
+  const galaxyCount = useMemo(() => (isMobile ? 450 : 1600), [isMobile]);
 
   // 背景星场数据
   /* eslint-disable react-hooks/purity -- 星点位置/颜色/大小用 Math.random 一次性生成，仅在挂载或粒度变化时计算 */
@@ -377,7 +377,7 @@ const HeroParticles = () => {
   });
 
   return (
-    <group ref={groupRef}>
+    <group ref={groupRef} scale={isMobile ? 0.88 : 1}>
       {/* 背景星场 */}
       <points>
         <bufferGeometry>

@@ -1,5 +1,7 @@
 import type { WorkshopSummary, WorkshopDetail } from '@/types/api';
 
+const mockCover = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
 export const mockWorkshops: WorkshopSummary[] = [
   {
     id: 'workshop_001',
@@ -7,7 +9,7 @@ export const mockWorkshops: WorkshopSummary[] = [
     slug: 'portrait-practice',
     subtitle: 'Portrait Photography Practice',
     summary: '深入学习人像摄影的构图技巧、光线运用和模特引导',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=人像摄影实战班',
+    coverImage: mockCover,
     priceText: '¥1,280',
     location: '县城摄影基地',
     startDate: '2024-02-15T00:00:00.000Z',
@@ -28,7 +30,7 @@ export const mockWorkshops: WorkshopSummary[] = [
     slug: 'landscape-camp',
     subtitle: 'Landscape Photography Camp',
     summary: '探索自然风光的拍摄技巧，学习如何捕捉日出日落、星空银河',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=风景摄影创作营',
+    coverImage: mockCover,
     priceText: '¥1,580',
     location: '山峦风景区',
     startDate: '2024-03-08T00:00:00.000Z',
@@ -49,7 +51,7 @@ export const mockWorkshops: WorkshopSummary[] = [
     slug: 'county-record-class',
     subtitle: 'County Documentary Photography',
     summary: '记录县城的日常生活和人文风情，学习纪实摄影的观察与表达',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=县城摄影记录班',
+    coverImage: mockCover,
     priceText: '¥980',
     location: '县城老街',
     startDate: '2024-04-20T00:00:00.000Z',
@@ -70,7 +72,7 @@ export const mockWorkshops: WorkshopSummary[] = [
     slug: 'advanced-postprocessing',
     subtitle: 'Advanced Post-Processing',
     summary: '深入学习Lightroom和Photoshop的高级调色技巧',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=后期处理进阶班',
+    coverImage: mockCover,
     priceText: '¥680',
     location: '线上直播',
     startDate: '2024-05-10T00:00:00.000Z',

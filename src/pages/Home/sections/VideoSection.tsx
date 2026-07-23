@@ -39,9 +39,9 @@ const VideoSection = () => {
   }, [data]);
 
   return (
-    <Box component="section" ref={sectionRef} id="video" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: 15, bgcolor: '#080808', scrollMarginTop: '100px' }}>
+    <Box component="section" ref={sectionRef} id="video" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: { xs: 9, md: 15 }, bgcolor: '#080808', scrollMarginTop: '100px' }}>
       <Container maxWidth="xl">
-        <Box className="section-title" sx={{ mb: 10 }}>
+        <Box className="section-title" sx={{ mb: { xs: 6, md: 10 } }}>
           <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 3 }}>
             影视作品 VIDEO
           </Typography>

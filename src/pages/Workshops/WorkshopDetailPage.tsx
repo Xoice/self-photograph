@@ -132,11 +132,11 @@ const WorkshopDetailPage = () => {
               }}
             />
           )}
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 4, lineHeight: 1.2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2 }}>
+            <Typography variant="h1" sx={{ fontSize: { xs: '2.25rem', sm: '2.75rem', md: '4rem' }, fontWeight: 300, mb: 4, lineHeight: 1.2, minWidth: 0, overflowWrap: 'anywhere' }}>
               {workshop.title}
             </Typography>
-            <ShareButton title={workshop.title} url={`/workshops/${workshop.slug}`} />
+            <Box sx={{ flexShrink: 0, mt: { xs: 0.5, sm: 1 } }}><ShareButton title={workshop.title} url={`/workshops/${workshop.slug}`} /></Box>
           </Box>
           {workshop.subtitle && (
             <Typography variant="h2" sx={{ fontSize: { xs: '1.5rem', md: '2rem' }, fontWeight: 300, mb: 6, color: 'primary.main' }}>

@@ -90,7 +90,7 @@ const WorkDetailPage = () => {
         type="article"
       />
       <Container maxWidth="lg">
-        <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 0.5, sm: 2 }} sx={{ mb: 4, alignItems: { xs: 'flex-start', sm: 'center' } }}>
           <Button
             onClick={() => navigate('/gallery')}
             startIcon={<ArrowBack />}
@@ -122,11 +122,11 @@ const WorkDetailPage = () => {
             ))}
           </Stack>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 4, lineHeight: 1.2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 2 }}>
+            <Typography variant="h1" sx={{ fontSize: { xs: '2.25rem', sm: '2.75rem', md: '4rem' }, fontWeight: 300, mb: 4, lineHeight: 1.2, minWidth: 0, overflowWrap: 'anywhere' }}>
               {work.title}
             </Typography>
-            <ShareButton title={work.title} url={`/gallery/${work.slug}`} />
+            <Box sx={{ flexShrink: 0, mt: { xs: 0.5, sm: 1 } }}><ShareButton title={work.title} url={`/gallery/${work.slug}`} /></Box>
           </Box>
 
           <Typography variant="body1" sx={{ color: '#888', fontSize: '1.1rem', mb: 4, maxWidth: 800 }}>

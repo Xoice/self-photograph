@@ -15,6 +15,13 @@ interface ResponsiveImageProps extends Omit<BoxProps, 'component'> {
   lazy?: boolean;
 }
 
+const transparentPlaceholder = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
+const normalizeImageUrl = (url: string) =>
+  /^(?:https?:)?\/\/via\.placeholder\.com(?:\/|$)/i.test(url)
+    ? transparentPlaceholder
+    : url;
+
 /**
  * 统一的图片渲染组件。
  * - 自动添加 loading="lazy" + decoding="async"
@@ -31,14 +38,15 @@ const ResponsiveImage = ({
   sx,
   ...rest
 }: ResponsiveImageProps) => {
+  const safeSrc = normalizeImageUrl(src);
   const srcSetStr = srcSet
-    ? srcSet.map((s) => `${s.url} ${s.width}w`).join(', ')
+    ? srcSet.map((s) => `${normalizeImageUrl(s.url)} ${s.width}w`).join(', ')
     : undefined;
 
   return (
     <Box
       component="img"
-      src={src}
+      src={safeSrc}
       alt={alt}
       sizes={sizes}
       {...(srcSetStr ? { srcSet: srcSetStr } : {})}

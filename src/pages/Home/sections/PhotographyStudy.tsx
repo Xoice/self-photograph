@@ -54,9 +54,9 @@ const PhotographyStudy = () => {
   const isOpen = (status: WorkshopStatus) => status === 'registration_open';
 
   return (
-    <Box component="section" ref={sectionRef} id="photographystudy" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: 15, bgcolor: '#0a0a0a', scrollMarginTop: '100px' }}>
+    <Box component="section" ref={sectionRef} id="photographystudy" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: { xs: 9, md: 15 }, bgcolor: '#0a0a0a', scrollMarginTop: '100px' }}>
       <Container maxWidth="xl">
-        <Box className="section-title" sx={{ mb: 10 }}>
+        <Box className="section-title" sx={{ mb: { xs: 6, md: 10 } }}>
           <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 3, overflowWrap: { xs: 'anywhere', md: 'normal' } }}>
             摄影研学 PHOTOGRAPHYSTUDY
           </Typography>

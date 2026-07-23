@@ -254,8 +254,8 @@ const Navbar = () => {
         onClose={() => setMobileOpen(false)}
         PaperProps={{
           sx: {
-            width: '75vw',
-            maxWidth: 320,
+            width: { xs: 'min(86vw, 360px)', sm: 320 },
+            maxWidth: '100%',
             bgcolor: '#050505',
             color: '#EAEAEA',
             pt: 'env(safe-area-inset-top)',
@@ -263,7 +263,7 @@ const Navbar = () => {
           },
         }}
       >
-        <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ p: { xs: 2, sm: 3 }, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 700, letterSpacing: '0.1em' }}>
             XOICE
           </Typography>
@@ -274,7 +274,7 @@ const Navbar = () => {
 
         <Divider sx={{ borderColor: '#222' }} />
 
-        <Stack sx={{ p: 2 }}>
+        <Stack sx={{ p: { xs: 1, sm: 2 } }}>
           {navItems.map((item) => (
             <Box key={item.label}>
               <Box

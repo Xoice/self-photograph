@@ -89,9 +89,9 @@ const ContactSection = () => {
   ] : [];
 
   return (
-    <Box component="section" ref={sectionRef} id="connect" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: 15, bgcolor: '#080808', scrollMarginTop: '100px' }}>
+    <Box component="section" ref={sectionRef} id="connect" sx={{ minHeight: '100vh', '@supports (height: 100dvh)': { minHeight: '100dvh' }, py: { xs: 9, md: 15 }, bgcolor: '#080808', scrollMarginTop: '100px' }}>
       <Container maxWidth="xl">
-        <Box className="section-title" sx={{ mb: 10 }}>
+        <Box className="section-title" sx={{ mb: { xs: 6, md: 10 } }}>
           <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 300, mb: 3 }}>
             联系Xoice CONTACT
           </Typography>
@@ -111,19 +111,19 @@ const ContactSection = () => {
                 ...cardHoverSx,
               }}
             >
-              <CardContent sx={{ p: 5 }}>
+              <CardContent sx={{ p: { xs: 2.5, sm: 4, md: 5 } }}>
                 <Stack spacing={4}>
                   {contactItems.map((item) => (
-                    <Stack key={item.label} direction="row" spacing={3} alignItems="flex-start">
-                      <Box sx={{ p: 2, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '50%' }}>
+                    <Stack key={item.label} direction="row" spacing={{ xs: 1.5, sm: 3 }} alignItems="flex-start">
+                      <Box sx={{ p: { xs: 1.25, sm: 2 }, bgcolor: 'rgba(255,255,255,0.05)', borderRadius: '50%', flexShrink: 0 }}>
                         {item.icon}
                       </Box>
                       <Box sx={{ flex: 1 }}>
                         <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1 }}>
                           {item.label}
                         </Typography>
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                          <Typography variant="h6" sx={{ fontSize: '1.3rem', fontWeight: 500, wordBreak: 'break-all' }}>
+                        <Stack direction="row" alignItems="center" spacing={1} sx={{ minWidth: 0 }}>
+                          <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.3rem' }, fontWeight: 500, overflowWrap: 'anywhere', minWidth: 0 }}>
                             {item.value}
                           </Typography>
                           {item.copyValue && item.field && (
@@ -165,7 +165,7 @@ const ContactSection = () => {
                 ...cardHoverSx,
               }}
             >
-              <CardContent sx={{ p: 5 }}>
+              <CardContent sx={{ p: { xs: 2.5, sm: 4, md: 5 } }}>
                 <Typography variant="h5" sx={{ mb: 4, fontWeight: 500 }}>
                   发送消息
                 </Typography>

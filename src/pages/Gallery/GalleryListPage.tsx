@@ -107,7 +107,7 @@ const GalleryListPage = () => {
                   onClick={() => navigate(`/gallery/${work.slug}`)}
                   sx={{
                     position: 'relative',
-                    height: 400,
+                    height: { xs: 'min(62svh, 420px)', sm: 400 },
                     bgcolor: '#111',
                     borderRadius: 1,
                     overflow: 'hidden',

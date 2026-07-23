@@ -85,8 +85,8 @@ const GallerySection = () => {
   };
 
   const cardSx = {
-    width: { xs: '75vw', md: 400 },
-    height: { xs: '50vh', md: 600 },
+    width: { xs: 'min(82vw, 360px)', md: 400 },
+    height: { xs: 'min(68svh, 520px)', md: 600 },
     flexShrink: 0,
     position: 'relative',
     overflow: 'hidden',
@@ -117,11 +117,11 @@ const GallerySection = () => {
           sx={{
             display: 'flex',
             gap: '1rem',
-            px: '12.5vw',
+            px: { xs: '9vw', sm: '12.5vw' },
             overflowX: 'auto',
             overflowY: 'hidden',
             scrollSnapType: 'x mandatory',
-            scrollPadding: '12.5vw',
+            scrollPadding: { xs: '9vw', sm: '12.5vw' },
             WebkitOverflowScrolling: 'touch',
             pb: 2,
             '&::-webkit-scrollbar': { display: 'none' },

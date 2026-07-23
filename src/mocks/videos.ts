@@ -1,5 +1,7 @@
 import type { VideoItem } from '@/types/api';
 
+const mockCover = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+
 export const mockVideos: VideoItem[] = [
   {
     id: 'video_001',
@@ -8,7 +10,7 @@ export const mockVideos: VideoItem[] = [
     description: '从零开始学习摄影基础知识，包括光圈、快门、ISO等核心概念',
     platform: 'bilibili',
     videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=摄影基础入门',
+    coverImage: mockCover,
     durationSeconds: 930,
     durationText: '15:30',
     category: '教学视频',
@@ -23,7 +25,7 @@ export const mockVideos: VideoItem[] = [
     description: '掌握人像摄影的构图、光线和姿势指导',
     platform: 'bilibili',
     videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=人像摄影技巧',
+    coverImage: mockCover,
     durationSeconds: 1215,
     durationText: '20:15',
     category: '教学视频',
@@ -38,7 +40,7 @@ export const mockVideos: VideoItem[] = [
     description: '探索风景摄影的拍摄技巧和后期处理方法',
     platform: 'bilibili',
     videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=风景摄影实战',
+    coverImage: mockCover,
     durationSeconds: 1125,
     durationText: '18:45',
     category: '教学视频',
@@ -53,7 +55,7 @@ export const mockVideos: VideoItem[] = [
     description: '记录县城的日常生活和人文风情',
     platform: 'bilibili',
     videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=县城摄影记录',
+    coverImage: mockCover,
     durationSeconds: 740,
     durationText: '12:20',
     category: '摄影县城',
@@ -68,7 +70,7 @@ export const mockVideos: VideoItem[] = [
     description: '私房摄影的艺术表达与创作思路',
     platform: 'bilibili',
     videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=私房摄影艺术',
+    coverImage: mockCover,
     durationSeconds: 1000,
     durationText: '16:40',
     category: '摄影县城',
@@ -83,7 +85,7 @@ export const mockVideos: VideoItem[] = [
     description: 'Lightroom和Photoshop后期处理技巧分享',
     platform: 'bilibili',
     videoUrl: 'https://www.bilibili.com/video/BV1xx411c7mD',
-    coverImage: 'https://via.placeholder.com/400x225/1a1a1a/ffffff?text=后期处理教程',
+    coverImage: mockCover,
     durationSeconds: 1330,
     durationText: '22:10',
     category: '教学视频',

@@ -1,5 +1,4 @@
 import { Box, Typography, Stack } from '@mui/material';
-import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { lazy, Suspense, useRef, useState, useEffect } from 'react';
 import { useSiteConfig } from '@/hooks/useSiteConfig';
@@ -35,6 +34,7 @@ const HeroSection = () => {
 
   const titleParts = config?.heroTitle?.trim().split(/\s+/) ?? [];
   const subtitle = config?.heroSubtitle?.trim() ?? '';
+  const hasHeroCopy = titleParts.length > 0 || subtitle.length > 0;
 
   // 滚出视口后暂停 R3F 渲染循环，省 CPU
   useEffect(() => {
@@ -48,21 +48,36 @@ const HeroSection = () => {
     return () => observer.disconnect();
   }, []);
 
-  useGSAP(() => {
-    const tl = gsap.timeline();
-    tl.from('.hero-title span', {
-      y: 100,
-      opacity: 0,
-      duration: 1.5,
-      stagger: 0.2,
-      ease: 'power4.out',
-    }).from('.hero-subtitle', {
-      y: 20,
-      opacity: 0,
-      duration: 1,
-      ease: 'power2.out',
-    }, '-=1');
-  }, { scope: containerRef });
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || !hasHeroCopy) return undefined;
+
+    const context = gsap.context(() => {
+      const tl = gsap.timeline();
+      const titleSpans = container.querySelectorAll('.hero-title span');
+      const subtitleElement = container.querySelector('.hero-subtitle');
+
+      if (titleSpans.length > 0) {
+        tl.from(titleSpans, {
+          y: 100,
+          opacity: 0,
+          duration: 1.5,
+          stagger: 0.2,
+          ease: 'power4.out',
+        });
+      }
+      if (subtitleElement) {
+        tl.from(subtitleElement, {
+          y: 20,
+          opacity: 0,
+          duration: 1,
+          ease: 'power2.out',
+        }, titleSpans.length > 0 ? '-=1' : undefined);
+      }
+    }, container);
+
+    return () => context.revert();
+  }, [hasHeroCopy]);
 
   // 文字 3D 视差：入场动画完成后启用，幅度小不影响可读性
   useEffect(() => {

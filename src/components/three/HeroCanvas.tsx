@@ -13,9 +13,13 @@ interface HeroCanvasProps {
  * visible=false 时停止 R3F 渲染循环以省电。
  */
 const HeroCanvas = ({ visible }: HeroCanvasProps) => {
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+
   return (
     <Canvas
-      camera={{ position: [0, 0, 30], fov: 75 }}
+      camera={{ position: [0, 0, 30], fov: isMobile ? 82 : 75 }}
+      dpr={isMobile ? [1, 1.25] : [1, 2]}
+      gl={{ antialias: !isMobile, powerPreference: 'high-performance', alpha: false }}
       frameloop={visible ? 'always' : 'never'}
     >
       <color attach="background" args={['#050505']} />
